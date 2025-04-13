@@ -1,0 +1,147 @@
+package com.zentu.zentu_core.service;
+
+import com.zentu.zentu_core.dto.membership.GroupMembershipDto;
+import com.zentu.zentu_core.dto.user.CreateUserRequest;
+import com.zentu.zentu_core.dto.user.UpdateUserRequest;
+import com.zentu.zentu_core.dto.user.UserDto;
+import com.zentu.zentu_core.dto.user.UserSummaryDto;
+import com.zentu.zentu_core.entity.Group;
+import com.zentu.zentu_core.entity.User;
+import com.zentu.zentu_core.entity.UserGroupMembership;
+import com.zentu.zentu_core.enums.AdministrativeRole;
+import com.zentu.zentu_core.enums.State;
+import com.zentu.zentu_core.repository.UserGroupMembershipRepository;
+import com.zentu.zentu_core.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
+
+@RequiredArgsConstructor
+public class UserService {
+    private final UserRepository userRepository;
+    private final UserGroupMembershipRepository userGroupMembershipRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final GroupService groupService;
+
+    @Transactional
+    public UUID createUser(CreateUserRequest request, AdministrativeRole role, Boolean isSuperUser){
+        if (userRepository.existsByPhoneNumber(request.getPhoneNumber())){
+            throw  new RuntimeException("Phone number already exists");
+        }
+
+        if (userRepository.existsByEmail(request.getEmail())){
+            throw  new RuntimeException("Email already exists");
+        }
+
+        User user = User.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .otherName(request.getOtherName())
+                .phoneNumber(request.getPhoneNumber())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(role)
+                .isSuperUser(isSuperUser)
+                .build();
+        userRepository.save(user);
+
+        return user.getId();
+    }
+
+    @Transactional
+    public void updateUser(UpdateUserRequest request, UUID userId){
+        User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found"));
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setOtherName(request.getOtherName());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setEmail(request.getEmail());
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void updateUserRole(UUID userId, String roleName){
+        User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found"));
+
+        AdministrativeRole role;
+        try{
+            role = AdministrativeRole.valueOf(roleName.toUpperCase());
+        }catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid role name");
+        }
+
+        user.setRole(role);
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void updateUserIsSuperUser(UUID userId){
+        User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found"));
+        user.setIsSuperUser(!user.getIsSuperUser());
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void deleteUser(UUID userId){
+        User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found"));
+        user.setState(State.INACTIVE);
+        userRepository.save(user);
+    }
+
+    public List<GroupMembershipDto> getUserGroupMemberships(User user){
+        List<UserGroupMembership> memberships = userGroupMembershipRepository.findAllByUser(user);
+
+        return memberships.stream()
+                .map(membership -> {
+                    Group group = membership.getGroup();
+                    Boolean isAdmin = groupService.isUserGroupAdmin(group, user);
+                    return GroupMembershipDto.builder()
+                            .groupId(group.getId())
+                            .groupName(group.getName())
+                            .groupDescription(group.getDescription())
+                            .isAdmin(isAdmin)
+                            .role(membership.getState().toString())
+                            .joinedAt(membership.getCreatedAt())
+                            .build();
+                })
+                .toList();
+    }
+
+    public UserDto convertToUserDto(User user){
+        List<GroupMembershipDto> memberships = getUserGroupMemberships(user);
+        return UserDto.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .otherName(user.getOtherName())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .role(user.getRole().toString())
+                .isSuperUser(user.getIsSuperUser())
+                .groupMemberships(memberships)
+                .build();
+    }
+
+    public UserSummaryDto convertToUserSummaryDto(User user){
+        return UserSummaryDto.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .otherName(user.getOtherName())
+                .build();
+    }
+
+    public UserDto getUserById(UUID userId){
+        User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found"));
+        return convertToUserDto(user);
+    }
+
+    public List<UserDto> getAllUsers(){
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(this::convertToUserDto).toList();
+    }
+}
