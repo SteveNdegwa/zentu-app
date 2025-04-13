@@ -13,8 +13,6 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@FilterDef(name = "stateFilter", parameters = @ParamDef(name = "state", type = State.class))
-@Filter(name = "stateFilter", condition = "state = :state")
 public abstract class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

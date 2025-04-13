@@ -1,7 +1,11 @@
 package com.zentu.zentu_core.entity;
 
+import com.zentu.zentu_core.enums.State;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,6 +17,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@FilterDef(name = "stateFilter", parameters = @ParamDef(name = "state", type = State.class))
+@Filter(name = "stateFilter", condition = "state = :state")
 public class Group extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String name;

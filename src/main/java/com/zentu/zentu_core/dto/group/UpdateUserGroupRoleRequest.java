@@ -1,6 +1,6 @@
 package com.zentu.zentu_core.dto.group;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Data
@@ -8,6 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class UpdateUserGroupRoleRequest {
-    @NotNull(message = "Role is required")
+    @NotBlank(message = "Role is required")
     private String role;
 }

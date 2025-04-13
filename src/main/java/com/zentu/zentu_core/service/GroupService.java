@@ -28,7 +28,7 @@ public class GroupService {
     private final UserService userService;
 
     @Transactional
-    public GroupDto createGroup(CreateGroupRequest request, User user) {
+    public UUID createGroup(CreateGroupRequest request, User user) {
         Group group = Group.builder().name(request.getName()).description(request.getDescription()).build();
         group = groupRepository.save(group);
 
@@ -38,7 +38,7 @@ public class GroupService {
         UserGroupMembership membership = UserGroupMembership.builder().user(user).group(group).build();
         userGroupMembershipRepository.save(membership);
 
-        return convertToGroupDto(group);
+        return group.getId();
     }
 
     public boolean isUserGroupAdmin(Group group, User user) {
