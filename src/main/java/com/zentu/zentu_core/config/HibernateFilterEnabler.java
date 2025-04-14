@@ -19,6 +19,6 @@ public class HibernateFilterEnabler {
     public void enableFilter() {
         entityManager.unwrap(Session.class)
                 .enableFilter("stateFilter")
-                .setParameter("state", State.ACTIVE);
+                .setParameter("state", State.ACTIVE.name());
     }
 }

@@ -1,7 +1,6 @@
 package com.zentu.zentu_core.entity;
 
 import com.zentu.zentu_core.enums.AdministrativeRole;
-import com.zentu.zentu_core.enums.State;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Filter;
@@ -15,7 +14,6 @@ import org.hibernate.annotations.ParamDef;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@FilterDef(name = "stateFilter", parameters = @ParamDef(name = "state", type = State.class))
 @Filter(name = "stateFilter", condition = "state = :state")
 public class User extends BaseEntity {
     private String firstName;

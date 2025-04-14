@@ -17,7 +17,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@FilterDef(name = "stateFilter", parameters = @ParamDef(name = "state", type = State.class))
 @Filter(name = "stateFilter", condition = "state = :state")
 public class Group extends BaseEntity {
     @Column(unique = true, nullable = false)

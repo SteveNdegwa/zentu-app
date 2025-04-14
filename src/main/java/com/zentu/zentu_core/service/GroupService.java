@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,12 +24,11 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
     private final UserGroupMembershipRepository userGroupMembershipRepository;
-    private final UserService userService;
 
     @Transactional
     public UUID createGroup(CreateGroupRequest request, User user) {
-        Group group = Group.builder().name(request.getName()).description(request.getDescription()).build();
-        group = groupRepository.save(group);
+        Group group = groupRepository.save(
+                Group.builder().name(request.getName()).description(request.getDescription()).build());
 
         group.getAdmins().add(user);
         groupRepository.save(group);
@@ -46,7 +44,7 @@ public class GroupService {
     }
 
     @Transactional
-    public GroupDto updateGroup(UUID groupId, UpdateGroupRequest request, User user) {
+    public void updateGroup(UUID groupId, UpdateGroupRequest request, User user) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new RuntimeException("Group not found"));
 
@@ -56,9 +54,7 @@ public class GroupService {
 
         group.setName(request.getName());
         group.setDescription(request.getDescription());
-        group = groupRepository.save(group);
-
-        return convertToGroupDto(group);
+        groupRepository.save(group);
     }
 
     @Transactional
@@ -76,9 +72,7 @@ public class GroupService {
 
     public List<GroupDto> getAllGroups() {
         List<Group> groups = groupRepository.findAll();
-        return groups.stream()
-                .map(this::convertToGroupDto)
-                .collect(Collectors.toList());
+        return groups.stream().map(this::convertToGroupDto).toList();
     }
 
     public GroupDto getGroupById(UUID groupId){
@@ -172,7 +166,12 @@ public class GroupService {
         Set<User> admins = group.getAdmins();
 
         return admins.stream()
-                .map(userService::convertToUserSummaryDto).toList();
+                .map(admin -> UserSummaryDto.builder()
+                        .id(admin.getId())
+                        .firstName(admin.getFirstName())
+                        .lastName(admin.getLastName())
+                        .otherName(admin.getOtherName())
+                        .build()).toList();
     }
 
     public List<GroupMemberDto> getGroupMembers(Group group){
@@ -192,7 +191,6 @@ public class GroupService {
                 })
                 .toList();
     }
-
 
     private GroupDto convertToGroupDto(Group group) {
         List<GroupMemberDto> members = getGroupMembers(group);

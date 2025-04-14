@@ -15,7 +15,6 @@ import org.hibernate.annotations.ParamDef;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@FilterDef(name = "stateFilter", parameters = @ParamDef(name = "state", type = State.class))
 @Filter(name = "stateFilter", condition = "state = :state")
 public class UserGroupMembership extends BaseEntity {
     @ManyToOne(optional = false)
