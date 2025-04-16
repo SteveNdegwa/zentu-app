@@ -4,6 +4,7 @@ import com.zentu.zentu_core.auth.dto.LoginRequest;
 import com.zentu.zentu_core.auth.entity.Identity;
 import com.zentu.zentu_core.auth.repository.IdentityRepository;
 import com.zentu.zentu_core.auth.util.TokenGenerator;
+import com.zentu.zentu_core.base.enums.State;
 import com.zentu.zentu_core.user.entity.User;
 import com.zentu.zentu_core.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -18,7 +19,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class IdentityService {
+public class AuthService {
     private final IdentityRepository identityRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -26,10 +27,12 @@ public class IdentityService {
 
     @Transactional
     public Map<String, String> login (LoginRequest request){
-        String hashedPassword = passwordEncoder.encode(request.getPassword());
+        User user = userRepository.findByPhoneNumberAndState(request.getPhoneNumber(), State.ACTIVE)
+                .orElseThrow(()-> new RuntimeException("Invalid username or password"));
 
-        User user = userRepository.findByPhoneNumberAndPassword(request.getPhoneNumber(), hashedPassword)
-                .orElseThrow(()-> new RuntimeException("Incorrect phone number or password"));
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid username or password");
+        }
 
         identityRepository.deactivateUserIdentities(user);
 
@@ -48,7 +51,8 @@ public class IdentityService {
 
     @Transactional
     public void logout(UUID userId){
-        User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found"));
+        User user = userRepository.findByIdAndState(userId, State.ACTIVE)
+                .orElseThrow(()-> new RuntimeException("User not found"));
         identityRepository.deactivateUserIdentities(user);
     }
 

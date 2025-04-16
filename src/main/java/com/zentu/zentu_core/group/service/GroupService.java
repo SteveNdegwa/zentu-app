@@ -49,7 +49,7 @@ public class GroupService {
 
     @Transactional
     public void updateGroup(UUID groupId, UpdateGroupRequest request, User user) {
-        Group group = groupRepository.findById(groupId)
+        Group group = groupRepository.findByIdAndState(groupId, State.ACTIVE)
                 .orElseThrow(() -> new RuntimeException("Group not found"));
 
         if (!isUserGroupAdmin(group, user)) {
@@ -63,7 +63,7 @@ public class GroupService {
 
     @Transactional
     public void deleteGroup(UUID groupId, User user) {
-        Group group = groupRepository.findById(groupId)
+        Group group = groupRepository.findByIdAndState(groupId, State.ACTIVE)
                 .orElseThrow(() -> new RuntimeException("Group not found"));
 
         if (!isUserGroupAdmin(group, user)) {
@@ -75,25 +75,25 @@ public class GroupService {
     }
 
     public List<GroupDto> getAllGroups() {
-        List<Group> groups = groupRepository.findAll();
+        List<Group> groups = groupRepository.findAllByState(State.ACTIVE);
         return groups.stream().map(this::convertToGroupDto).toList();
     }
 
     public GroupDto getGroupById(UUID groupId){
-        Group group = groupRepository.findById(groupId)
+        Group group = groupRepository.findByIdAndState(groupId, State.ACTIVE)
                 .orElseThrow(()-> new RuntimeException("Group not found"));
         return convertToGroupDto(group);
     }
 
     @Transactional
     public void addUserToGroup(UUID groupId, UUID userId) {
-        Group group = groupRepository.findById(groupId)
+        Group group = groupRepository.findByIdAndState(groupId, State.ACTIVE)
                 .orElseThrow(() -> new RuntimeException("Group not found"));
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndState(userId, State.ACTIVE)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (groupMembershipRepository.findByUserAndGroup(user, group).isPresent()){
+        if (groupMembershipRepository.findByUserAndGroupAndState(user, group, State.ACTIVE).isPresent()){
             throw new RuntimeException("User is already in the group");
         }
 
@@ -104,13 +104,13 @@ public class GroupService {
 
     @Transactional
     public void removeUserFromGroup(UUID groupId, UUID userId) {
-        Group group = groupRepository.findById(groupId)
+        Group group = groupRepository.findByIdAndState(groupId, State.ACTIVE)
                 .orElseThrow(() -> new RuntimeException("Group not found"));
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndState(userId, State.ACTIVE)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        GroupMembership membership = groupMembershipRepository.findByUserAndGroup(user, group)
+        GroupMembership membership = groupMembershipRepository.findByUserAndGroupAndState(user, group, State.ACTIVE)
                 .orElseThrow(()-> new RuntimeException("User not in the group"));
 
         membership.setState(State.INACTIVE);
@@ -121,17 +121,17 @@ public class GroupService {
 
     @Transactional
     public void setUserAsGroupAdmin(UUID groupId, UUID userId, User user) {
-        Group group = groupRepository.findById(groupId)
+        Group group = groupRepository.findByIdAndState(groupId, State.ACTIVE)
                 .orElseThrow(() -> new RuntimeException("Group not found"));
 
         if (!isUserGroupAdmin(group, user)){
             throw new RuntimeException("Unauthorized to perform this operation");
         }
 
-        User newAdmin = userRepository.findById(userId)
+        User newAdmin = userRepository.findByIdAndState(userId, State.ACTIVE)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!groupMembershipRepository.existsByUserAndGroup(newAdmin, group)){
+        if (!groupMembershipRepository.existsByUserAndGroupAndState(newAdmin, group, State.ACTIVE)){
             throw new RuntimeException("User is not a member of the group");
         }
 
@@ -142,13 +142,13 @@ public class GroupService {
 
     @Transactional
     public void updateUserGroupRole(UUID groupId, UUID userId, String roleName) {
-        Group group = groupRepository.findById(groupId)
+        Group group = groupRepository.findByIdAndState(groupId, State.ACTIVE)
                 .orElseThrow(() -> new RuntimeException("Group not found"));
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndState(userId, State.ACTIVE)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        GroupMembership membership = groupMembershipRepository.findByUserAndGroup(user, group)
+        GroupMembership membership = groupMembershipRepository.findByUserAndGroupAndState(user, group, State.ACTIVE)
                 .orElseThrow(() -> new RuntimeException("User is not a member of the group"));
 
         GroupRole role;
@@ -164,7 +164,7 @@ public class GroupService {
     }
 
     public List<UserSummaryDto> getGroupAdmins(UUID groupId) {
-        Group group = groupRepository.findById(groupId)
+        Group group = groupRepository.findByIdAndState(groupId, State.ACTIVE)
                 .orElseThrow(() -> new RuntimeException("Group not found"));
 
         Set<User> admins = group.getAdmins();
@@ -179,7 +179,7 @@ public class GroupService {
     }
 
     public List<GroupMemberDto> getGroupMembers(Group group){
-        List<GroupMembership> memberships = groupMembershipRepository.findAllByGroup(group);
+        List<GroupMembership> memberships = groupMembershipRepository.findAllByGroupAndState(group, State.ACTIVE);
         return memberships.stream()
                 .map(membership -> {
                     User user = membership.getUser();

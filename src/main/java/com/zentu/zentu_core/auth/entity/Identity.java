@@ -4,7 +4,6 @@ import com.zentu.zentu_core.base.entity.BaseEntity;
 import com.zentu.zentu_core.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Filter;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +14,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Filter(name = "stateFilter", condition = "state = :state")
 public class Identity extends BaseEntity {
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")

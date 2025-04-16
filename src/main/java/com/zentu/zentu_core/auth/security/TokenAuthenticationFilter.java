@@ -2,6 +2,7 @@ package com.zentu.zentu_core.auth.security;
 
 import com.zentu.zentu_core.auth.entity.Identity;
 import com.zentu.zentu_core.auth.repository.IdentityRepository;
+import com.zentu.zentu_core.base.enums.State;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,13 +30,13 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
     ) throws ServletException, IOException {
         String token = extractTokenFromHeader(request);
-        Optional<Identity> identity = identityRepository.findByToken(token);
+        Optional<Identity> identity = identityRepository.findByTokenAndState(token, State.ACTIVE);
         if (identity.isPresent()){
             Authentication authentication = new UsernamePasswordAuthenticationToken(
                     identity.get().getUser(), null, Collections.emptyList());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-        filterChain.doFilter(request, response); // Proceed with the request
+        filterChain.doFilter(request, response);
     }
 
     private String extractTokenFromHeader(HttpServletRequest request) {

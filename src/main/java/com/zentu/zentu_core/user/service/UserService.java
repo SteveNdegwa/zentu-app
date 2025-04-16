@@ -31,11 +31,11 @@ public class UserService {
 
     @Transactional
     public UUID createUser(CreateUserRequest request, UserRole role, Boolean isSuperUser){
-        if (userRepository.existsByPhoneNumber(request.getPhoneNumber())){
+        if (userRepository.existsByPhoneNumberAndState(request.getPhoneNumber(), State.ACTIVE)){
             throw  new RuntimeException("Phone number already exists");
         }
 
-        if (userRepository.existsByEmail(request.getEmail())){
+        if (userRepository.existsByEmailAndState(request.getEmail(), State.ACTIVE)){
             throw  new RuntimeException("Email already exists");
         }
 
@@ -56,7 +56,8 @@ public class UserService {
 
     @Transactional
     public void updateUser(UpdateUserRequest request, UUID userId){
-        User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found"));
+        User user = userRepository.findByIdAndState(userId, State.ACTIVE)
+                .orElseThrow(()-> new RuntimeException("User not found"));
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setOtherName(request.getOtherName());
@@ -67,7 +68,8 @@ public class UserService {
 
     @Transactional
     public void updateUserRole(UUID userId, String roleName){
-        User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found"));
+        User user = userRepository.findByIdAndState(userId, State.ACTIVE)
+                .orElseThrow(()-> new RuntimeException("User not found"));
 
         UserRole role;
         try{
@@ -82,20 +84,22 @@ public class UserService {
 
     @Transactional
     public void updateUserIsSuperUser(UUID userId){
-        User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found"));
+        User user = userRepository.findByIdAndState(userId, State.ACTIVE)
+                .orElseThrow(()-> new RuntimeException("User not found"));
         user.setIsSuperUser(!user.getIsSuperUser());
         userRepository.save(user);
     }
 
     @Transactional
     public void deleteUser(UUID userId){
-        User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found"));
+        User user = userRepository.findByIdAndState(userId, State.ACTIVE)
+                .orElseThrow(()-> new RuntimeException("User not found"));
         user.setState(State.INACTIVE);
         userRepository.save(user);
     }
 
     public List<GroupMembershipDto> getUserGroupMemberships(User user){
-        List<GroupMembership> memberships = userGroupMembershipRepository.findAllByUser(user);
+        List<GroupMembership> memberships = userGroupMembershipRepository.findAllByUserAndState(user, State.ACTIVE);
 
         return memberships.stream()
                 .map(membership -> {
@@ -138,12 +142,13 @@ public class UserService {
     }
 
     public UserDto getUserById(UUID userId){
-        User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found"));
+        User user = userRepository.findByIdAndState(userId, State.ACTIVE)
+                .orElseThrow(()-> new RuntimeException("User not found"));
         return convertToUserDto(user);
     }
 
     public List<UserDto> getAllUsers(){
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAllByState(State.ACTIVE);
         return users.stream()
                 .map(this::convertToUserDto).toList();
     }

@@ -33,7 +33,9 @@ public class GroupController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> updateGroup(
-            @PathVariable UUID groupId, @RequestBody @Valid UpdateGroupRequest request, @AuthenticationPrincipal User user) {
+            @PathVariable UUID groupId,
+            @RequestBody @Valid UpdateGroupRequest request,
+            @AuthenticationPrincipal User user) {
         groupService.updateGroup(groupId, request, user);
         return ResponseEntity.ok(ApiResponse.success("Group updated successfully", null));
     }

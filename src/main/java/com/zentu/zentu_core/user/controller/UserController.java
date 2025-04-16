@@ -1,5 +1,6 @@
 package com.zentu.zentu_core.user.controller;
 
+import com.zentu.zentu_core.auth.security.annotations.ProtectedEndpoint;
 import com.zentu.zentu_core.base.dto.ApiResponse;
 import com.zentu.zentu_core.user.dto.CreateUserRequest;
 import com.zentu.zentu_core.user.dto.UpdateUserRequest;
@@ -73,6 +74,7 @@ public class UserController {
     }
 
     @GetMapping
+    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<List<UserDto>>> getAllUsers() {
         List<UserDto> users = userService.getAllUsers();
         return ResponseEntity.ok(ApiResponse.success("Users fetched successfully", users));

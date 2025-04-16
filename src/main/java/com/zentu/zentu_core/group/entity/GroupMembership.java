@@ -5,7 +5,6 @@ import com.zentu.zentu_core.group.enums.GroupRole;
 import com.zentu.zentu_core.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Filter;
 
 @Entity
 @Table(name = "group_membership", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "group_id"}))
@@ -14,7 +13,6 @@ import org.hibernate.annotations.Filter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Filter(name = "stateFilter", condition = "state = :state")
 public class GroupMembership extends BaseEntity {
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")

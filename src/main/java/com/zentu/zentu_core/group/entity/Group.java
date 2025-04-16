@@ -4,7 +4,6 @@ import com.zentu.zentu_core.base.entity.BaseEntity;
 import com.zentu.zentu_core.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Filter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +15,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Filter(name = "stateFilter", condition = "state = :state")
 public class Group extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String name;

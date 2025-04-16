@@ -1,5 +1,6 @@
 package com.zentu.zentu_core.group.repository;
 
+import com.zentu.zentu_core.base.enums.State;
 import com.zentu.zentu_core.group.entity.Group;
 import com.zentu.zentu_core.user.entity.User;
 import com.zentu.zentu_core.group.entity.GroupMembership;
@@ -13,11 +14,11 @@ import java.util.UUID;
 @Repository
 public interface GroupMembershipRepository extends JpaRepository<GroupMembership, UUID> {
 
-    Optional<GroupMembership> findByUserAndGroup(User user, Group group);
+    Optional<GroupMembership> findByUserAndGroupAndState(User user, Group group, State state);
 
-    List<GroupMembership> findAllByUser(User user);
+    List<GroupMembership> findAllByUserAndState(User user, State state);
 
-    List<GroupMembership> findAllByGroup(Group group);
+    List<GroupMembership> findAllByGroupAndState(Group group, State state);
 
-    boolean existsByUserAndGroup(User user, Group group);
+    boolean existsByUserAndGroupAndState(User user, Group group, State state);
 }

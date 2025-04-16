@@ -4,7 +4,6 @@ import com.zentu.zentu_core.base.entity.BaseEntity;
 import com.zentu.zentu_core.user.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Filter;
 
 @Entity
 @Table(name = "users")
@@ -13,7 +12,6 @@ import org.hibernate.annotations.Filter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Filter(name = "stateFilter", condition = "state = :state")
 public class User extends BaseEntity {
     @Column(nullable = false)
     private String firstName;
