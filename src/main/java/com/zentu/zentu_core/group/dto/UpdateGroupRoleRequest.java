@@ -7,6 +7,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateGroupRoleRequest {
-    @NotBlank(message = "Role is required")
+    @NotBlank
     private String role;
 }

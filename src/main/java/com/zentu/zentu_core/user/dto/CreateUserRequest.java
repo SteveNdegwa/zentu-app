@@ -7,21 +7,21 @@ import jakarta.validation.constraints.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateUserRequest {
-    @NotBlank(message = "First name is required")
+    @NotBlank
     private String firstName;
 
-    @NotBlank(message = "Last name is required")
+    @NotBlank
     private String lastName;
 
     private String otherName;
 
-    @NotBlank(message = "Phone number is required")
+    @NotBlank
     private String phoneNumber;
 
-    @NotBlank(message = "Email required")
+    @NotBlank
     private String email;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Password should be longer than eight characters")
-    private String password;
-}
+    @NotBlank
+    @Size(min = 8)
+        private String password;
+    }

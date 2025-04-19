@@ -10,14 +10,14 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateVotingProposalRequest {
-    @NotBlank(message = "Group ID is required")
+    @NotBlank
     private UUID groupId;
 
-    @NotBlank(message = "Voting proposal name is required")
+    @NotBlank
     private String name;
 
     private String description;
 
-    @NotBlank(message = "Voting proposal expiry time is required")
+    @NotBlank
     private LocalDateTime expiresAt;
 }

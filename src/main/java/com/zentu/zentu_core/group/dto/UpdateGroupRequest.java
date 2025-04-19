@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateGroupRequest {
-    @NotBlank(message = "Group's name must be provided")
+    @NotBlank
     private String name;
 
     private String description;

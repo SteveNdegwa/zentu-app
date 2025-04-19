@@ -9,11 +9,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateVotingProposalRequest {
-    @NotBlank(message = "Voting proposal name must be provided")
+    @NotBlank
     private String name;
 
     private String description;
 
-    @NotBlank(message = "Voting proposal expiry time is required")
+    @NotBlank
     private LocalDateTime expiresAt;
 }

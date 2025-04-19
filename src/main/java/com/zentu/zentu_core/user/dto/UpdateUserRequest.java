@@ -7,17 +7,17 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateUserRequest {
-    @NotBlank(message = "First name is required")
+    @NotBlank
     private String firstName;
 
-    @NotBlank(message = "Last name is required")
+    @NotBlank
     private String lastName;
 
     private String otherName;
 
-    @NotBlank(message = "Phone number is required")
+    @NotBlank
     private String phoneNumber;
 
-    @NotBlank(message = "Email is required")
+    @NotBlank
     private String email;
 }

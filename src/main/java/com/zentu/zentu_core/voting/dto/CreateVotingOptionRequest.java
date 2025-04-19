@@ -7,6 +7,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateVotingOptionRequest {
-    @NotBlank(message = "Voting option name is required")
+    @NotBlank
     private String name;
 }
