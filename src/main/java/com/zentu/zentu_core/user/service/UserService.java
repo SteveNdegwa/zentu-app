@@ -98,6 +98,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional(readOnly = true)
     public List<GroupMembershipDto> getUserGroupMemberships(User user){
         List<GroupMembership> memberships = userGroupMembershipRepository.findAllByUserAndState(user, State.ACTIVE);
 
@@ -117,7 +118,7 @@ public class UserService {
                 .toList();
     }
 
-    public UserDto convertToUserDto(User user){
+    private UserDto convertToUserDto(User user){
         List<GroupMembershipDto> memberships = getUserGroupMemberships(user);
         return UserDto.builder()
                 .id(user.getId())
@@ -132,7 +133,7 @@ public class UserService {
                 .build();
     }
 
-    public UserSummaryDto convertToUserSummaryDto(User user){
+    private UserSummaryDto convertToUserSummaryDto(User user){
         return UserSummaryDto.builder()
                 .id(user.getId())
                 .firstName(user.getFirstName())
@@ -141,12 +142,14 @@ public class UserService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public UserDto getUserById(UUID userId){
         User user = userRepository.findByIdAndState(userId, State.ACTIVE)
                 .orElseThrow(()-> new RuntimeException("User not found"));
         return convertToUserDto(user);
     }
 
+    @Transactional(readOnly = true)
     public List<UserDto> getAllUsers(){
         List<User> users = userRepository.findAllByState(State.ACTIVE);
         return users.stream()

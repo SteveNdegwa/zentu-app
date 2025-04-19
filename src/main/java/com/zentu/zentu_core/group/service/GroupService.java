@@ -74,11 +74,13 @@ public class GroupService {
         groupRepository.save(group);
     }
 
+    @Transactional(readOnly = true)
     public List<GroupDto> getAllGroups() {
         List<Group> groups = groupRepository.findAllByState(State.ACTIVE);
         return groups.stream().map(this::convertToGroupDto).toList();
     }
 
+    @Transactional(readOnly = true)
     public GroupDto getGroupById(UUID groupId){
         Group group = groupRepository.findByIdAndState(groupId, State.ACTIVE)
                 .orElseThrow(()-> new RuntimeException("Group not found"));
@@ -163,6 +165,7 @@ public class GroupService {
 
     }
 
+    @Transactional(readOnly = true)
     public List<UserSummaryDto> getGroupAdmins(UUID groupId) {
         Group group = groupRepository.findByIdAndState(groupId, State.ACTIVE)
                 .orElseThrow(() -> new RuntimeException("Group not found"));
@@ -178,6 +181,7 @@ public class GroupService {
                         .build()).toList();
     }
 
+    @Transactional(readOnly = true)
     public List<GroupMemberDto> getGroupMembers(Group group){
         List<GroupMembership> memberships = groupMembershipRepository.findAllByGroupAndState(group, State.ACTIVE);
         return memberships.stream()
