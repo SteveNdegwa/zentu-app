@@ -182,7 +182,7 @@ public class GroupService {
     }
 
     @Transactional(readOnly = true)
-    public List<GroupMemberDto> getGroupMembers(Group group){
+    private List<GroupMemberDto> getGroupMembers(Group group){
         List<GroupMembership> memberships = groupMembershipRepository.findAllByGroupAndState(group, State.ACTIVE);
         return memberships.stream()
                 .map(membership -> {
