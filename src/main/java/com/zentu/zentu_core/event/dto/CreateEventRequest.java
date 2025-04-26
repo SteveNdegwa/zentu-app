@@ -1,4 +1,4 @@
-package com.zentu.zentu_core.voting.dto;
+package com.zentu.zentu_core.event.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,15 +10,22 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateVotingProposalRequest {
-    @NotBlank
-    private UUID groupId;
-
+public class CreateEventRequest {
     @NotBlank
     private String name;
 
     private String description;
 
+    private String location;
+
     @NotNull
-    private LocalDateTime expiresAt;
+    private LocalDateTime startTime;
+
+    @NotNull
+    private LocalDateTime endTime;
+
+    @NotNull
+    private UUID groupId;
+
+
 }

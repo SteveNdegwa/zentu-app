@@ -1,6 +1,7 @@
 package com.zentu.zentu_core.voting.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,6 @@ public class UpdateVotingProposalRequest {
 
     private String description;
 
-    @NotBlank
+    @NotNull
     private LocalDateTime expiresAt;
 }

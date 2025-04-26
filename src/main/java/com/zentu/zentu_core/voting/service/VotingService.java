@@ -259,7 +259,7 @@ public class VotingService {
                 .name(proposal.getName())
                 .description(proposal.getDescription())
                 .expiresAt(proposal.getExpiresAt())
-                .creatorName(proposal.getCreator().getFirstName() + " " + proposal.getCreator().getLastName())
+                .creatorName(proposal.getCreator().getFullName())
                 .options(options)
                 .state(proposal.getState().toString())
                 .build();
@@ -272,7 +272,7 @@ public class VotingService {
                 .name(proposal.getName())
                 .description(proposal.getDescription())
                 .expiresAt(proposal.getExpiresAt())
-                .creatorName(proposal.getCreator().getFirstName() + " " + proposal.getCreator().getLastName())
+                .creatorName(proposal.getCreator().getFullName())
                 .state(proposal.getState().toString())
                 .build();
     }

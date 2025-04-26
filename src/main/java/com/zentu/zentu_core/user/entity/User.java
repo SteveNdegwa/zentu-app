@@ -35,4 +35,10 @@ public class User extends BaseEntity {
 
     private Boolean isSuperUser = false;
 
+    public String getFullName() {
+        return java.util.stream.Stream.of(firstName, otherName, lastName)
+                .filter(name -> name != null && !name.isBlank())
+                .collect(java.util.stream.Collectors.joining(" "));
+    }
+
 }
