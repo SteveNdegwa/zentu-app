@@ -1,6 +1,7 @@
 package com.zentu.zentu_core.voting.entity;
 
 import com.zentu.zentu_core.base.entity.BaseEntity;
+import com.zentu.zentu_core.base.enums.State;
 import com.zentu.zentu_core.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,4 +30,5 @@ public class Vote extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
+
 }

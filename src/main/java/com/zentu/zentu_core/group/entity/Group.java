@@ -1,6 +1,7 @@
 package com.zentu.zentu_core.group.entity;
 
 import com.zentu.zentu_core.base.entity.BaseEntity;
+import com.zentu.zentu_core.base.enums.State;
 import com.zentu.zentu_core.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,5 +29,8 @@ public class Group extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> admins = new HashSet<>();
+
+    @Enumerated(EnumType.STRING)
+    private State state = State.ACTIVE;
 
 }

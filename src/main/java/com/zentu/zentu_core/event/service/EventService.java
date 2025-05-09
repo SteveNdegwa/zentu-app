@@ -280,7 +280,7 @@ public class EventService {
 
     @Transactional(readOnly = true)
     public List<EventDto> getEventsByCreator(User user){
-        List<Event> events = eventRepository.findAllByCreatorOrderByDateCreated(user);
+        List<Event> events = eventRepository.findAllByCreatorOrderByCreatedAt(user);
         return events.stream().map(this::convertToEventDto).toList();
     }
 
@@ -293,7 +293,7 @@ public class EventService {
             throw new RuntimeException("User is not a member of the group");
         }
 
-        List<Event> events = eventRepository.findAllByGroupOrderByDateCreated(group);
+        List<Event> events = eventRepository.findAllByGroupOrderByCreatedAt(group);
         return events.stream().map(this::convertToEventDto).toList();
     }
 
@@ -301,7 +301,7 @@ public class EventService {
     public List<EventDto> getEventsByUser(User user){
         List<Group> groups = groupMembershipRepository.findGroupsByUser(user);
 
-        List<Event> events = eventRepository.findAllByGroupInOrderByDateCreated(groups);
+        List<Event> events = eventRepository.findAllByGroupInOrderByCreatedAt(groups);
         return events.stream().map(this::convertToEventDto).toList();
     }
 

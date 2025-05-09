@@ -1,6 +1,7 @@
 package com.zentu.zentu_core.group.entity;
 
 import com.zentu.zentu_core.base.entity.BaseEntity;
+import com.zentu.zentu_core.base.enums.State;
 import com.zentu.zentu_core.group.enums.GroupRole;
 import com.zentu.zentu_core.user.entity.User;
 import jakarta.persistence.*;
@@ -29,4 +30,6 @@ public class GroupMembership extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private GroupRole role = GroupRole.MEMBER;
 
+    @Enumerated(EnumType.STRING)
+    private State state = State.ACTIVE;
 }

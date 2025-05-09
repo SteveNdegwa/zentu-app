@@ -1,6 +1,7 @@
 package com.zentu.zentu_core.auth.entity;
 
 import com.zentu.zentu_core.base.entity.BaseEntity;
+import com.zentu.zentu_core.base.enums.State;
 import com.zentu.zentu_core.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,4 +25,7 @@ public class Identity extends BaseEntity {
 
     @Column(nullable = false)
     private LocalDateTime expiresAt;
+
+    @Enumerated(EnumType.STRING)
+    private State state = State.ACTIVE;
 }

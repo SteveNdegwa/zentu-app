@@ -15,13 +15,13 @@ import java.util.UUID;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, UUID> {
-    List<Event> findAllByGroupOrderByDateCreated(Group group);
+    List<Event> findAllByGroupOrderByCreatedAt(Group group);
 
-    List<Event> findAllByGroupInOrderByDateCreated(List<Group> groups);
+    List<Event> findAllByGroupInOrderByCreatedAt(List<Group> groups);
 
-    List<Event> findAllByCreatorOrderByDateCreated(User creator);
+    List<Event> findAllByCreatorOrderByCreatedAt(User creator);
 
-    List<Event> findAllByStateOrderByDateCreated(EventState state);
+    List<Event> findAllByStateOrderByCreatedAt(EventState state);
 
     @Query("SELECT e FROM Event e WHERE e.startTime BETWEEN :startOfDay AND :endOfDay")
     List<Event> findEventsForDay(

@@ -28,7 +28,4 @@ public abstract class BaseEntity {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @Enumerated(EnumType.STRING)
-    private State state = State.ACTIVE;
-
 }

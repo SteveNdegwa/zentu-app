@@ -1,6 +1,7 @@
 package com.zentu.zentu_core.voting.entity;
 
 import com.zentu.zentu_core.base.entity.BaseEntity;
+import com.zentu.zentu_core.base.enums.State;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
@@ -21,4 +22,5 @@ public class VotingOption extends BaseEntity {
     @JoinColumn(name = "voting_proposal_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private VotingProposal votingProposal;
+
 }

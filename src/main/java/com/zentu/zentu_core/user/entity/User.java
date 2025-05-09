@@ -1,6 +1,7 @@
 package com.zentu.zentu_core.user.entity;
 
 import com.zentu.zentu_core.base.entity.BaseEntity;
+import com.zentu.zentu_core.base.enums.State;
 import com.zentu.zentu_core.user.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,6 +35,9 @@ public class User extends BaseEntity {
     private UserRole role = UserRole.USER;
 
     private Boolean isSuperUser = false;
+
+    @Enumerated(EnumType.STRING)
+    private State state = State.ACTIVE;
 
     public String getFullName() {
         return java.util.stream.Stream.of(firstName, otherName, lastName)
