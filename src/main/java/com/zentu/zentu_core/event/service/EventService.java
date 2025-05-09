@@ -300,7 +300,7 @@ public class EventService {
     @Transactional(readOnly = true)
     public List<EventDto> getEventsByUser(User user){
         List<Group> groups = groupMembershipRepository.findGroupsByUser(user);
-        
+
         List<Event> events = eventRepository.findAllByGroupInOrderByDateCreated(groups);
         return events.stream().map(this::convertToEventDto).toList();
     }

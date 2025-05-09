@@ -1,5 +1,6 @@
 package com.zentu.zentu_core.event.controller;
 
+import com.zentu.zentu_core.auth.security.annotations.ProtectedEndpoint;
 import com.zentu.zentu_core.base.dto.ApiResponse;
 import com.zentu.zentu_core.event.dto.CreateEventRequest;
 import com.zentu.zentu_core.event.dto.EventDto;
@@ -24,6 +25,7 @@ public class EventController {
     private final EventService eventService;
 
     @PostMapping
+    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<UUID>> createEvent(
             @RequestBody @Valid CreateEventRequest request,
             @AuthenticationPrincipal User user
@@ -33,6 +35,7 @@ public class EventController {
     }
 
     @PutMapping("/{eventId}")
+    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<Void>> updateEvent(
             @PathVariable UUID eventId,
             @RequestBody @Valid UpdateEventRequest request,
@@ -43,6 +46,7 @@ public class EventController {
     }
 
     @DeleteMapping("/{eventId}")
+    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<Void>> deleteEvent(
             @PathVariable UUID eventId,
             @AuthenticationPrincipal User user
@@ -52,6 +56,7 @@ public class EventController {
     }
 
     @PostMapping("/{eventId}/rsvp")
+    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<Void>> rsvpToEvent(
             @PathVariable UUID eventId,
             @RequestBody @Valid RsvpToEventRequest request,
@@ -62,6 +67,7 @@ public class EventController {
     }
 
     @PatchMapping("/{eventId}/postpone")
+    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<Void>> togglePostponeEvent(
             @PathVariable UUID eventId,
             @AuthenticationPrincipal User user
@@ -71,6 +77,7 @@ public class EventController {
     }
 
     @PatchMapping("/{eventId}/cancel")
+    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<Void>> toggleCancelEvent(
             @PathVariable UUID eventId,
             @AuthenticationPrincipal User user
@@ -80,6 +87,7 @@ public class EventController {
     }
 
     @PatchMapping("/{eventId}/archive")
+    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<Void>> toggleArchiveEvent(
             @PathVariable UUID eventId,
             @AuthenticationPrincipal User user
@@ -89,6 +97,7 @@ public class EventController {
     }
 
     @GetMapping("/{eventId}")
+    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<EventDto>> getEvent(
             @PathVariable UUID eventId
     ) {
@@ -97,6 +106,7 @@ public class EventController {
     }
 
     @GetMapping("/creator")
+    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<List<EventDto>>> getEventsByCreator(
             @AuthenticationPrincipal User user
     ) {
@@ -105,6 +115,7 @@ public class EventController {
     }
 
     @GetMapping("/group/{groupId}")
+    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<List<EventDto>>> getEventsByGroup(
             @PathVariable UUID groupId,
             @AuthenticationPrincipal User user
@@ -114,6 +125,7 @@ public class EventController {
     }
 
     @GetMapping("/user")
+    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<List<EventDto>>> getEventsByUser(
             @AuthenticationPrincipal User user
     ) {

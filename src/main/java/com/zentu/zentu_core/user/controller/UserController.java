@@ -29,18 +29,21 @@ public class UserController {
     }
 
     @PostMapping("/admins")
+    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<UUID>> createAdmin(@RequestBody @Valid CreateUserRequest request) {
         UUID userId = userService.createUser(request, UserRole.ADMIN, Boolean.FALSE);
         return ResponseEntity.ok(ApiResponse.success("Admin created successfully", userId));
     }
 
     @PostMapping("/superusers")
+    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<UUID>> createSuperUsers(@RequestBody @Valid CreateUserRequest request) {
         UUID userId = userService.createUser(request, UserRole.ADMIN, Boolean.TRUE);
         return ResponseEntity.ok(ApiResponse.success("Superuser created successfully", userId));
     }
 
     @PatchMapping("/{id}")
+    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<Void>> updateUser(
             @PathVariable UUID userId, @RequestBody @Valid UpdateUserRequest request) {
         userService.updateUser(request, userId);
@@ -48,6 +51,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}/role")
+    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<Void>> updateUserRole(
             @PathVariable UUID userId, @RequestBody @Valid UpdateUserRoleRequest request) {
         userService.updateUserRole(userId, request.getRole());
@@ -55,19 +59,21 @@ public class UserController {
     }
 
     @PatchMapping("/{id}/superuser")
+    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<Void>> updateUserIsSuperUser(@PathVariable UUID userId) {
         userService.updateUserIsSuperUser(userId);
-        return ResponseEntity.ok(
-                ApiResponse.success("User's superuser status updated successfully", null));
+        return ResponseEntity.ok(ApiResponse.success("User's superuser status updated successfully", null));
     }
 
     @DeleteMapping("/{id}")
+    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable UUID userId) {
         userService.deleteUser(userId);
         return ResponseEntity.ok(ApiResponse.success("User deleted successfully", null));
     }
 
     @GetMapping("/{id}")
+    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<UserDto>> getUser(@PathVariable UUID userId) {
         UserDto userDto = userService.getUserById(userId);
         return ResponseEntity.ok(ApiResponse.success("User fetched successfully", userDto));
