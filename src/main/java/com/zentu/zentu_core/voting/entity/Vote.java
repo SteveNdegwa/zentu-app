@@ -17,17 +17,17 @@ import org.hibernate.annotations.OnDeleteAction;
 @Builder
 public class Vote extends BaseEntity {
     @ManyToOne(optional = false)
-    @JoinColumn(name = "voting_proposal_id", nullable = false)
+    @JoinColumn(name = "voting_proposal_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private VotingProposal votingProposal;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "voting_option_id", nullable = false)
+    @JoinColumn(name = "voting_option_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private VotingOption votingOption;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 

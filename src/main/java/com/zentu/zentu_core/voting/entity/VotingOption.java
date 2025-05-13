@@ -19,7 +19,7 @@ public class VotingOption extends BaseEntity {
     private String name;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "voting_proposal_id", nullable = false)
+    @JoinColumn(name = "voting_proposal_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private VotingProposal votingProposal;
 

@@ -27,12 +27,12 @@ public class VotingProposal extends BaseEntity {
     private String description;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "creator_id", nullable = false)
+    @JoinColumn(name = "creator_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User creator;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "group_id", nullable = false)
+    @JoinColumn(name = "group_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Group group;
 
@@ -55,6 +55,7 @@ public class VotingProposal extends BaseEntity {
 
     public void removeOption(VotingOption option) {
         options.remove(option);
+        option.setVotingProposal(null);
     }
 
     public void addVote(Vote vote) {
@@ -64,6 +65,7 @@ public class VotingProposal extends BaseEntity {
 
     public void removeVote(Vote vote) {
         votes.remove(vote);
+        vote.setVotingProposal(null);
     }
 
 }

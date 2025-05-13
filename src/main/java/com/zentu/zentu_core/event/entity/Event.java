@@ -33,12 +33,12 @@ public class Event extends BaseEntity {
     private LocalDateTime endTime;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "group_id", nullable = false)
+    @JoinColumn(name = "group_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Group group;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "creator_id", nullable = false)
+    @JoinColumn(name = "creator_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User creator;
 

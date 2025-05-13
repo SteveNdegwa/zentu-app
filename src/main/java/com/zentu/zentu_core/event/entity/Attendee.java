@@ -17,12 +17,12 @@ import org.hibernate.annotations.OnDeleteAction;
 @Builder
 public class Attendee extends BaseEntity {
     @ManyToOne(optional = false)
-    @JoinColumn(name = "attendee_id", nullable = false)
+    @JoinColumn(name = "attendee_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "event_id", nullable = false)
+    @JoinColumn(name = "event_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Event event;
 
