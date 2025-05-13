@@ -10,7 +10,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
-@Table(name = "group_membership", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "group_id"}))
+@Table(name = "group_memberships", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "group_id"}))
 @Getter
 @Setter
 @NoArgsConstructor
