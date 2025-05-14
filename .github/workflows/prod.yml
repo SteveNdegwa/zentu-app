@@ -95,9 +95,9 @@ jobs:
           key: ${{ secrets.ZENTU_PASSWORD_SSH_KEY }}
           script_stop: true
           script: |
+            sudo chown -R $USER:$USER /srv/apps/live/zentu-app
             cd /srv/apps/live/zentu-app/
             git config --global --add safe.directory /srv/apps/live/zentu-app
             git pull origin main
             docker-compose pull
             docker-compose up -d --build
-
