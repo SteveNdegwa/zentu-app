@@ -81,3 +81,22 @@ jobs:
           context: .
           push: true
           tags: stevendegwa/zentu_app:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: docker-build-push
+    steps:
+      - name: Run deployment commands
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.ZENTU_SERVER_IP }}
+          username: ${{ secrets.ZENTU_SSH_USER }}
+          port: 22
+          key: ${{ secrets.ZENTU_PASSWORD_SSH_KEY }}
+          script_stop: true
+          script: |
+            cd /srv/apps/live/zentu-app/
+            git pull origin main
+            docker-compose pull
+            docker-compose up -d --build
+
