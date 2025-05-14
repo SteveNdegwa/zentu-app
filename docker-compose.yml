@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: spring_boot_app
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/zentu_test_db
+      SPRING_DATASOURCE_USERNAME: zentu_user
+      SPRING_DATASOURCE_PASSWORD: zentu_pass
+    ports:
+      - "8080:8080"
+
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: zentu_user
+      POSTGRES_PASSWORD: zentu_pass
+      POSTGRES_DB: zentu_test_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
