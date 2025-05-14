@@ -46,6 +46,10 @@ jobs:
 
     - name: Build with Maven
       run: mvn clean install
+      env:
+        SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/zentu_test_db
+        SPRING_DATASOURCE_USERNAME: zentu_user
+        SPRING_DATASOURCE_PASSWORD: zentu_pass
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
