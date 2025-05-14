@@ -96,6 +96,7 @@ jobs:
           script_stop: true
           script: |
             cd /srv/apps/live/zentu-app/
+            git config --global --add safe.directory /srv/apps/live/zentu-app
             git pull origin main
             docker-compose pull
             docker-compose up -d --build
