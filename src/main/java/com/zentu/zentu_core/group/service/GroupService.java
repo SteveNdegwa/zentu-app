@@ -23,6 +23,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+
 public class GroupService {
 
     private final GroupRepository groupRepository;
@@ -43,13 +44,11 @@ public class GroupService {
         Group group = groupRepository.save(
                 Group.builder().name(request.getName()).description(request.getDescription()).build());
         String maxAlias = groupRepository.findMaxAlias();
-        group.setAlias = getNextAlias(maxAlias);
+        group.setAlias(getNextAlias(maxAlias));
         group.getAdmins().add(user);
         groupRepository.save(group);
-
         GroupMembership membership = GroupMembership.builder().user(user).group(group).build();
         groupMembershipRepository.save(membership);
-
         return group.getId();
     }
 
@@ -65,7 +64,6 @@ public class GroupService {
         if (!isUserGroupAdmin(group, user)) {
             throw new RuntimeException("Unauthorized to perform this action");
         }
-
         group.setName(request.getName());
         group.setDescription(request.getDescription());
         groupRepository.save(group);

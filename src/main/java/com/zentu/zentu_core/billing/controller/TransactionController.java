@@ -15,10 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/account")
 @RequiredArgsConstructor
 public class TransactionController {
-
     private final AccountService accountService;
-
-
     @PostMapping("/topup")
     public ResponseEntity<?> topUp(@Valid @RequestBody WalletRequest request) {
         try {
