@@ -29,11 +29,26 @@ public class GroupService {
     private final UserRepository userRepository;
     private final GroupMembershipRepository groupMembershipRepository;
 
+    public GroupService(GroupRepository groupRepository, UserRepository userRepository, GroupMembershipRepository groupMembershipRepository) {
+        this.groupRepository = groupRepository;
+        this.userRepository = userRepository;
+        this.groupMembershipRepository = groupMembershipRepository;
+    }
+
+    private String getNextAlias(String currentMax) {
+        if (currentMax == null) {
+            return "0000";
+        }
+        int nextNumber = Integer.parseInt(currentMax) + 1;
+        return String.format("%04d", nextNumber);
+    }
+
     @Transactional
     public UUID createGroup(CreateGroupRequest request, User user) {
         Group group = groupRepository.save(
                 Group.builder().name(request.getName()).description(request.getDescription()).build());
-
+        String maxAlias = groupRepository.findMaxAlias();
+        group.setAlias = getNextAlias(maxAlias);
         group.getAdmins().add(user);
         groupRepository.save(group);
 
