@@ -20,6 +20,6 @@ public interface GroupRepository extends JpaRepository<Group, UUID> {
 
     boolean existsByNameAndState(String name, State state);
 //
-//    @Query("SELECT MAX(g.alias) FROM Group g")
-//    String findMaxAlias();
+    @Query("SELECT MAX(g.alias) FROM Group g")
+    String findMaxAlias();
 }
