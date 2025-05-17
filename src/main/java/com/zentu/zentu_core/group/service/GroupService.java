@@ -29,11 +29,6 @@ public class GroupService {
     private final UserRepository userRepository;
     private final GroupMembershipRepository groupMembershipRepository;
 
-    public GroupService(GroupRepository groupRepository, UserRepository userRepository, GroupMembershipRepository groupMembershipRepository) {
-        this.groupRepository = groupRepository;
-        this.userRepository = userRepository;
-        this.groupMembershipRepository = groupMembershipRepository;
-    }
 
     private String getNextAlias(String currentMax) {
         if (currentMax == null) {
