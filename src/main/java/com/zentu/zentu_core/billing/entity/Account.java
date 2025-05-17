@@ -2,6 +2,7 @@ package com.zentu.zentu_core.billing.entity;
 
 
 import com.zentu.zentu_core.base.entity.BaseEntity;
+import com.zentu.zentu_core.base.enums.State;
 import com.zentu.zentu_core.group.entity.Group;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -41,6 +42,9 @@ public class Account extends BaseEntity {
 
     @Column(name = "charge", nullable = false)
     private BigDecimal charge = BigDecimal.ZERO;
+
+    @Enumerated(EnumType.STRING)
+    private State state = State.ACTIVE;
 
 }
 

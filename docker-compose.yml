@@ -8,8 +8,8 @@ services:
       - db
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/zentu_db
-      SPRING_DATASOURCE_USERNAME: zentu_user
-      SPRING_DATASOURCE_PASSWORD: zentu_pass
+      SPRING_DATASOURCE_USERNAME: zentu_prod
+      SPRING_DATASOURCE_PASSWORD: zentu_prod
     ports:
       - "8080:8080"
 
@@ -17,11 +17,11 @@ services:
     image: postgres:16
     container_name: postgres_db
     environment:
-      POSTGRES_USER: zentu_user
-      POSTGRES_PASSWORD: zentu_pass
+      POSTGRES_USER: zentu_prod
+      POSTGRES_PASSWORD: zentu_prod
       POSTGRES_DB: zentu_db
     ports:
-      - "5427:5432"
+      - "5428:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

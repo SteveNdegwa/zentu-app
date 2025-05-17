@@ -1,7 +1,10 @@
 package com.zentu.zentu_core.billing.entity;
-
 import com.zentu.zentu_core.base.entity.BaseEntity;
+import com.zentu.zentu_core.base.enums.State;
+import com.zentu.zentu_core.billing.enums.AccountFieldType;
+import com.zentu.zentu_core.billing.enums.EntryCategory;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,27 +23,22 @@ public class BalanceLogEntry extends BaseEntity {
 	@JoinColumn(name = "balance_log", referencedColumnName = "id", nullable = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private BalanceLog balanceLog;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "entry_type_id", referencedColumnName = "id", nullable = false)
-	private EntryType entryType;
-	
-	@Column(name = "entry_type", length = 100)
-	private String entryTypeName;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "account_field_type_id", referencedColumnName = "id", nullable = false)
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "entry_category", nullable = false)
+	@NotNull(message = "Entry Category is required")
+	private EntryCategory entryCategory = EntryCategory.DEBIT;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "account_fileld_type", nullable = false)
+	@NotNull(message = "Account Field Type is required")
 	private AccountFieldType accountFieldType;
-	
-	@Column(name = "account_field", length = 100)
-	private String accountFieldTypeName;
 	
 	@Column(name = "amount_transacted", precision = 25, scale = 2, nullable = false)
 	private BigDecimal amountTransacted = BigDecimal.ZERO;
 
-	
-	@Column(name = "state_name", length = 100)
-	private String stateName;
+	@Enumerated(EnumType.STRING)
+	private State state = State.ACTIVE;
 	
 }
 
