@@ -42,8 +42,8 @@ public class GroupService {
     public UUID createGroup(CreateGroupRequest request, User user) {
         Group group = groupRepository.save(
                 Group.builder().name(request.getName()).description(request.getDescription()).build());
-//        String maxAlias = groupRepository.findMaxAlias();
-//        group.setAlias = getNextAlias(maxAlias);
+        String maxAlias = groupRepository.findMaxAlias();
+        group.setAlias = getNextAlias(maxAlias);
         group.getAdmins().add(user);
         groupRepository.save(group);
 
