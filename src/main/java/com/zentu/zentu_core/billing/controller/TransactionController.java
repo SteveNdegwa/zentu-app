@@ -18,9 +18,6 @@ public class TransactionController {
 
     private final AccountService accountService;
 
-    public TransactionController(AccountService accountService) {
-        this.accountService = accountService;
-    }
 
     @PostMapping("/topup")
     public ResponseEntity<?> topUp(@Valid @RequestBody WalletRequest request) {
