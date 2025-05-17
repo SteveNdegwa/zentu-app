@@ -3,6 +3,7 @@ package com.zentu.zentu_core.group.repository;
 import com.zentu.zentu_core.base.enums.State;
 import com.zentu.zentu_core.group.entity.Group;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,4 +19,7 @@ public interface GroupRepository extends JpaRepository<Group, UUID> {
     Optional<Group> findByNameAndState(String name, State state);
 
     boolean existsByNameAndState(String name, State state);
+
+    @Query("SELECT MAX(g.alias) FROM Group g")
+    String findMaxAlias();
 }
