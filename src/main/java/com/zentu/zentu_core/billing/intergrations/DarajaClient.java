@@ -1,111 +1,151 @@
 package com.zentu.zentu_core.billing.intergrations;
-import com.zentu.zentu_core.billing.utils.PhoneUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.*;
 import java.util.Map;
 
 import java.util.Base64;
+import org.springframework.stereotype.Component;
 
-public class MpesaInterface {
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+
+@Component
+public class DarajaClient {
 	
-	@Value("${mpesa.consumer_key}")
+	@Value("${daraja.consumer.key}")
 	private String consumerKey;
 	
-	@Value("${mpesa.consumer_secret}")
+	@Value("${daraja.consumer.secret}")
 	private String consumerSecret;
 	
-	@Value("${mpesa.shortcode}")
+	@Value("${daraja.business.shortcode}")
 	private String shortcode;
 	
-	@Value("${mpesa.lipa_na_mpesa_shortcode}")
-	private String lipaNaMpesaShortcode;
+	@Value("${daraja.business.passkey}")
+	private String passkey;
 	
-	@Value("${mpesa.shortcode_password}")
-	private String shortcodePassword;
+	@Value("${daraja.base.url:https://api.safaricom.co.ke}")
+	private String baseUrl;
 	
-	@Value("${mpesa.callback_url}")
-	private String callbackUrl;
+	private String token;
 	
-	private final String apiBaseUrl = "https://sandbox.safaricom.co.ke/";
+	private final RestTemplate restTemplate;
 	
-	public String getAccessToken() {
-		String tokenUrl = apiBaseUrl + "oauth/v1/generate?grant_type=client_credentials";
-		String authHeader = "Basic " + encodeCredentials(consumerKey, consumerSecret);
-		
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", authHeader);
-		
-		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<Map> response = restTemplate.exchange(
-				tokenUrl, HttpMethod.GET, new HttpEntity<>(headers), Map.class);
-		
-		return (String) response.getBody().get("access_token");
+	public DarajaClient(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+		this.token = generateToken();
 	}
 	
-	public String initiateSTKPush(String phoneNumber, double amount) {
-		if (!PhoneUtils.validatePhoneNumber(phoneNumber, "254", 12)) {
-			return "Invalid phone number";
+	private String generateToken() {
+		String url = baseUrl + "/oauth/v1/generate?grant_type=client_credentials";
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setBasicAuth(consumerKey, consumerSecret);
+		
+		HttpEntity<Void> entity = new HttpEntity<>(headers);
+		ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
+		
+		if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+			return (String) response.getBody().get("access_token");
+		} else {
+			throw new RuntimeException("Failed to generate token from Daraja API");
 		}
-		
-		String url = apiBaseUrl + "mpesa/stkpush/v1/processrequest";
-		String token = getAccessToken();
-		
-		HttpHeaders headers = new HttpHeaders();
-		headers.setBearerAuth(token);
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		
-		String timestamp = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-		String password = Base64.getEncoder().encodeToString((lipaNaMpesaShortcode + shortcodePassword + timestamp).getBytes());
-		
-		String requestBody = String.format("""
-                {
-                    "BusinessShortCode":"%s",
-                    "Password":"%s",
-                    "Timestamp":"%s",
-                    "TransactionType":"CustomerPayBillOnline",
-                    "Amount":"%.0f",
-                    "PartyA":"%s",
-                    "PartyB":"%s",
-                    "PhoneNumber":"%s",
-                    "CallBackURL":"%s",
-                    "AccountReference":"Ref12345",
-                    "TransactionDesc":"Payment for goods"
-                }
-                """, lipaNaMpesaShortcode, password, timestamp, amount, phoneNumber, lipaNaMpesaShortcode, phoneNumber, callbackUrl);
-		
-		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(requestBody, headers), String.class);
-		return response.getBody();
 	}
 	
-	public String queryTransactionStatus(String checkoutRequestID) {
-		String url = apiBaseUrl + "mpesa/stkpushquery/v1/query";
-		String token = getAccessToken();
-		
+	private HttpHeaders getHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth(token);
 		headers.setContentType(MediaType.APPLICATION_JSON);
+		return headers;
+	}
+	
+	public Map<String, Object> stkPush(String phoneNumber, double amount, String callbackUrl,
+	                                   String accountReference, String transactionDesc) {
+		String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+		String passwordStr = shortcode + passkey + timestamp;
+		String password = Base64.getEncoder().encodeToString(passwordStr.getBytes(StandardCharsets.UTF_8));
 		
-		String timestamp = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-		String password = Base64.getEncoder().encodeToString((lipaNaMpesaShortcode + shortcodePassword + timestamp).getBytes());
+		Map<String, Object> payload = new HashMap<>();
+		payload.put("BusinessShortCode", shortcode);
+		payload.put("Password", password);
+		payload.put("Timestamp", timestamp);
+		payload.put("TransactionType", "CustomerPayBillOnline");
+		payload.put("Amount", amount);
+		payload.put("PartyA", phoneNumber);
+		payload.put("PartyB", shortcode);
+		payload.put("PhoneNumber", phoneNumber);
+		payload.put("CallBackURL", callbackUrl);
+		payload.put("AccountReference", accountReference);
+		payload.put("TransactionDesc", transactionDesc);
 		
-		String requestBody = String.format("""
-                {
-                    "BusinessShortCode":"%s",
-                    "Password":"%s",
-                    "Timestamp":"%s",
-                    "CheckoutRequestID":"%s"
-                }
-                """, lipaNaMpesaShortcode, password, timestamp, checkoutRequestID);
+		String url = baseUrl + "/mpesa/stkpush/v1/processrequest";
 		
-		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(requestBody, headers), String.class);
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, getHeaders());
+		ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
 		
 		return response.getBody();
 	}
 	
-	private String encodeCredentials(String consumerKey, String consumerSecret) {
-		return Base64.getEncoder().encodeToString((consumerKey + ":" + consumerSecret).getBytes());
+	public Map<String, Object> registerC2bUrls(String validationUrl, String confirmationUrl, String responseType) {
+		Map<String, Object> payload = new HashMap<>();
+		payload.put("ShortCode", shortcode);
+		payload.put("ResponseType", responseType);
+		payload.put("ConfirmationURL", confirmationUrl);
+		payload.put("ValidationURL", validationUrl);
+		
+		String url = baseUrl + "/mpesa/c2b/v1/registerurl";
+		
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, getHeaders());
+		ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+		
+		return response.getBody();
+	}
+	
+	public Map<String, Object> transactionStatus(String transactionId, String partyA, String identifierType,
+	                                             String remarks, String occasion) {
+		Map<String, Object> payload = new HashMap<>();
+		payload.put("Initiator", "testapi");
+		payload.put("SecurityCredential", "SECURITY_CREDENTIAL"); // You must implement how to generate this securely
+		payload.put("CommandID", "TransactionStatusQuery");
+		payload.put("TransactionID", transactionId);
+		payload.put("PartyA", partyA);
+		payload.put("IdentifierType", identifierType);
+		payload.put("ResultURL", "https://yourdomain.com/path/to/result");
+		payload.put("QueueTimeOutURL", "https://yourdomain.com/path/to/timeout");
+		payload.put("Remarks", remarks);
+		payload.put("Occasion", occasion);
+		
+		String url = baseUrl + "/mpesa/transactionstatus/v1/query";
+		
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, getHeaders());
+		ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+		
+		return response.getBody();
+	}
+	
+	public Map<String, Object> reversal(String transactionId, double amount, String receiverParty,
+	                                    String remarks, String occasion) {
+		Map<String, Object> payload = new HashMap<>();
+		payload.put("Initiator", "testapi");
+		payload.put("SecurityCredential", "SECURITY_CREDENTIAL"); // Generate securely
+		payload.put("CommandID", "TransactionReversal");
+		payload.put("TransactionID", transactionId);
+		payload.put("Amount", amount);
+		payload.put("ReceiverParty", receiverParty);
+		payload.put("ReceiverIdentifierType", "11");
+		payload.put("ResultURL", "https://spinmobile.co/path/to/result");
+		payload.put("QueueTimeOutURL", "https://spinmobile.co/path/to/timeout");
+		payload.put("Remarks", remarks);
+		payload.put("Occasion", occasion);
+		
+		String url = baseUrl + "/mpesa/reversal/v1/request";
+		
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, getHeaders());
+		ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+		
+		return response.getBody();
 	}
 }

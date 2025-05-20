@@ -1,6 +1,6 @@
 package com.zentu.zentu_core.billing.controller;
 import com.zentu.zentu_core.billing.dto.WalletRequest;
-import com.zentu.zentu_core.billing.service.AccountService;
+import com.zentu.zentu_core.billing.service.account.AccountService;
 import com.zentu.zentu_core.billing.utils.ResponseProvider;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
