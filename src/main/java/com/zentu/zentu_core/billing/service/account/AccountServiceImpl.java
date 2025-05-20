@@ -52,8 +52,8 @@ public class AccountServiceImpl implements AccountService {
 
             String receipt = new TransactionRefGenerator().generate();
             Transaction transaction = Transaction.createCreditTransaction(user, amount, receipt, account.getAvailable().add(amount));
-            Transaction trans = genericCrudService.create(transaction);
-            log.info("TOP-UP Transaction created with ID: {}", trans.getId());
+            Transaction trans = genericCrudService.save(transaction);
+            log.info("TOP-UP Transaction updated with ID: {}", trans.getId());
 
             account.addUnclearedAmount(amount);
             saveBalanceLog(receipt, transaction, amount, account.getCurrent().add(amount), AccountFieldType.UNCLEARED, BalanceEntryType.ACCOUNT_DEPOSIT, EntryCategory.CREDIT);
@@ -66,7 +66,7 @@ public class AccountServiceImpl implements AccountService {
 
             account.addAvailableAmount(amount);
             saveBalanceLog(receipt, transaction, amount, account.getCurrent(), AccountFieldType.AVAILABLE, BalanceEntryType.APPROVE_ACCOUNT_DEPOSIT, EntryCategory.CREDIT);
-            Account acc = genericCrudService.create(account);
+            Account acc = genericCrudService.save(account);
             log.info("Account created with ID: {}", acc.getId());
 
 
@@ -109,7 +109,7 @@ public class AccountServiceImpl implements AccountService {
 
             String receipt = new TransactionRefGenerator().generate();
             Transaction transaction = Transaction.createDebitTransaction(user, amount, receipt, newAvailableBalance);
-            Transaction trans = genericCrudService.create(transaction);
+            Transaction trans = genericCrudService.save(transaction);
             log.info("WITHDRAW Transaction created with ID: {}", trans.getId());
 
             account.subtractAvailableAmount(amount);
@@ -123,8 +123,8 @@ public class AccountServiceImpl implements AccountService {
 
             account.subtractCurrentAmount(amount);
             saveBalanceLog(receipt, transaction, amount, newAvailableBalance, AccountFieldType.CURRENT, BalanceEntryType.APPROVE_ACCOUNT_WITHDRAW, EntryCategory.DEBIT);
-            Account acc = genericCrudService.create(account);
-            log.info("Account created with ID: {}", acc.getId());
+            Account acc = genericCrudService.save(account);
+            log.info("Account updated with ID: {}", acc.getId());
 
             Map<String, Object> data = new HashMap<>();
             data.put("code", "200.000.000");
@@ -146,8 +146,8 @@ public class AccountServiceImpl implements AccountService {
         balanceLog.setTransaction(transaction);
         balanceLog.setBalanceEntryType(balanceEntryType);
         balanceLog.setState(State.COMPLETED);
-        BalanceLog bal = genericCrudService.create(balanceLog);
-        log.info("BalanceLog created with ID: {}", bal.getId());
+        BalanceLog bal = genericCrudService.save(balanceLog);
+        log.info("BalanceLog updated with ID: {}", bal.getId());
 
         BalanceLogEntry balanceLogEntry = new BalanceLogEntry();
         balanceLogEntry.setBalanceLog(balanceLog);
@@ -155,7 +155,7 @@ public class AccountServiceImpl implements AccountService {
         balanceLogEntry.setAmountTransacted(amount);
         balanceLogEntry.setStatus(State.COMPLETED);
         balanceLogEntry.setEntryCategory(entryCategory);
-        BalanceLogEntry entry = genericCrudService.create(balanceLogEntry);
-        log.info("BalanceLogEntry created with ID: {}", entry.getId());
+        BalanceLogEntry entry = genericCrudService.save(balanceLogEntry);
+        log.info("BalanceLogEntry updated with ID: {}", entry.getId());
     }
 }

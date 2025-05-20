@@ -6,6 +6,8 @@ import java.util.UUID;
 public interface GenericCrudService {
     <T> T create(T entity);
 
+    <T> T save(T entity);
+
     <T> T read(Class<T> entityClass, UUID id);
 
     <T> T updateFields(Class<T> entityClass, UUID id, Map<String, Object> fieldsToUpdate);

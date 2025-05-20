@@ -58,6 +58,13 @@ public class GenericCrudServiceImpl implements GenericCrudService {
     }
 
     @Override
+    @Transactional
+    public <T> T save(T entity) {
+        return entityManager.merge(entity);
+    }
+
+
+    @Override
     public <T> T findOneByField(Class<T> entityClass, String fieldName, Object value) {
         String jpql = "SELECT e FROM " + entityClass.getSimpleName() + " e WHERE e." + fieldName + " = :value";
         return entityManager.createQuery(jpql, entityClass)
