@@ -23,7 +23,7 @@ public class BalanceLog extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "balance_entry_type", nullable = false)
 	@NotNull(message = "Balance Entry Type is required")
-	private BalanceEntryType balanceEntryType = BalanceEntryType.TOPUP_WALLET;
+	private BalanceEntryType balanceEntryType = BalanceEntryType.ACCOUNT_DEPOSIT;
 	
 	@Column(name = "receipt", length = 100)
 	private String receipt;

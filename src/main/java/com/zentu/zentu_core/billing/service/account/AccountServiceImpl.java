@@ -13,7 +13,6 @@ import com.zentu.zentu_core.common.db.GenericCrudService;
 import com.zentu.zentu_core.group.entity.Group;
 import com.zentu.zentu_core.user.entity.User;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +24,6 @@ import java.util.Map;
 @Service
 @Slf4j
 @Transactional
-@AllArgsConstructor
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 

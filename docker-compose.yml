@@ -10,6 +10,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/zentu_db
       SPRING_DATASOURCE_USERNAME: zentu_prod
       SPRING_DATASOURCE_PASSWORD: zentu_prod
+      DARAJA_CALLBACK_URL: https://zentu.com/daraja/callback
     ports:
       - "8080:8080"
 

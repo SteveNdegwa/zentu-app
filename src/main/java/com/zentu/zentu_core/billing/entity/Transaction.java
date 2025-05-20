@@ -23,7 +23,7 @@ public class Transaction extends BaseEntity {
 	private User user;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id", nullable = false)
+	@JoinColumn(name = "group_id", nullable = false)
 	@NotNull(message = "Group is required")
 	private Group group;
 
