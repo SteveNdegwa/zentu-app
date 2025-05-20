@@ -1,4 +1,4 @@
-package com.zentu.zentu_core.billing.controller;
+package com.zentu.zentu_core.billing.controller.mpesa;
 
 import com.zentu.zentu_core.billing.service.mpesa.MpesaService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -5,6 +5,7 @@ import com.zentu.zentu_core.base.enums.State;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "mpesa_transaction")
@@ -16,13 +17,13 @@ public class MpesaTransactionLog extends BaseEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private UUID id;
 	
 	@Column(name = "checkout_request_id", unique = true)
 	private String checkoutRequestId;
 	
-	@Column(name = "remote_code")
-	private String remoteCode;
+	@Column(name = "alias")
+	private String groupAlias;
 	
 	@Column(name = "source_key")
 	private String sourceKey;

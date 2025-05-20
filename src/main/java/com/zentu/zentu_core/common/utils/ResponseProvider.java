@@ -1,4 +1,4 @@
-package com.zentu.zentu_core.billing.utils;
+package com.zentu.zentu_core.common.utils;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

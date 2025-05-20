@@ -46,5 +46,38 @@ public class Account extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private State state = State.ACTIVE;
 
+    public void addUnclearedAmount(BigDecimal amount) {
+        this.uncleared = this.uncleared.add(amount);
+    }
+
+    public void subtractUnclearedAmount(BigDecimal amount) {
+        this.uncleared = this.uncleared.subtract(amount);
+    }
+
+    public void addCurrentAmount(BigDecimal amount) {
+        this.current = this.current.add(amount);
+    }
+
+    public void subtractCurrentAmount(BigDecimal amount) {
+        this.current = this.current.subtract(amount);
+    }
+
+    public void addAvailableAmount(BigDecimal amount) {
+        this.available = this.available.add(amount);
+    }
+
+    public void subtractAvailableAmount(BigDecimal amount) {
+        this.available = this.available.subtract(amount);
+    }
+
+    public void addReservedAmount(BigDecimal amount) {
+        this.reserved = this.reserved.add(amount);
+    }
+
+    public void subtractReservedAmount(BigDecimal amount) {
+        this.reserved = this.reserved.subtract(amount);
+    }
+
+
 }
 

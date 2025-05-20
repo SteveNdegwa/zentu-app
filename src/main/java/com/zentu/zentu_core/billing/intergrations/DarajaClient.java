@@ -108,13 +108,13 @@ public class DarajaClient {
 	                                             String remarks, String occasion) {
 		Map<String, Object> payload = new HashMap<>();
 		payload.put("Initiator", "testapi");
-		payload.put("SecurityCredential", "SECURITY_CREDENTIAL"); // You must implement how to generate this securely
+		payload.put("SecurityCredential", "SECURITY_CREDENTIAL");
 		payload.put("CommandID", "TransactionStatusQuery");
 		payload.put("TransactionID", transactionId);
 		payload.put("PartyA", partyA);
 		payload.put("IdentifierType", identifierType);
-		payload.put("ResultURL", "https://yourdomain.com/path/to/result");
-		payload.put("QueueTimeOutURL", "https://yourdomain.com/path/to/timeout");
+		payload.put("ResultURL", "https://zentu.com/path/to/result");
+		payload.put("QueueTimeOutURL", "https://zentu.com/path/to/timeout");
 		payload.put("Remarks", remarks);
 		payload.put("Occasion", occasion);
 		
@@ -130,7 +130,7 @@ public class DarajaClient {
 	                                    String remarks, String occasion) {
 		Map<String, Object> payload = new HashMap<>();
 		payload.put("Initiator", "testapi");
-		payload.put("SecurityCredential", "SECURITY_CREDENTIAL"); // Generate securely
+		payload.put("SecurityCredential", "SECURITY_CREDENTIAL");
 		payload.put("CommandID", "TransactionReversal");
 		payload.put("TransactionID", transactionId);
 		payload.put("Amount", amount);

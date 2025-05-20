@@ -5,4 +5,5 @@ public enum State {
     INACTIVE,
     PENDING,
     COMPLETED,
+    FAILED,
 }

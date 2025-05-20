@@ -51,6 +51,31 @@ public class Transaction extends BaseEntity {
 	@Column(name = "status", nullable = false)
 	private State status = State.ACTIVE;
 
+	public static Transaction createCreditTransaction(User user, BigDecimal amount, String receipt, BigDecimal balance) {
+		Transaction tx = new Transaction();
+		tx.setUser(user);
+		tx.setAmount(amount);
+		tx.setTransactionType(EntryCategory.CREDIT);
+		tx.setInternalReference(receipt);
+		tx.setReceiptNumber(receipt);
+		tx.setStatus(State.COMPLETED);
+		tx.setBalance(balance);
+		return tx;
+	}
+
+	public static Transaction createDebitTransaction(User user, BigDecimal amount, String receipt, BigDecimal balance) {
+		Transaction tx = new Transaction();
+		tx.setUser(user);
+		tx.setAmount(amount);
+		tx.setTransactionType(EntryCategory.DEBIT);
+		tx.setInternalReference(receipt);
+		tx.setReceiptNumber(receipt);
+		tx.setStatus(State.COMPLETED);
+		tx.setBalance(balance);
+		return tx;
+	}
+
+
 }
 
 
