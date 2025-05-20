@@ -1,5 +1,8 @@
 package com.zentu.zentu_core.billing.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum EntryCategory {
     CREDIT("CR"),
     DEBIT("DR");
@@ -9,8 +12,5 @@ public enum EntryCategory {
     EntryCategory(String code) {
         this.code = code;
     }
-
-    public String getCode() {
-        return code;
-    }
+	
 }

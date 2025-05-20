@@ -10,6 +10,9 @@ import jakarta.validation.constraints.Positive;
 public class WalletRequest {
 	@NotNull(message = "Group alias must not be null")
 	private String groupAlias;
+	
+	@NotNull(message = "Group alias must not be null")
+	private String phoneNumber;
 
 	@NotNull(message = "Amount must not be null")
 	@Positive(message = "Amount must be greater than zero")

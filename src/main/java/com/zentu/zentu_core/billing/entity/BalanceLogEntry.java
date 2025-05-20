@@ -38,7 +38,8 @@ public class BalanceLogEntry extends BaseEntity {
 	private BigDecimal amountTransacted = BigDecimal.ZERO;
 
 	@Enumerated(EnumType.STRING)
-	private State state = State.ACTIVE;
+	@Column(name = "status", precision = 25, scale = 2, nullable = false)
+	private State status = State.ACTIVE;
 	
 }
 

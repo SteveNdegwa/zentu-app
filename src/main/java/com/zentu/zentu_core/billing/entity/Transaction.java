@@ -1,7 +1,9 @@
 package com.zentu.zentu_core.billing.entity;
 import com.zentu.zentu_core.base.entity.BaseEntity;
+import com.zentu.zentu_core.base.enums.State;
 import com.zentu.zentu_core.billing.enums.EntryCategory;
 import com.zentu.zentu_core.billing.enums.TransactionStatus;
+import com.zentu.zentu_core.group.entity.Group;
 import com.zentu.zentu_core.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -19,6 +21,11 @@ public class Transaction extends BaseEntity {
 	@JoinColumn(name = "user_id", nullable = false)
 	@NotNull(message = "User is required")
 	private User user;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
+	@NotNull(message = "Group is required")
+	private Group group;
 
 	@Column(name = "receipt_number", nullable = false, unique = true)
 	@NotNull(message = "Receipt number is required")
@@ -39,11 +46,10 @@ public class Transaction extends BaseEntity {
 	@Column(name = "transaction_type", nullable = false)
 	@NotNull(message = "Transaction type is required")
 	private EntryCategory transactionType = EntryCategory.DEBIT;
-
+	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
-	@NotNull(message = "Transaction status is required")
-	private TransactionStatus status;
+	private State status = State.ACTIVE;
 
 }
 

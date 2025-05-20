@@ -15,6 +15,8 @@ public interface GroupRepository extends JpaRepository<Group, UUID> {
     Optional<Group> findByIdAndState(UUID id, State state);
 
     List<Group> findAllByState(State state);
+    
+    Optional<Group> findByAlias(String alias);
 
     Optional<Group> findByNameAndState(String name, State state);
 
