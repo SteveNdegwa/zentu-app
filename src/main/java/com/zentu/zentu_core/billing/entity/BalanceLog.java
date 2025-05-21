@@ -1,12 +1,15 @@
 package com.zentu.zentu_core.billing.entity;
+
 import com.zentu.zentu_core.base.entity.BaseEntity;
 import com.zentu.zentu_core.base.enums.State;
 import com.zentu.zentu_core.billing.enums.BalanceEntryType;
+import com.zentu.zentu_core.billing.repository.BalanceLogRepository;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.math.BigDecimal;
 
 @Getter
@@ -19,7 +22,7 @@ public class BalanceLog extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "transaction_id", referencedColumnName = "id", nullable = false)
 	private Transaction transaction;
-
+	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "balance_entry_type", nullable = false)
 	@NotNull(message = "Balance Entry Type is required")
@@ -33,9 +36,22 @@ public class BalanceLog extends BaseEntity {
 	
 	@Column(name = "balance", precision = 25, scale = 2, nullable = false)
 	private BigDecimal balance = BigDecimal.ZERO;
-
+	
 	@Enumerated(EnumType.STRING)
 	private State state = State.ACTIVE;
-
+	
+	@Transient
+	private static BalanceLogRepository balanceLogRepository;
+	
+	public static void setBalanceLogRepository(BalanceLogRepository repo) {
+		balanceLogRepository = repo;
+	}
+	
+	// Save method
+	public BalanceLog save() {
+		if (balanceLogRepository == null) {
+			throw new IllegalStateException("BalanceLogRepository has not been set.");
+		}
+		return balanceLogRepository.save(this);
+	}
 }
-

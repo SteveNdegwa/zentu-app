@@ -17,3 +17,5 @@ public class ZentuCoreApplication {
 		return new RestTemplate();
 	}
 }
+
+//OpenFeign

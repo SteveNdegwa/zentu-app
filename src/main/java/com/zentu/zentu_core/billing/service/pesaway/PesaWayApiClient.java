@@ -18,7 +18,6 @@ public class PesaWayApiClient {
     private final String clientId;
     private final String clientSecret;
     private final String baseUrl;
-    private String accessToken;
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
@@ -33,7 +32,6 @@ public class PesaWayApiClient {
         this.baseUrl = baseUrl;
         this.restTemplate = new RestTemplate();
         this.objectMapper = new ObjectMapper();
-        this.accessToken = authenticate();
     }
 
     private String authenticate() {
@@ -59,6 +57,7 @@ public class PesaWayApiClient {
 
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
+        String accessToken = authenticate();
         headers.set("Authorization", "Bearer " + accessToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
         return headers;

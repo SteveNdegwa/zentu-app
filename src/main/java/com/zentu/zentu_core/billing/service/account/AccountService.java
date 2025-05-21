@@ -5,6 +5,6 @@ import org.springframework.http.ResponseEntity;
 import java.math.BigDecimal;
 
 public interface AccountService {
-    ResponseEntity<?> topUp(String phoneNumber, String groupAlias, BigDecimal amount);
-    ResponseEntity<?> withdraw(String phoneNumber, String groupAlias, BigDecimal amount);
+    ResponseEntity<?> topUp( String groupAlias, String phoneNumber, BigDecimal amount);
+    ResponseEntity<?> withdraw(String groupAlias, String phoneNumber, BigDecimal amount);
 }

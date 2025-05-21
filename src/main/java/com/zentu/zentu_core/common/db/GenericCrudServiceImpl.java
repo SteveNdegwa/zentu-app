@@ -3,6 +3,7 @@ package com.zentu.zentu_core.common.db;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class GenericCrudServiceImpl implements GenericCrudService {
 
     @PersistenceContext
@@ -60,12 +62,14 @@ public class GenericCrudServiceImpl implements GenericCrudService {
     @Override
     @Transactional
     public <T> T save(T entity) {
+        log.info("Saving entity: " + entity);
         return entityManager.merge(entity);
     }
 
 
     @Override
     public <T> T findOneByField(Class<T> entityClass, String fieldName, Object value) {
+        log.info("Finding entity by field: " + fieldName + " with value: " + value);
         String jpql = "SELECT e FROM " + entityClass.getSimpleName() + " e WHERE e." + fieldName + " = :value";
         return entityManager.createQuery(jpql, entityClass)
                 .setParameter("value", value)

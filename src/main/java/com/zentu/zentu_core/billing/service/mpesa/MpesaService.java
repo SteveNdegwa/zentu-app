@@ -8,6 +8,7 @@ import com.zentu.zentu_core.common.db.GenericCrudService;
 import com.zentu.zentu_core.base.enums.State;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 @Service
+@Transactional
 public class MpesaService {
 
 	@Autowired

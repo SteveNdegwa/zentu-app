@@ -33,7 +33,7 @@ public class DarajaClient {
 			@Value("${daraja.consumer.secret}") String consumerSecret,
 			@Value("${daraja.business.shortcode}") String shortcode,
 			@Value("${daraja.business.passkey}") String passkey,
-			@Value("${daraja.base.url:https://api.safaricom.co.ke}") String baseUrl
+			@Value("${daraja.base.url}") String baseUrl
 	) {
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
