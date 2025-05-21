@@ -1,6 +1,7 @@
 package com.zentu.zentu_core.auth.controller;
 
 import com.zentu.zentu_core.auth.dto.LoginRequest;
+import com.zentu.zentu_core.auth.dto.VerifyUserRequest;
 import com.zentu.zentu_core.auth.service.AuthService;
 import com.zentu.zentu_core.base.dto.ApiResponse;
 import jakarta.validation.Valid;
@@ -28,5 +29,11 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> logout(@PathVariable UUID userId){
         authService.logout(userId);
         return ResponseEntity.ok(ApiResponse.success("Successfully logged out", null));
+    }
+
+    @PostMapping("/verify-user")
+    public ResponseEntity<ApiResponse<Void>> verifyUser(@RequestBody @Valid VerifyUserRequest request){
+        authService.verifyUser(request);
+        return ResponseEntity.ok(ApiResponse.success("User verified successfully", null));
     }
 }

@@ -48,6 +48,8 @@ public class UserService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(role)
                 .isSuperUser(isSuperUser)
+                .deviceId(request.getDeviceId())
+                .isVerified(true)
                 .build();
         userRepository.save(user);
 
@@ -97,6 +99,8 @@ public class UserService {
         user.setState(State.INACTIVE);
         userRepository.save(user);
     }
+
+
 
     @Transactional(readOnly = true)
     public List<GroupMembershipDto> getUserGroupMemberships(User user){
