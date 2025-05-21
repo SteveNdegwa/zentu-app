@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/mpesa")
+@RequestMapping("/mpesa")
 public class MpesaController {
 	
 	@Autowired

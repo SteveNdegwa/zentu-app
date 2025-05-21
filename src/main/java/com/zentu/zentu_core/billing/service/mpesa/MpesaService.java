@@ -9,6 +9,7 @@ import com.zentu.zentu_core.base.enums.State;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
@@ -17,6 +18,7 @@ import java.util.stream.Stream;
 
 @Service
 @Transactional
+@Slf4j
 public class MpesaService {
 
 	@Autowired
@@ -59,6 +61,7 @@ public class MpesaService {
 			String jsonResponse = objectMapper.writeValueAsString(data);
 			transaction.setResponse(jsonResponse);
 		} catch (Exception e) {
+			log.info("Failed to convert response to JSON: {}", e.getMessage());
 			e.printStackTrace();
 			transaction.setResponse(null);
 		}
@@ -143,7 +146,7 @@ public class MpesaService {
 		Map<String, Object> result = darajaClient.stkPush(
 				data.get("phone_number").toString(),
 				Double.parseDouble(data.get("amount").toString()),
-				System.getenv("DARAJA_CALLBACK_URL"),
+				"https://stage-billing.spinmobile.co/api/payments/callback/",
 				data.get("account_reference").toString(),
 				data.get("transaction_desc").toString()
 		);
