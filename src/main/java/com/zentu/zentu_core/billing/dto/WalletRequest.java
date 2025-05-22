@@ -13,6 +13,10 @@ public class WalletRequest {
 	
 	@NotNull(message = "Group alias must not be null")
 	private String phoneNumber;
+	
+	
+	@NotNull(message = "Receipt must not be null")
+	private String receiptNumber;
 
 	@NotNull(message = "Amount must not be null")
 	@Positive(message = "Amount must be greater than zero")
