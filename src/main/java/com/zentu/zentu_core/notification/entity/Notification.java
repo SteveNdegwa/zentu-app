@@ -1,9 +1,12 @@
 package com.zentu.zentu_core.notification.entity;
 
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import com.zentu.zentu_core.base.entity.BaseEntity;
 import com.zentu.zentu_core.notification.enums.NotificationState;
 import com.zentu.zentu_core.notification.enums.NotificationType;
 import com.zentu.zentu_core.user.entity.User;
+import org.hibernate.annotations.Type;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,6 +34,8 @@ public class Notification extends BaseEntity {
     @Column(nullable = false)
     private String templateName;
 
+    @Type(JsonType.class)
+    @Column(columnDefinition = "jsonb")
     private Map<String, Object> context;
 
     private String responseMessage;
