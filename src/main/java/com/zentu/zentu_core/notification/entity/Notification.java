@@ -21,6 +21,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Builder
 public class Notification extends BaseEntity {
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
