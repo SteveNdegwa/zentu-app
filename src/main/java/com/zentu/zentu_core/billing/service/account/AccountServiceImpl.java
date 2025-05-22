@@ -31,7 +31,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> topUp(String alias, String phoneNumber, BigDecimal amount) {
+    public ResponseEntity<?> topUp(String receipt, String alias, String phoneNumber, BigDecimal amount) {
         try {
             User user = genericCrudService.findOneByField(User.class, "phoneNumber", phoneNumber);
             log.info("User found: {}", user);
@@ -51,7 +51,7 @@ public class AccountServiceImpl implements AccountService {
                 throw new RuntimeException("User account not found");
             }
 
-            String receipt = new TransactionRefGenerator().generate();
+//            String receipt = new TransactionRefGenerator().generate();
             Transaction transaction = Transaction.createCreditTransaction(user, group, amount, receipt, account.getAvailable().add(amount)).save();
             log.info("TOP-UP Transaction updated with ID: {}", transaction.getId());
 
@@ -66,8 +66,7 @@ public class AccountServiceImpl implements AccountService {
 
             account.addAvailableAmount(amount);
             saveBalanceLog(receipt, transaction, amount, account.getCurrent(), AccountFieldType.AVAILABLE, BalanceEntryType.APPROVE_ACCOUNT_DEPOSIT, EntryCategory.CREDIT);
-            Account acc = genericCrudService.save(account);
-            log.info("Account created with ID: {}", acc.getId());
+            log.info("Account created with ID: ");
 
 
             Map<String, Object> data = new HashMap<>();
@@ -83,7 +82,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> withdraw(String phoneNumber, String alias, BigDecimal amount) {
+    public ResponseEntity<?> withdraw(String receipt,String phoneNumber, String alias, BigDecimal amount) {
         try {
             User user = genericCrudService.findOneByField(User.class, "phoneNumber", phoneNumber);
             if (user == null) {
@@ -107,7 +106,7 @@ public class AccountServiceImpl implements AccountService {
 
             BigDecimal newAvailableBalance = account.getAvailable().subtract(amount);
 
-            String receipt = new TransactionRefGenerator().generate();
+//            String receipt = new TransactionRefGenerator().generate();
             Transaction transaction = Transaction.createDebitTransaction(user, group, amount, receipt, newAvailableBalance).save();
             log.info("WITHDRAW Transaction created with ID: {}", transaction.getId());
 
@@ -122,8 +121,7 @@ public class AccountServiceImpl implements AccountService {
 
             account.subtractCurrentAmount(amount);
             saveBalanceLog(receipt, transaction, amount, newAvailableBalance, AccountFieldType.CURRENT, BalanceEntryType.APPROVE_ACCOUNT_WITHDRAW, EntryCategory.DEBIT);
-            Account acc = genericCrudService.save(account);
-            log.info("Account updated with ID: {}", acc.getId());
+            log.info("Account updated with ID");
 
             Map<String, Object> data = new HashMap<>();
             data.put("code", "200.000.000");
