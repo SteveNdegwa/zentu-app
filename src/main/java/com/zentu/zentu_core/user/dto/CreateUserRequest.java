@@ -21,6 +21,8 @@ public class CreateUserRequest {
     @NotBlank
     private String email;
 
+    private String deviceId;
+
     @NotBlank
     @Size(min = 8)
     private String password;

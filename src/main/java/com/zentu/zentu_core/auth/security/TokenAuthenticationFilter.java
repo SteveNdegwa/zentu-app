@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -30,10 +31,16 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
     ) throws ServletException, IOException {
         String token = extractTokenFromHeader(request);
-        Optional<Identity> identity = identityRepository.findByTokenAndState(token, State.ACTIVE);
-        if (identity.isPresent()){
+        Optional<Identity> identityOpt = identityRepository.findByTokenAndState(token, State.ACTIVE);
+        if (identityOpt.isPresent()){
+            Identity identity = identityOpt.get();
+
+            LocalDateTime expiresAt = LocalDateTime.now().plusDays(1);
+            identity.setExpiresAt(expiresAt);
+            identityRepository.save(identity);
+
             Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    identity.get().getUser(), null, Collections.emptyList());
+                    identity.getUser(), null, Collections.emptyList());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         filterChain.doFilter(request, response);

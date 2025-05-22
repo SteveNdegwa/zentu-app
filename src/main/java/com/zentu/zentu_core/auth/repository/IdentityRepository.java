@@ -19,5 +19,4 @@ public interface IdentityRepository extends JpaRepository<Identity, UUID> {
     void deactivateUserIdentities(@Param("user") User user);
 
     Optional<Identity> findByTokenAndState(String token, State state);
-
 }

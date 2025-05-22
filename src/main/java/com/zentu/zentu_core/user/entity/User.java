@@ -36,6 +36,10 @@ public class User extends BaseEntity {
 
     private Boolean isSuperUser = false;
 
+    private Boolean isVerified = false;
+
+    private String deviceId;
+
     @Enumerated(EnumType.STRING)
     private State state = State.ACTIVE;
 
