@@ -45,4 +45,5 @@ public class Notification extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private NotificationState notificationState = NotificationState.PENDING;
+
 }
