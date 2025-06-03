@@ -2,6 +2,8 @@ package com.zentu.zentu_core.user.service;
 import com.zentu.zentu_core.common.utils.ResponseProvider;
 import com.zentu.zentu_core.user.dto.CreateAppUserDto;
 import com.zentu.zentu_core.user.dto.LoginRequest;
+import com.zentu.zentu_core.user.dto.VerifyOtpRequest;
+import com.zentu.zentu_core.user.dto.VerifyPhoneNumberRequest;
 import com.zentu.zentu_core.user.entity.AppUser;
 import com.zentu.zentu_core.user.entity.UserSession;
 import com.zentu.zentu_core.user.repository.AppUserRepository;
@@ -62,6 +64,27 @@ public class AppUserServiceImpl implements AppUserService {
 		if (request.getApp() != null) loginData.put("app", request.getApp());
 		if (request.getPassword() != null) loginData.put("password", request.getPassword());
 		Map<String, Object> response = userServiceSync.sync("token", loginData);
+		Map<String, Object> data = new HashMap<>();
+		data.put("code", "200.000");
+		data.put("message", response.get("message"));
+		return new ResponseProvider(data).success();
+	}
+
+	public ResponseEntity<?> verifyPhoneNumber(VerifyPhoneNumberRequest request) {
+		Map<String, Object> verifyData = new HashMap<>();
+		if (request.getPhoneNumber() != null) verifyData.put("phone_number", request.getPhoneNumber());
+		Map<String, Object> response = userServiceSync.sync("verify_phone_number", verifyData);
+		Map<String, Object> data = new HashMap<>();
+		data.put("code", "200.000");
+		data.put("message", response.get("message"));
+		return new ResponseProvider(data).success();
+	}
+
+	public ResponseEntity<?> verifyOtp(VerifyOtpRequest request) {
+		Map<String, Object> verifyData = new HashMap<>();
+		if (request.getPhoneNumber() != null) verifyData.put("phone_number", request.getPhoneNumber());
+		if (request.getOtp() != null) verifyData.put("otp", request.getOtp());
+		Map<String, Object> response = userServiceSync.sync("verify_phone_number", verifyData);
 		Map<String, Object> data = new HashMap<>();
 		data.put("code", "200.000");
 		data.put("message", response.get("message"));
