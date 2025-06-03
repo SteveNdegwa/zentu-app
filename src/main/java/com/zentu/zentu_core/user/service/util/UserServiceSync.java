@@ -1,4 +1,7 @@
 package com.zentu.zentu_core.user.service.util;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -6,22 +9,51 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Map;
 
 @Component
+@Slf4j
 public class UserServiceSync {
-
-    private final String baseUrl = "http://localhost:8080/api/user/sync/";
-    private final RestTemplate restTemplate = new RestTemplate();
-
+    
+    private final String baseUrl = "https://0f7c-197-232-96-207.ngrok-free.app/auth/";
+    private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
+    
+    public UserServiceSync(RestTemplate restTemplate, ObjectMapper objectMapper) {
+        this.restTemplate = restTemplate;
+        this.objectMapper = objectMapper;
+    }
+    
     public Map<String, Object> sync(String action, Map<String, Object> payload) {
         String url = baseUrl + action + "/";
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
+            
+            String jsonPayload = objectMapper.writeValueAsString(payload);
+            HttpEntity<String> entity = new HttpEntity<>(jsonPayload, headers);
+            
+            log.info("Syncing with URL: {}, Payload: {}", url, jsonPayload);
+            
             ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+            
+            log.info("Sync response: {}", response.getBody());
+            
             return response.getBody();
         } catch (Exception e) {
-            System.out.println("Sync failed: " + e.getMessage());
-            return Map.of("status", "error", "message", e.getMessage());
+            log.error("Sync failed: {}", e.getMessage());
+            String errorMessage = e.getMessage();
+            try {
+                int jsonStart = errorMessage.indexOf("{");
+                if (jsonStart != -1) {
+                    String jsonPart = errorMessage.substring(jsonStart);
+                    Map<String, Object> errorMap = objectMapper.readValue(jsonPart, Map.class);
+                    Object msg = errorMap.get("message");
+                    if (msg != null) {
+                        return Map.of("code", "500.000", "message", msg.toString());
+                    }
+                }
+            } catch (Exception innerEx) {
+                log.warn("Failed to parse inner error message: {}", innerEx.getMessage());
+            }
+            return Map.of("code", "500.000", "message", "Unexpected error occurred.");
         }
     }
 }
