@@ -4,6 +4,7 @@ package com.zentu.zentu_core.billing.entity;
 import com.zentu.zentu_core.base.entity.BaseEntity;
 import com.zentu.zentu_core.base.enums.State;
 import com.zentu.zentu_core.group.entity.Group;
+import com.zentu.zentu_core.user.entity.AppUser;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -20,9 +21,14 @@ import java.math.BigDecimal;
 public class Account extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id", nullable = false)
+    @JoinColumn(name = "account_group", nullable = true, unique = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Group group;
+    private Group accountGroup;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "app_user", nullable = true, unique = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private AppUser user;
 
     @Column(name = "account_number", nullable = false, unique = true)
     @NotNull(message = "Account number is required")

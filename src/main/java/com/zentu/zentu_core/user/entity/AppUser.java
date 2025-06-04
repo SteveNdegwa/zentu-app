@@ -20,15 +20,13 @@ public class AppUser extends BaseEntity {
     @Column(unique = true)
     private String userId;
 
-    @Column(columnDefinition = "json")
-    @Convert(converter = JsonConverter.class)
-    private Map<String, Object> metadata;
-
     private Boolean isActive = true;
-
+    
+    @Column(columnDefinition = "last_login", nullable = true)
     private LocalDateTime lastLogin;
 
     @CreationTimestamp
+    @Column(columnDefinition = "created_on", nullable = true)
     private LocalDateTime createdAt;
 
     @JsonIgnore

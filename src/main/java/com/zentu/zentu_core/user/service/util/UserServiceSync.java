@@ -12,7 +12,7 @@ import java.util.Map;
 @Slf4j
 public class UserServiceSync {
     
-    private final String baseUrl = "https://0f7c-197-232-96-207.ngrok-free.app/auth/";
+    private final String baseUrl = "http://127.0.0.1:8000/auth/";
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     
@@ -26,34 +26,24 @@ public class UserServiceSync {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            
             String jsonPayload = objectMapper.writeValueAsString(payload);
             HttpEntity<String> entity = new HttpEntity<>(jsonPayload, headers);
-            
             log.info("Syncing with URL: {}, Payload: {}", url, jsonPayload);
-            
             ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
-            
             log.info("Sync response: {}", response.getBody());
-            
             return response.getBody();
         } catch (Exception e) {
             log.error("Sync failed: {}", e.getMessage());
-            String errorMessage = e.getMessage();
             try {
-                int jsonStart = errorMessage.indexOf("{");
-                if (jsonStart != -1) {
-                    String jsonPart = errorMessage.substring(jsonStart);
-                    Map<String, Object> errorMap = objectMapper.readValue(jsonPart, Map.class);
-                    Object msg = errorMap.get("message");
-                    if (msg != null) {
-                        return Map.of("code", "500.000", "message", msg.toString());
-                    }
-                }
-            } catch (Exception innerEx) {
-                log.warn("Failed to parse inner error message: {}", innerEx.getMessage());
+                String errorMessage = e.getMessage();
+                String jsonPart = errorMessage.substring(errorMessage.indexOf("{"));
+                Map<String, Object> errorMap = objectMapper.readValue(jsonPart, Map.class);
+                String msg = String.valueOf(errorMap.getOrDefault("message", "Unexpected error occurred."));
+                return Map.of("code", "500.000", "message", msg);
+            } catch (Exception ex) {
+                log.warn("Error parsing JSON from exception: {}", ex.getMessage());
+                return Map.of("code", "500.000", "message", "Unexpected error occurred.");
             }
-            return Map.of("code", "500.000", "message", "Unexpected error occurred.");
         }
     }
 }

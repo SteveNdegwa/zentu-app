@@ -1,9 +1,9 @@
 package com.zentu.zentu_core.user.service;
+import com.zentu.zentu_core.billing.entity.Account;
+import com.zentu.zentu_core.billing.repository.AccountRepository;
+import com.zentu.zentu_core.common.utils.AccountNumberGenerator;
 import com.zentu.zentu_core.common.utils.ResponseProvider;
-import com.zentu.zentu_core.user.dto.CreateAppUserDto;
-import com.zentu.zentu_core.user.dto.LoginRequest;
-import com.zentu.zentu_core.user.dto.VerifyOtpRequest;
-import com.zentu.zentu_core.user.dto.VerifyPhoneNumberRequest;
+import com.zentu.zentu_core.user.dto.*;
 import com.zentu.zentu_core.user.entity.AppUser;
 import com.zentu.zentu_core.user.entity.UserSession;
 import com.zentu.zentu_core.user.repository.AppUserRepository;
@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 @Service
@@ -24,6 +23,8 @@ public class AppUserServiceImpl implements AppUserService {
 	private final AppUserRepository userRepository;
 	private final UserSessionRepository sessionRepository;
 	private final UserServiceSync userServiceSync;
+	private final AccountRepository accountRepository;
+	private final AccountNumberGenerator accountNumberGenerator;
 	public ResponseEntity<?> createAppUser(CreateAppUserDto request) {
 		Map<String, Object> userData = new HashMap<>();
 		if (request.getRole() != null) userData.put("role", request.getRole());
@@ -47,11 +48,21 @@ public class AppUserServiceImpl implements AppUserService {
 		Map<String, Object> data = new HashMap<>();
 		data.put("code", response.get("code"));
 		data.put("message", response.get("message"));
-		if ("code".equals(response.get("200.000"))) {
+		if ("200.000".equals(response.get("code"))) {
 			AppUser user = new AppUser();
-			user.setUserId((String) response.get("user_id"));
-			data.put("code", "200.000");
-			data.put("message", response.get("message"));
+			Object messageObj = response.get("message");
+			if (messageObj instanceof Map<?, ?> messageMap) {
+				Object userId = messageMap.get("user");
+				if (userId instanceof String userIdStr) {
+					user.setUserId(userIdStr);
+				}
+			}
+			userRepository.save(user);
+			Account account = new Account();
+			account.setAccountNumber(accountNumberGenerator.generate());
+			account.setUser(user);
+			accountRepository.save(account);
+			// Todo Send Notification to user
 			return new ResponseProvider(data).success();
 		} else {
 			return new ResponseProvider(data).exception();
@@ -69,6 +80,16 @@ public class AppUserServiceImpl implements AppUserService {
 		data.put("message", response.get("message"));
 		return new ResponseProvider(data).success();
 	}
+	
+	public ResponseEntity<?> retrieveProfile(RetrieveProfileRequest request) {
+		Map<String, Object> loginData = new HashMap<>();
+		if (request.getUser() != null) loginData.put("user", request.getUser());
+		Map<String, Object> response = userServiceSync.sync("sync_user_profile", loginData);
+		Map<String, Object> data = new HashMap<>();
+		data.put("code", "200.000");
+		data.put("message", response.get("message"));
+		return new ResponseProvider(data).success();
+	}
 
 	public ResponseEntity<?> verifyPhoneNumber(VerifyPhoneNumberRequest request) {
 		Map<String, Object> verifyData = new HashMap<>();
@@ -77,6 +98,7 @@ public class AppUserServiceImpl implements AppUserService {
 		Map<String, Object> data = new HashMap<>();
 		data.put("code", "200.000");
 		data.put("message", response.get("message"));
+		// Todo Send Notification to user
 		return new ResponseProvider(data).success();
 	}
 

@@ -1,10 +1,7 @@
 package com.zentu.zentu_core.user.controller;
 
 import com.zentu.zentu_core.common.utils.ResponseProvider;
-import com.zentu.zentu_core.user.dto.CreateAppUserDto;
-import com.zentu.zentu_core.user.dto.LoginRequest;
-import com.zentu.zentu_core.user.dto.VerifyOtpRequest;
-import com.zentu.zentu_core.user.dto.VerifyPhoneNumberRequest;
+import com.zentu.zentu_core.user.dto.*;
 import com.zentu.zentu_core.user.service.AppUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -38,6 +33,16 @@ public class AppUserController {
 		try {
 			
 			return appUserService.loginUser(request);
+		} catch (Exception e) {
+			return new ResponseProvider("500.002", "Failed to login user").exception();
+		}
+	}
+	
+	@PostMapping("/profile")
+	public ResponseEntity<?> retrieveProfile(@Valid @RequestBody RetrieveProfileRequest request) {
+		try {
+			
+			return appUserService.retrieveProfile(request);
 		} catch (Exception e) {
 			return new ResponseProvider("500.002", "Failed to login user").exception();
 		}
