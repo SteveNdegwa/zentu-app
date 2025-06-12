@@ -60,9 +60,7 @@ public class AppUserServiceImpl implements AppUserService {
 			userRepository.save(user);
 			Account account = new Account();
 			account.setAccountNumber(accountNumberGenerator.generate());
-			account.setUser(user);
 			accountRepository.save(account);
-			// Todo Send Notification to user
 			return new ResponseProvider(data).success();
 		} else {
 			return new ResponseProvider(data).exception();
