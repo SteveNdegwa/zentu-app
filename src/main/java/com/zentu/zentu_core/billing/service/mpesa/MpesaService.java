@@ -99,8 +99,8 @@ public class MpesaService {
 			
 			log.info("Phone here: {}", phone);
 			log.info("Amount here: {}", amount);
-			
-			var processTopUp = accountService.topUp(receipt, groupAlias, phone, amount);
+			boolean isGroup = true;
+			var processTopUp = accountService.topUp(receipt, groupAlias, amount, isGroup);
 			log.info("processTopUp here: {}", processTopUp);
 			genericCrudService.updateFields(MpesaTransactionLog.class, transaction.getId(), Map.of(
 					"receipt", receipt,
@@ -119,9 +119,8 @@ public class MpesaService {
 		String transId = (String) data.get("TransID");
 		double amount = Double.parseDouble(data.get("TransAmount").toString());
 		String phoneNumber = data.get("MSISDN").toString();
-
-		accountService.topUp(transId, phoneNumber, groupAlias, BigDecimal.valueOf(amount));
-
+		boolean isGroup = true;
+		accountService.topUp(transId, groupAlias, BigDecimal.valueOf(amount), isGroup);
 		MpesaTransactionLog transaction = MpesaTransactionLog.builder()
 				.groupAlias(groupAlias)
 				.phoneNumber(phoneNumber)

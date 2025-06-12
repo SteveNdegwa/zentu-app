@@ -1,20 +1,19 @@
 package com.zentu.zentu_core.billing.dto;
-import lombok.Getter;
-import lombok.Setter;
+
+import lombok.Data;
 import java.math.BigDecimal;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-@Getter
-@Setter
+@Data
 public class WalletRequest {
+
 	@NotNull(message = "Group alias must not be null")
-	private String groupAlias;
-	
-	@NotNull(message = "Group alias must not be null")
-	private String phoneNumber;
-	
-	
+	private String alias;
+
+	@NotNull(message = "Group must not be null")
+	private Boolean isGroup;
+
 	@NotNull(message = "Receipt must not be null")
 	private String receiptNumber;
 

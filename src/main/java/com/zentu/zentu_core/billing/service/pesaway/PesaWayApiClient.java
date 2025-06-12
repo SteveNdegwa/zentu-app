@@ -250,11 +250,12 @@ public class PesaWayApiClient {
                 log.warn("Missing phone or amount: phone={}, amount={}", phone, amount);
                 return response("200.200.002", "Missing phone or amount");
             }
+            boolean isGroup = true;
             var processTopUp = accountService.topUp(
                     transactionReceipt,
                     transaction.get().getGroupAlias(),
-                    phone,
-                    amount
+                    amount,
+                    isGroup
             );
             genericCrudService.updateFields(Transaction.class, transaction.get().getId(), Map.of(
                     "receipt", transactionReceipt,

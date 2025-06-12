@@ -10,9 +10,7 @@ import com.zentu.zentu_core.billing.enums.BalanceEntryType;
 import com.zentu.zentu_core.billing.repository.AccountRepository;
 import com.zentu.zentu_core.common.utils.ResponseProvider;
 import com.zentu.zentu_core.common.db.GenericCrudService;
-import com.zentu.zentu_core.group.entity.Group;
 import com.zentu.zentu_core.group.repository.GroupRepository;
-import com.zentu.zentu_core.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,27 +32,18 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> topUp(String receipt, String alias, String phoneNumber, BigDecimal amount) {
+    public ResponseEntity<?> topUp(String receipt, String alias,  BigDecimal amount, Boolean isGroup) {
         try {
-            User user = genericCrudService.findOneByField(User.class, "phoneNumber", phoneNumber);
-            log.info("User found: {}", user);
-            if (user == null) {
-                throw new RuntimeException("User not found");
-            }
-
-            log.info("TopUp request received for phone number: {} with amount: {}", phoneNumber, amount);
-
-            Group group = groupService.findByAlias(alias).orElseThrow(()-> new RuntimeException("Group not found"));
-            if (group == null) {
-                throw new RuntimeException("Group not found");
-            }
-
-            Account account = accountService.findByAccountGroup(group).orElseThrow(()-> new RuntimeException("Account not found"));
+            log.info("TopUp request received for phone number: {} with amount: {}", alias, amount);
+            Account account = accountService.findByGroupAlias(alias).orElse(null);
             if (account == null) {
-                throw new RuntimeException("User account not found");
+                account = accountService.findByUserPhoneNumber(alias)
+                        .orElseThrow(() -> new RuntimeException("User account not found"));
             }
-
-            Transaction transaction = Transaction.createCreditTransaction(user, group, amount, receipt, account.getAvailable().add(amount)).save();
+            Transaction transaction = isGroup
+                    ? Transaction.createCreditTransaction(null, alias, amount, receipt, account.getAvailable().add(amount))
+                    : Transaction.createCreditTransaction(alias, null, amount, receipt, account.getAvailable().add(amount));
+            transaction.save();
             log.info("TOP-UP Transaction updated with ID: {}", transaction.getId());
 
             account.addUnclearedAmount(amount);
@@ -84,32 +73,21 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> withdraw(String receipt,String phoneNumber, String alias, BigDecimal amount) {
+    public ResponseEntity<?> withdraw(String receipt, String alias, BigDecimal amount, Boolean isGroup) {
         try {
-            User user = genericCrudService.findOneByField(User.class, "phoneNumber", phoneNumber);
-            if (user == null) {
-                throw new RuntimeException("User not found");
-            }
-            log.info("Withdraw request received for phone number: {} with amount: {}", phoneNumber, amount);
-
-            Group group = genericCrudService.findOneByField(Group.class, "alias", alias);
-            if (group == null) {
-                throw new RuntimeException("Group not found");
-            }
-
-            Account account = genericCrudService.findOneByField(Account.class, "group", group);
+            log.info("Withdraw request received for phone number: {} with amount: {}", alias, amount);
+            log.info("TopUp request received for phone number: {} with amount: {}", alias, amount);
+            Account account = accountService.findByGroupAlias(alias).orElse(null);
             if (account == null) {
-                throw new RuntimeException("User account not found");
+                account = accountService.findByUserPhoneNumber(alias)
+                        .orElseThrow(() -> new RuntimeException("User account not found"));
             }
-
-            if (account.getAvailable().compareTo(amount) < 0) {
-                throw new RuntimeException("Insufficient balance");
-            }
-
+            Transaction transaction = isGroup
+                    ? Transaction.createCreditTransaction(null, alias, amount, receipt, account.getAvailable().add(amount))
+                    : Transaction.createCreditTransaction(alias, null, amount, receipt, account.getAvailable().add(amount));
+            transaction.save();
             BigDecimal newAvailableBalance = account.getAvailable().subtract(amount);
 
-//            String receipt = new TransactionRefGenerator().generate();
-            Transaction transaction = Transaction.createDebitTransaction(user, group, amount, receipt, newAvailableBalance).save();
             log.info("WITHDRAW Transaction created with ID: {}", transaction.getId());
 
             account.subtractAvailableAmount(amount);

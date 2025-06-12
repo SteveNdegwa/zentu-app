@@ -15,16 +15,12 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class Transaction extends BaseEntity {
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id", nullable = false)
-	@NotNull(message = "User is required")
-	private User user;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "group_id", nullable = false)
-	@NotNull(message = "Group is required")
-	private Group group;
+
+	@Column(name = "group_alias",  nullable = true, unique = true)
+	private String groupAlias;
+
+	@Column(name = "user_phone_number",  nullable = true, unique = true)
+	private String userPhoneNumber;
 	
 	@Column(name = "receipt_number", nullable = false, unique = true)
 	@NotNull(message = "Receipt number is required")
@@ -63,10 +59,10 @@ public class Transaction extends BaseEntity {
 		return transactionRepository.save(this);
 	}
 	
-	public static Transaction createCreditTransaction(User user, Group group, BigDecimal amount, String receipt, BigDecimal balance) {
+	public static Transaction createCreditTransaction(String user, String group, BigDecimal amount, String receipt, BigDecimal balance) {
 		Transaction tx = new Transaction();
-		tx.setUser(user);
-		tx.setGroup(group);
+		tx.setGroupAlias(group);
+		tx.setUserPhoneNumber(user);
 		tx.setAmount(amount);
 		tx.setTransactionType(EntryCategory.CREDIT);
 		tx.setInternalReference(receipt);
@@ -76,10 +72,10 @@ public class Transaction extends BaseEntity {
 		return tx;
 	}
 	
-	public static Transaction createDebitTransaction(User user, Group group, BigDecimal amount, String receipt, BigDecimal balance) {
+	public static Transaction createDebitTransaction(String user, String group, BigDecimal amount, String receipt, BigDecimal balance) {
 		Transaction tx = new Transaction();
-		tx.setUser(user);
-		tx.setGroup(group);
+		tx.setGroupAlias(group);
+		tx.setUserPhoneNumber(user);
 		tx.setAmount(amount);
 		tx.setTransactionType(EntryCategory.DEBIT);
 		tx.setInternalReference(receipt);

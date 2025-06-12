@@ -20,15 +20,11 @@ import java.math.BigDecimal;
 @Setter
 public class Account extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_group", nullable = true, unique = true)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Group accountGroup;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "app_user", nullable = true, unique = true)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private AppUser user;
+    @Column(name = "group_alias",  nullable = true, unique = true)
+    private String groupAlias;
+
+    @Column(name = "user_phone_number",  nullable = true, unique = true)
+    private String userPhoneNumber;
 
     @Column(name = "account_number", nullable = false, unique = true)
     @NotNull(message = "Account number is required")
