@@ -2,18 +2,40 @@ package com.zentu.zentu_core.billing.service.pesaway;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zentu.zentu_core.base.enums.State;
+import com.zentu.zentu_core.billing.entity.MpesaTransactionLog;
+import com.zentu.zentu_core.billing.entity.PesawayTransactionLog;
+import com.zentu.zentu_core.billing.entity.Transaction;
+import com.zentu.zentu_core.billing.repository.PesawayTransactionLogRepository;
+import com.zentu.zentu_core.billing.service.account.AccountService;
+import com.zentu.zentu_core.common.db.GenericCrudService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
+@Slf4j
 public class PesaWayApiClient {
+
+    @Autowired
+    private GenericCrudService genericCrudService;
+
+    @Autowired
+    private AccountService accountService;
+
+    @Autowired
+    private PesawayTransactionLogRepository pesawayTransactionLogService;
 
     private final String clientId;
     private final String clientSecret;
@@ -123,7 +145,7 @@ public class PesaWayApiClient {
         return post("/api/v1/mobile-money/send-payment/", payload);
     }
 
-    public JsonNode receiveC2BPayment(String externalReference, double amount, String phoneNumber, String channel, String reason, String resultsUrl) {
+    public JsonNode receiveC2BPayment(String externalReference, double amount, String phoneNumber, String channel, String groupAlias, String user, String reason, String resultsUrl) {
         Map<String, Object> payload = Map.of(
                 "ExternalReference", externalReference,
                 "Amount", amount,
@@ -132,7 +154,16 @@ public class PesaWayApiClient {
                 "Reason", reason,
                 "ResultsUrl", resultsUrl
         );
+        PesawayTransactionLog transaction = PesawayTransactionLog.builder()
+                .groupAlias(groupAlias)
+                .originatorReference(externalReference)
+                .userId(user)
+                .phoneNumber(phoneNumber)
+                .state(State.COMPLETED)
+                .build();
+        genericCrudService.create(transaction);
         return post("/api/v1/mobile-money/receive-payment/", payload);
+
     }
 
     public JsonNode authorizeTransaction(String transactionId, String otp) {
@@ -192,4 +223,69 @@ public class PesaWayApiClient {
         );
         return post("/api/v1/airtime/send-airtime/", payload);
     }
+
+    public Map<String, Object> processPesawayCallback(Map<String, Object> data) {
+        log.info("Received Pesaway Callback: {}", data);
+        Integer resultCode = (Integer) data.get("ResultCode");
+        String resultDesc = (String) data.getOrDefault("ResultDesc", "No description");
+        String originatorReference = (String) data.get("OriginatorReference");
+        String transactionReceipt = (String) data.get("TransactionReceipt");
+        BigDecimal amount = new BigDecimal(data.get("TransactionAmount").toString());
+        String phone = (String) data.get("ReceiverPartyPublicName");
+        if (originatorReference == null || resultCode == null) {
+            return response("200.200.001", "Missing callback data");
+        }
+        Optional<PesawayTransactionLog> transaction = pesawayTransactionLogService.findByOriginatorReference(originatorReference);
+        if (transaction.isEmpty()) {
+            return response("200.200.001", "Transaction not found");
+        }
+        try {
+            String jsonResponse = objectMapper.writeValueAsString(data);
+            log.info("Callback JSON: {}", jsonResponse);
+        } catch (Exception e) {
+            log.error("Failed to convert response to JSON: {}", e.getMessage());
+        }
+        if (resultCode == 0) {
+            if (phone == null || amount == null) {
+                log.warn("Missing phone or amount: phone={}, amount={}", phone, amount);
+                return response("200.200.002", "Missing phone or amount");
+            }
+            var processTopUp = accountService.topUp(
+                    transactionReceipt,
+                    transaction.get().getGroupAlias(),
+                    phone,
+                    amount
+            );
+            genericCrudService.updateFields(Transaction.class, transaction.get().getId(), Map.of(
+                    "receipt", transactionReceipt,
+                    "phoneNumber", phone,
+                    "state", State.COMPLETED
+            ));
+            return response("200.200.001", "Transaction Successful");
+        } else {
+            return response("200.200.001", resultDesc);
+        }
+    }
+
+
+    private Map<String, Object> safeCastToMap(Object obj) {
+        if (obj instanceof Map<?, ?> map) {
+            Map<String, Object> result = new HashMap<>();
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
+                if (entry.getKey() instanceof String) {
+                    result.put((String) entry.getKey(), entry.getValue());
+                }
+            }
+            return result;
+        }
+        return null;
+    }
+
+    private Map<String, Object> response(String code, Object data) {
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("code", code);
+        resp.put("data", data);
+        return resp;
+    }
+
 }

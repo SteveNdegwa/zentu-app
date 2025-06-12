@@ -23,7 +23,6 @@ public class DarajaClient {
 	private final String passkey;
 	private final String baseUrl;
 
-	private String token;
 
 	private final RestTemplate restTemplate;
 	private final ObjectMapper objectMapper;
@@ -42,19 +41,15 @@ public class DarajaClient {
 		this.baseUrl = baseUrl;
 		this.restTemplate = new RestTemplate();
 		this.objectMapper = new ObjectMapper();
-		this.token = generateToken();
 	}
 
 
 	private String generateToken() {
 		String url = baseUrl + "/oauth/v1/generate?grant_type=client_credentials";
-
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBasicAuth(consumerKey, consumerSecret);
-
 		HttpEntity<Void> entity = new HttpEntity<>(headers);
 		ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
-
 		if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
 			return (String) response.getBody().get("access_token");
 		} else {
@@ -64,13 +59,13 @@ public class DarajaClient {
 
 	private HttpHeaders getHeaders() {
 		HttpHeaders headers = new HttpHeaders();
+		String token = generateToken();
 		headers.setBearerAuth(token);
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		return headers;
 	}
 
-	public Map<String, Object> stkPush(String phoneNumber, double amount, String callbackUrl,
-	                                   String accountReference, String transactionDesc) {
+	public Map<String, Object> stkPush(String phoneNumber, double amount, String callbackUrl, String accountReference, String transactionDesc) {
 		String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
 		String passwordStr = shortcode + passkey + timestamp;
 		String password = Base64.getEncoder().encodeToString(passwordStr.getBytes(StandardCharsets.UTF_8));

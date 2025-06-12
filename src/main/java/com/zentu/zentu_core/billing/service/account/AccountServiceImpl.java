@@ -7,10 +7,11 @@ import com.zentu.zentu_core.billing.entity.Transaction;
 import com.zentu.zentu_core.billing.enums.EntryCategory;
 import com.zentu.zentu_core.billing.enums.AccountFieldType;
 import com.zentu.zentu_core.billing.enums.BalanceEntryType;
+import com.zentu.zentu_core.billing.repository.AccountRepository;
 import com.zentu.zentu_core.common.utils.ResponseProvider;
-import com.zentu.zentu_core.common.utils.TransactionRefGenerator;
 import com.zentu.zentu_core.common.db.GenericCrudService;
 import com.zentu.zentu_core.group.entity.Group;
+import com.zentu.zentu_core.group.repository.GroupRepository;
 import com.zentu.zentu_core.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,8 @@ import java.util.Map;
 public class AccountServiceImpl implements AccountService {
 
     private final GenericCrudService genericCrudService;
+    private final AccountRepository accountService;
+    private final GroupRepository groupService;
 
     @Override
     @Transactional
@@ -41,17 +44,16 @@ public class AccountServiceImpl implements AccountService {
 
             log.info("TopUp request received for phone number: {} with amount: {}", phoneNumber, amount);
 
-            Group group = genericCrudService.findOneByField(Group.class, "alias", alias);
+            Group group = groupService.findByAlias(alias).orElseThrow(()-> new RuntimeException("Group not found"));
             if (group == null) {
                 throw new RuntimeException("Group not found");
             }
 
-            Account account = genericCrudService.findOneByField(Account.class, "group", group);
+            Account account = accountService.findByAccountGroup(group).orElseThrow(()-> new RuntimeException("Account not found"));
             if (account == null) {
                 throw new RuntimeException("User account not found");
             }
 
-//            String receipt = new TransactionRefGenerator().generate();
             Transaction transaction = Transaction.createCreditTransaction(user, group, amount, receipt, account.getAvailable().add(amount)).save();
             log.info("TOP-UP Transaction updated with ID: {}", transaction.getId());
 
