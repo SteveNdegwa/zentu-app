@@ -11,6 +11,16 @@ services:
       SPRING_DATASOURCE_USERNAME: zentu_prod
       SPRING_DATASOURCE_PASSWORD: zentu_prod
       DARAJA_CALLBACK_URL: https://zentu.com/daraja/callback
+      PESAWAY_BASE_URL: https://api.sandbox.pesaway.com
+      PESAWAY_CLIENT_ID: 4yN4wTqhNDRRKY6oMksGVbTa9Q8xP0px
+      PESAWAY_CALLBACK_URL: https://contribution-occupational-bless-payday.trycloudflare.com/pesaway/callback
+      PESAWAY_CLIENT_SECRET: S9zRS9Q3f7DBkC7I
+      DARAJA_CONSUMER_KEY: MXzqXXThjO6eTSKMJy7ojNdXaH42fYF9iQs8lQVFUmtmZG1Q
+      DARAJA_SHORT_CODE: 5499806
+      DARAJA_BASE_URL: https://api.safaricom.co.ke
+      DARAJA_PASS_KEY: 0d210e80de6fadef6487afcf1c6dbc00ea8592132756f7f991036e177913dacd
+      DARAJA_CONSUMER_SECRET: jnX6Wceo6R8poYZQI9FbJNWAZQZqHIXycS5PQzLFKcHqXbQF7ZLHLK4KOZM1UGpQ
+      APP_NAME: zentu-core
     ports:
       - "8080:8080"
 
