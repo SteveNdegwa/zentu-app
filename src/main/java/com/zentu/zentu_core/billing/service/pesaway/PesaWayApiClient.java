@@ -40,6 +40,7 @@ public class PesaWayApiClient {
     private final String clientId;
     private final String clientSecret;
     private final String baseUrl;
+    private final String callbackUrl;
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
@@ -47,11 +48,13 @@ public class PesaWayApiClient {
     public PesaWayApiClient(
             @Value("${pesaway.client-id}") String clientId,
             @Value("${pesaway.client-secret}") String clientSecret,
-            @Value("${pesaway.base-url}") String baseUrl
+            @Value("${pesaway.base-url}") String baseUrl,
+            @Value("${pesaway.callback-url}") String callbackUrl
     ) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.baseUrl = baseUrl;
+        this.callbackUrl = callbackUrl;
         this.restTemplate = new RestTemplate();
         this.objectMapper = new ObjectMapper();
     }
@@ -145,14 +148,14 @@ public class PesaWayApiClient {
         return post("/api/v1/mobile-money/send-payment/", payload);
     }
 
-    public JsonNode receiveC2BPayment(String externalReference, double amount, String phoneNumber, String channel, String groupAlias,  String reason, String resultsUrl, Boolean isGroupTopup) {
+    public JsonNode receiveC2BPayment(String externalReference, double amount, String phoneNumber, String channel, String groupAlias,  String reason, Boolean isGroupTopup) {
         Map<String, Object> payload = Map.of(
                 "ExternalReference", externalReference,
                 "Amount", amount,
                 "PhoneNumber", phoneNumber,
                 "Channel", channel,
                 "Reason", reason,
-                "ResultsUrl", resultsUrl
+                "ResultsUrl", this.callbackUrl
         );
         PesawayTransactionLog transaction = PesawayTransactionLog.builder()
                 .groupAlias(groupAlias)

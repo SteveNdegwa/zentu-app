@@ -34,8 +34,7 @@ public class PesaWayController {
         String reason = request.getReason();
         String alias = request.getAlias();
         Boolean isGroupTopup = true;
-        String resultsUrl = "https://contribution-occupational-bless-payday.trycloudflare.com/pesaway/callback";
-        return ResponseEntity.ok(pesaWayApiClient.receiveC2BPayment(receipt, amount, phoneNumber, channel, alias, reason, resultsUrl, isGroupTopup));
+        return ResponseEntity.ok(pesaWayApiClient.receiveC2BPayment(receipt, amount, phoneNumber, channel, alias, reason, isGroupTopup));
     }
 
     @PostMapping("/user-topup")
@@ -47,8 +46,7 @@ public class PesaWayController {
         String reason = request.getReason();
         String alias = request.getAlias();
         Boolean isGroupTopup = true;
-        String resultsUrl = "https://contribution-occupational-bless-payday.trycloudflare.com/pesaway/callback";
-        return ResponseEntity.ok(pesaWayApiClient.receiveC2BPayment(receipt, amount, phoneNumber, channel, alias, reason, resultsUrl, isGroupTopup));
+        return ResponseEntity.ok(pesaWayApiClient.receiveC2BPayment(receipt, amount, phoneNumber, channel, alias, reason, isGroupTopup));
     }
 
     @PostMapping("/callback")
