@@ -96,7 +96,7 @@ public class AppUserServiceImpl implements AppUserService {
 		Map<String, Object> verifyData = new HashMap<>();
 		if (request.getPhoneNumber() != null) verifyData.put("phone_number", request.getPhoneNumber());
 		if (request.getOtp() != null) verifyData.put("otp", request.getOtp());
-		Map<String, Object> response = userServiceSync.sync("verify_phone_number", verifyData);
+		Map<String, Object> response = userServiceSync.sync("verify_otp", verifyData);
 		Map<String, Object> data = new HashMap<>();
 		data.put("code", "200.000");
 		data.put("message", response.get("message"));
