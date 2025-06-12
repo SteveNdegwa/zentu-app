@@ -27,7 +27,6 @@ public class AppUserServiceImpl implements AppUserService {
 	private final AccountNumberGenerator accountNumberGenerator;
 	public ResponseEntity<?> createAppUser(CreateAppUserDto request) {
 		Map<String, Object> userData = new HashMap<>();
-		if (request.getRole() != null) userData.put("role", "Customer");
 		if (request.getPhoneNumber() != null) userData.put("username", request.getPhoneNumber());
 		if (request.getFirstName() != null) userData.put("first_name", request.getFirstName());
 		if (request.getLastName() != null) userData.put("last_name", request.getLastName());
@@ -36,6 +35,7 @@ public class AppUserServiceImpl implements AppUserService {
 		if (request.getEmail() != null) userData.put("email", request.getEmail());
 		if (request.getApp() != null) userData.put("app", request.getApp());
 		userData.put("set_random_password", request.isSetRandomPin());
+		userData.put("role", "Customer");
 		if (!request.isSetRandomPin()) {
 			if (request.getNewPin() != null) userData.put("new_password", request.getNewPin());
 			if (request.getConfirmPin() != null) userData.put("confirm_password", request.getConfirmPin());
