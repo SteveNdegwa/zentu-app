@@ -13,6 +13,7 @@ services:
       DARAJA_CALLBACK_URL: https://stage-billing.spinmobile.co/api/payments/callback/
       NOTIFY_URL: https://notify.rentwaveafrica.co.ke/core/send-notification/
       PESAWAY_BASE_URL: https://api.sandbox.pesaway.com
+      IDENTITY_BASE_URL: https://identity.rentwaveafrica.co.ke/auth/
       PESAWAY_CLIENT_ID: 4yN4wTqhNDRRKY6oMksGVbTa9Q8xP0px
       PESAWAY_CALLBACK_URL: https://contribution-occupational-bless-payday.trycloudflare.com/pesaway/callback
       PESAWAY_CLIENT_SECRET: S9zRS9Q3f7DBkC7I

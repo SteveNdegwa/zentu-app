@@ -2,6 +2,7 @@ package com.zentu.zentu_core.user.service.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -11,8 +12,9 @@ import java.util.Map;
 @Component
 @Slf4j
 public class UserServiceSync {
-    
-    private final String baseUrl = "http://127.0.0.1:8000/auth/";
+    @Value("${identity.base-url}")
+    private String baseUrl;
+
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     
