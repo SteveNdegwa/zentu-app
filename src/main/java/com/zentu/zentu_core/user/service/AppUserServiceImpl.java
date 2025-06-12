@@ -4,10 +4,6 @@ import com.zentu.zentu_core.billing.repository.AccountRepository;
 import com.zentu.zentu_core.common.utils.AccountNumberGenerator;
 import com.zentu.zentu_core.common.utils.ResponseProvider;
 import com.zentu.zentu_core.user.dto.*;
-import com.zentu.zentu_core.user.entity.AppUser;
-import com.zentu.zentu_core.user.entity.UserSession;
-import com.zentu.zentu_core.user.repository.AppUserRepository;
-import com.zentu.zentu_core.user.repository.UserSessionRepository;
 import com.zentu.zentu_core.user.service.util.UserServiceSync;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +16,6 @@ import java.util.Map;
 @Slf4j
 public class AppUserServiceImpl implements AppUserService {
 	
-	private final AppUserRepository userRepository;
-	private final UserSessionRepository sessionRepository;
 	private final UserServiceSync userServiceSync;
 	private final AccountRepository accountRepository;
 	private final AccountNumberGenerator accountNumberGenerator;
@@ -49,15 +43,13 @@ public class AppUserServiceImpl implements AppUserService {
 		data.put("code", response.get("code"));
 		data.put("message", response.get("message"));
 		if ("200.000".equals(response.get("code"))) {
-			AppUser user = new AppUser();
 			Object messageObj = response.get("message");
 			if (messageObj instanceof Map<?, ?> messageMap) {
 				Object userId = messageMap.get("user");
 				if (userId instanceof String userIdStr) {
-					user.setUserId(userIdStr);
+					log.info("User created with ID: {}", userIdStr);
 				}
 			}
-			userRepository.save(user);
 			Account account = new Account();
 			account.setAccountNumber(accountNumberGenerator.generate());
 			accountRepository.save(account);
@@ -112,15 +104,10 @@ public class AppUserServiceImpl implements AppUserService {
 	}
 	
 	public void logoutUser(String userId) {
-		AppUser user = userRepository.findByUserId(userId).orElseThrow();
-		sessionRepository.save(new UserSession(null, user, "logout", null));
 		userServiceSync.sync("logout", Map.of("user_id", userId));
 	}
 	
 	public void disableUser(String userId) {
-		AppUser user = userRepository.findByUserId(userId).orElseThrow();
-		user.setIsActive(false);
-		userRepository.save(user);
 		userServiceSync.sync("disable", Map.of("user_id", userId));
 	}
 }

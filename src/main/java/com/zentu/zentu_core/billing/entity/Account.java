@@ -3,14 +3,10 @@ package com.zentu.zentu_core.billing.entity;
 
 import com.zentu.zentu_core.base.entity.BaseEntity;
 import com.zentu.zentu_core.base.enums.State;
-import com.zentu.zentu_core.group.entity.Group;
-import com.zentu.zentu_core.user.entity.AppUser;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 
