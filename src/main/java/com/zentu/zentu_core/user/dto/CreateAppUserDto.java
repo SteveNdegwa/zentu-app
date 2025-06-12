@@ -5,15 +5,14 @@ import lombok.Data;
 @Data
 public class CreateAppUserDto {
 	private String role;
-	private String username;
 	private String firstName;
 	private String lastName;
 	private String otherName;
 	private String phoneNumber;
 	private String email;
 	private String app;
-	private boolean setRandomPassword;
-	private String newPassword;
-	private String confirmPassword;
-	private boolean changePasswordNextLogin;
+	private boolean setRandomPin;
+	private String newPin;
+	private String confirmPin;
+	private boolean changePinNextLogin;
 }

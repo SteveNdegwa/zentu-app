@@ -28,19 +28,19 @@ public class AppUserServiceImpl implements AppUserService {
 	public ResponseEntity<?> createAppUser(CreateAppUserDto request) {
 		Map<String, Object> userData = new HashMap<>();
 		if (request.getRole() != null) userData.put("role", request.getRole());
-		if (request.getUsername() != null) userData.put("username", request.getUsername());
+		if (request.getPhoneNumber() != null) userData.put("username", request.getPhoneNumber());
 		if (request.getFirstName() != null) userData.put("first_name", request.getFirstName());
 		if (request.getLastName() != null) userData.put("last_name", request.getLastName());
 		if (request.getOtherName() != null) userData.put("other_name", request.getOtherName());
 		if (request.getPhoneNumber() != null) userData.put("phone_number", request.getPhoneNumber());
 		if (request.getEmail() != null) userData.put("email", request.getEmail());
 		if (request.getApp() != null) userData.put("app", request.getApp());
-		userData.put("set_random_password", request.isSetRandomPassword());
-		if (!request.isSetRandomPassword()) {
-			if (request.getNewPassword() != null) userData.put("new_password", request.getNewPassword());
-			if (request.getConfirmPassword() != null) userData.put("confirm_password", request.getConfirmPassword());
+		userData.put("set_random_password", request.isSetRandomPin());
+		if (!request.isSetRandomPin()) {
+			if (request.getNewPin() != null) userData.put("new_password", request.getNewPin());
+			if (request.getConfirmPin() != null) userData.put("confirm_password", request.getConfirmPin());
 		}
-		userData.put("change_password_next_login", request.isChangePasswordNextLogin());
+		userData.put("change_password_next_login", request.isChangePinNextLogin());
 		log.info("Creating user with data: {}", userData);
 		log.info("Creating user with data: {}", userData);
 		Map<String, Object> response = userServiceSync.sync("register", userData);
