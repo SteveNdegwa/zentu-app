@@ -10,7 +10,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/zentu_db
       SPRING_DATASOURCE_USERNAME: zentu_prod
       SPRING_DATASOURCE_PASSWORD: zentu_prod
-      DARAJA_CALLBACK_URL: https://zentu.com/daraja/callback
+      DARAJA_CALLBACK_URL: https://stage-billing.spinmobile.co/api/payments/callback/
+      NOTIFY_URL: https://notify.rentwaveafrica.co.ke/core/send-notification/
       PESAWAY_BASE_URL: https://api.sandbox.pesaway.com
       PESAWAY_CLIENT_ID: 4yN4wTqhNDRRKY6oMksGVbTa9Q8xP0px
       PESAWAY_CALLBACK_URL: https://contribution-occupational-bless-payday.trycloudflare.com/pesaway/callback
