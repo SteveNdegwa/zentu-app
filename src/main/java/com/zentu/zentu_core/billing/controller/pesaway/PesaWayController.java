@@ -26,16 +26,29 @@ public class PesaWayController {
     }
 
     @PostMapping("/group-topup")
-    public ResponseEntity<JsonNode> topupAccount(@Valid @RequestBody PesawayTopupRequest request) {
+    public ResponseEntity<JsonNode> topupGroupAccount(@Valid @RequestBody PesawayTopupRequest request) {
         double amount = request.getAmount();
         String receipt = new TransactionRefGenerator().generate();
         String phoneNumber = request.getPhoneNumber();
         String channel = request.getChannel();
         String reason = request.getReason();
-        String groupAlias = request.getGroupAlias();
-        String userId = request.getUserId();
-        String resultsUrl = "https://wolf-im-grande-kidney.trycloudflare.com/pesaway/callback";
-        return ResponseEntity.ok(pesaWayApiClient.receiveC2BPayment(receipt, amount, phoneNumber, channel, groupAlias, userId, reason, resultsUrl));
+        String alias = request.getAlias();
+        Boolean isGroupTopup = true;
+        String resultsUrl = "https://contribution-occupational-bless-payday.trycloudflare.com/pesaway/callback";
+        return ResponseEntity.ok(pesaWayApiClient.receiveC2BPayment(receipt, amount, phoneNumber, channel, alias, reason, resultsUrl, isGroupTopup));
+    }
+
+    @PostMapping("/user-topup")
+    public ResponseEntity<JsonNode> topupUserAccount(@Valid @RequestBody PesawayTopupRequest request) {
+        double amount = request.getAmount();
+        String receipt = new TransactionRefGenerator().generate();
+        String phoneNumber = request.getPhoneNumber();
+        String channel = request.getChannel();
+        String reason = request.getReason();
+        String alias = request.getAlias();
+        Boolean isGroupTopup = true;
+        String resultsUrl = "https://contribution-occupational-bless-payday.trycloudflare.com/pesaway/callback";
+        return ResponseEntity.ok(pesaWayApiClient.receiveC2BPayment(receipt, amount, phoneNumber, channel, alias, reason, resultsUrl, isGroupTopup));
     }
 
     @PostMapping("/callback")

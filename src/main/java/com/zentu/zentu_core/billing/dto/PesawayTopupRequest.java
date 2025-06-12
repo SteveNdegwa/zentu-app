@@ -15,12 +15,7 @@ public class PesawayTopupRequest {
     @NotNull(message = "Reason must not be null")
     private String reason;
 
-    private String groupAlias;
-
-    private String userId;
-
-    @NotNull(message = "Receipt must not be null")
-    private String receiptNumber;
+    private String alias;
 
     @NotNull(message = "Amount must not be null")
     @Positive(message = "Amount must be greater than zero")

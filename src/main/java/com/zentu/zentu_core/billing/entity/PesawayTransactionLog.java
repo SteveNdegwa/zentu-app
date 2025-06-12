@@ -21,13 +21,16 @@ public class PesawayTransactionLog extends BaseEntity {
     private String groupAlias;
 
     @Column(name = "zentu_user", nullable = true)
-    private String userId;
+    private String userPhoneNumber;
 
     @Column(name = "originator_reference", unique = true, nullable = false)
     private String originatorReference;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
+
+    @Column(name = "is_group_topup")
+    private Boolean isGroupTopup;
 
     @Column(name = "phone_number")
     private String phoneNumber;

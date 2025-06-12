@@ -145,7 +145,7 @@ public class PesaWayApiClient {
         return post("/api/v1/mobile-money/send-payment/", payload);
     }
 
-    public JsonNode receiveC2BPayment(String externalReference, double amount, String phoneNumber, String channel, String groupAlias, String user, String reason, String resultsUrl) {
+    public JsonNode receiveC2BPayment(String externalReference, double amount, String phoneNumber, String channel, String groupAlias,  String reason, String resultsUrl, Boolean isGroupTopup) {
         Map<String, Object> payload = Map.of(
                 "ExternalReference", externalReference,
                 "Amount", amount,
@@ -157,7 +157,8 @@ public class PesaWayApiClient {
         PesawayTransactionLog transaction = PesawayTransactionLog.builder()
                 .groupAlias(groupAlias)
                 .originatorReference(externalReference)
-                .userId(user)
+                .userPhoneNumber(phoneNumber)
+                .isGroupTopup(isGroupTopup)
                 .phoneNumber(phoneNumber)
                 .state(State.COMPLETED)
                 .build();
@@ -250,7 +251,7 @@ public class PesaWayApiClient {
                 log.warn("Missing phone or amount: phone={}, amount={}", phone, amount);
                 return response("200.200.002", "Missing phone or amount");
             }
-            boolean isGroup = true;
+            Boolean isGroup = transaction.get().getIsGroupTopup();
             var processTopUp = accountService.topUp(
                     transactionReceipt,
                     transaction.get().getGroupAlias(),
