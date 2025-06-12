@@ -27,7 +27,7 @@ public class AppUserServiceImpl implements AppUserService {
 	private final AccountNumberGenerator accountNumberGenerator;
 	public ResponseEntity<?> createAppUser(CreateAppUserDto request) {
 		Map<String, Object> userData = new HashMap<>();
-		if (request.getRole() != null) userData.put("role", request.getRole());
+		if (request.getRole() != null) userData.put("role", "Customer");
 		if (request.getPhoneNumber() != null) userData.put("username", request.getPhoneNumber());
 		if (request.getFirstName() != null) userData.put("first_name", request.getFirstName());
 		if (request.getLastName() != null) userData.put("last_name", request.getLastName());

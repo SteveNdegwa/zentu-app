@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class CreateAppUserDto {
-	private String role;
 	private String firstName;
 	private String lastName;
 	private String otherName;
