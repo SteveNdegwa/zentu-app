@@ -24,7 +24,6 @@ public class Account extends BaseEntity {
     @Column(name = "alias",  nullable = true, unique = true)
     private String alias;
 
-
     @Column(name = "account_number", nullable = false, unique = true)
     @NotNull(message = "Account number is required")
     private Integer accountNumber;
