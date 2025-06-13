@@ -57,6 +57,19 @@ public enum ServiceType {
     CLEANING,
     USHERING,
 
-    // Custom / Misc
-    CUSTOM_SERVICE
+    // Construction & Real Estate
+    BUILDING_CONTRACTOR,
+    ARCHITECTURAL_DESIGN,
+    INTERIOR_DESIGN,
+    LANDSCAPING,
+    REAL_ESTATE_AGENT,
+    PLUMBING,
+    ELECTRICAL_WORKS,
+    PAINTING,
+
+    // Technology & Digital
+    WEB_DESIGN,
+    APP_DEVELOPMENT,
+    IT_SUPPORT,
+    DIGITAL_MARKETING,
 }

@@ -22,7 +22,7 @@ public class Service extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = true)
-    private ServiceType type = ServiceType.CUSTOM_SERVICE;
+    private ServiceType type;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
