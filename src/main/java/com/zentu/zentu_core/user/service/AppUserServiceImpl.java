@@ -52,6 +52,7 @@ public class AppUserServiceImpl implements AppUserService {
 			}
 			Account account = new Account();
 			account.setAccountNumber(accountNumberGenerator.generate());
+			account.setUserPhoneNumber(request.getPhoneNumber());
 			accountRepository.save(account);
 			return new ResponseProvider(data).success();
 		} else {
