@@ -36,11 +36,7 @@ public class AccountServiceImpl implements AccountService {
     public ResponseEntity<?> topUp(String receipt, String alias,  BigDecimal amount, Boolean isGroup) {
         try {
             log.info("TopUp request received for phone number: {} with amount: {}", alias, amount);
-            Account account = accountService.findByGroupAlias(alias).orElse(null);
-            if (account == null) {
-                account = accountService.findByUserPhoneNumber(alias)
-                        .orElseThrow(() -> new RuntimeException("User account not found"));
-            }
+            Account account = accountService.findByAlias(alias).orElseThrow(() -> new RuntimeException("Account not found"));
             Transaction transaction = isGroup
                     ? Transaction.createCreditTransaction(AccountType.GROUP, alias, amount, receipt, account.getAvailable().add(amount))
                     : Transaction.createCreditTransaction(AccountType.USER, alias, amount, receipt, account.getAvailable().add(amount));
@@ -78,11 +74,7 @@ public class AccountServiceImpl implements AccountService {
         try {
             log.info("Withdraw request received for phone number: {} with amount: {}", alias, amount);
             log.info("TopUp request received for phone number: {} with amount: {}", alias, amount);
-            Account account = accountService.findByGroupAlias(alias).orElse(null);
-            if (account == null) {
-                account = accountService.findByUserPhoneNumber(alias)
-                        .orElseThrow(() -> new RuntimeException("User account not found"));
-            }
+            Account account = accountService.findByAlias(alias).orElseThrow(() -> new RuntimeException("Account not found"));
             Transaction transaction = isGroup
                     ? Transaction.createCreditTransaction(AccountType.GROUP, alias, amount, receipt, account.getAvailable().subtract(amount))
                     : Transaction.createCreditTransaction(AccountType.USER, alias, amount, receipt, account.getAvailable().subtract(amount));
@@ -120,11 +112,8 @@ public class AccountServiceImpl implements AccountService {
         try {
             log.info("Withdraw request received for phone number: {} with amount: {}", alias, amount);
             log.info("TopUp request received for phone number: {} with amount: {}", alias, amount);
-            Account account = accountService.findByGroupAlias(alias).orElse(null);
-            if (account == null) {
-                account = accountService.findByUserPhoneNumber(alias)
-                        .orElseThrow(() -> new RuntimeException("User account not found"));
-            }
+            Account account = accountService.findByAlias(alias).orElseThrow(() -> new RuntimeException("Account not found"));
+
             Transaction transaction = isGroup
                     ? Transaction.createCreditTransaction(AccountType.GROUP, alias, amount, receipt, account.getAvailable().add(amount))
                     : Transaction.createCreditTransaction(AccountType.USER, alias, amount, receipt, account.getAvailable().add(amount));

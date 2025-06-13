@@ -11,8 +11,7 @@ import java.util.UUID;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, UUID> {
-	Optional<Account> findByGroupAlias(String alias);
-	Optional<Account> findByUserPhoneNumber(String userPhoneNumber);
+	Optional<Account> findByAlias(String alias);
 
 	@Query("SELECT MAX(a.accountNumber) FROM Account a")
 	Integer findMaxAccountNumber();
