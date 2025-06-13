@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/services")
@@ -36,7 +37,7 @@ public class ServiceController {
     }
 
     @PostMapping("/{serviceId}/bids")
-    public ResponseEntity<Bid> placeBid(@PathVariable Long serviceId, @Valid @RequestBody CreateBidDto dto) {
+    public ResponseEntity<Bid> placeBid(@PathVariable UUID serviceId, @Valid @RequestBody CreateBidDto dto) {
         Service service = serviceRepository.findById(serviceId).orElseThrow();
         Bid bid = new Bid();
         bid.setService(service);
@@ -48,12 +49,12 @@ public class ServiceController {
     }
 
     @GetMapping("/{serviceId}/bids")
-    public List<Bid> getBidsForService(@PathVariable Long serviceId) {
+    public List<Bid> getBidsForService(@PathVariable UUID serviceId) {
         return bidRepository.findByServiceId(serviceId);
     }
 
     @PostMapping("/{serviceId}/reviews")
-    public ResponseEntity<ServiceReview> addReview(@PathVariable Long serviceId, @Valid @RequestBody CreateReviewDto dto) {
+    public ResponseEntity<ServiceReview> addReview(@PathVariable UUID serviceId, @Valid @RequestBody CreateReviewDto dto) {
         Service service = serviceRepository.findById(serviceId).orElseThrow();
         ServiceReview review = new ServiceReview();
         review.setService(service);
@@ -64,7 +65,7 @@ public class ServiceController {
     }
 
     @GetMapping("/{serviceId}/reviews")
-    public List<ServiceReview> getReviewsForService(@PathVariable Long serviceId) {
+    public List<ServiceReview> getReviewsForService(@PathVariable UUID serviceId) {
         return reviewRepository.findByServiceId(serviceId);
     }
 }
