@@ -4,6 +4,7 @@ import com.zentu.zentu_core.billing.entity.Account;
 import com.zentu.zentu_core.billing.entity.BalanceLog;
 import com.zentu.zentu_core.billing.entity.BalanceLogEntry;
 import com.zentu.zentu_core.billing.entity.Transaction;
+import com.zentu.zentu_core.billing.enums.AccountType;
 import com.zentu.zentu_core.billing.enums.EntryCategory;
 import com.zentu.zentu_core.billing.enums.AccountFieldType;
 import com.zentu.zentu_core.billing.enums.BalanceEntryType;
@@ -41,8 +42,8 @@ public class AccountServiceImpl implements AccountService {
                         .orElseThrow(() -> new RuntimeException("User account not found"));
             }
             Transaction transaction = isGroup
-                    ? Transaction.createCreditTransaction(null, alias, amount, receipt, account.getAvailable().add(amount))
-                    : Transaction.createCreditTransaction(alias, null, amount, receipt, account.getAvailable().add(amount));
+                    ? Transaction.createCreditTransaction(AccountType.GROUP, alias, amount, receipt, account.getAvailable().add(amount))
+                    : Transaction.createCreditTransaction(AccountType.USER, alias, amount, receipt, account.getAvailable().add(amount));
             transaction.save();
             log.info("TOP-UP Transaction updated with ID: {}", transaction.getId());
 
@@ -83,8 +84,8 @@ public class AccountServiceImpl implements AccountService {
                         .orElseThrow(() -> new RuntimeException("User account not found"));
             }
             Transaction transaction = isGroup
-                    ? Transaction.createCreditTransaction(null, alias, amount, receipt, account.getAvailable().subtract(amount))
-                    : Transaction.createCreditTransaction(alias, null, amount, receipt, account.getAvailable().subtract(amount));
+                    ? Transaction.createCreditTransaction(AccountType.GROUP, alias, amount, receipt, account.getAvailable().subtract(amount))
+                    : Transaction.createCreditTransaction(AccountType.USER, alias, amount, receipt, account.getAvailable().subtract(amount));
             transaction.save();
             BigDecimal newAvailableBalance = account.getAvailable().subtract(amount);
             log.info("WITHDRAW Transaction created with ID: {}", transaction.getId());
@@ -125,8 +126,8 @@ public class AccountServiceImpl implements AccountService {
                         .orElseThrow(() -> new RuntimeException("User account not found"));
             }
             Transaction transaction = isGroup
-                    ? Transaction.createCreditTransaction(null, alias, amount, receipt, account.getAvailable().add(amount))
-                    : Transaction.createCreditTransaction(alias, null, amount, receipt, account.getAvailable().add(amount));
+                    ? Transaction.createCreditTransaction(AccountType.GROUP, alias, amount, receipt, account.getAvailable().add(amount))
+                    : Transaction.createCreditTransaction(AccountType.USER, alias, amount, receipt, account.getAvailable().add(amount));
             transaction.save();
             BigDecimal newAvailableBalance = account.getAvailable().subtract(amount);
 

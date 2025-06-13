@@ -1,5 +1,6 @@
 package com.zentu.zentu_core.user.service;
 import com.zentu.zentu_core.billing.entity.Account;
+import com.zentu.zentu_core.billing.enums.AccountType;
 import com.zentu.zentu_core.billing.repository.AccountRepository;
 import com.zentu.zentu_core.common.utils.AccountNumberGenerator;
 import com.zentu.zentu_core.common.utils.ResponseProvider;
@@ -52,7 +53,8 @@ public class AppUserServiceImpl implements AppUserService {
 			}
 			Account account = new Account();
 			account.setAccountNumber(accountNumberGenerator.generate());
-			account.setUserPhoneNumber(request.getPhoneNumber());
+			account.setAccountType(AccountType.USER);
+			account.setAlias(request.getPhoneNumber());
 			accountRepository.save(account);
 			return new ResponseProvider(data).success();
 		} else {

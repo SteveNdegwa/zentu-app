@@ -3,6 +3,7 @@ package com.zentu.zentu_core.billing.entity;
 
 import com.zentu.zentu_core.base.entity.BaseEntity;
 import com.zentu.zentu_core.base.enums.State;
+import com.zentu.zentu_core.billing.enums.AccountType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -16,11 +17,12 @@ import java.math.BigDecimal;
 @Setter
 public class Account extends BaseEntity {
 
-    @Column(name = "group_alias",  nullable = true, unique = true)
-    private String groupAlias;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "account_type", nullable = false)
+    private AccountType accountType;
 
-    @Column(name = "user_phone_number",  nullable = true, unique = true)
-    private String userPhoneNumber;
+    @Column(name = "alias",  nullable = true, unique = true)
+    private String alias;
 
     @Column(name = "account_number", nullable = false, unique = true)
     @NotNull(message = "Account number is required")

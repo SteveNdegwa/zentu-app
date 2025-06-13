@@ -1,6 +1,7 @@
 package com.zentu.zentu_core.billing.entity;
 import com.zentu.zentu_core.base.entity.BaseEntity;
 import com.zentu.zentu_core.base.enums.State;
+import com.zentu.zentu_core.billing.enums.AccountType;
 import com.zentu.zentu_core.billing.enums.EntryCategory;
 import com.zentu.zentu_core.billing.repository.TransactionRepository;
 import com.zentu.zentu_core.group.entity.Group;
@@ -16,11 +17,12 @@ import java.math.BigDecimal;
 @Setter
 public class Transaction extends BaseEntity {
 
-	@Column(name = "group_alias",  nullable = true, unique = true)
-	private String groupAlias;
+	@Column(name = "alias",  nullable = true, unique = true)
+	private String alias;
 
-	@Column(name = "user_phone_number",  nullable = true, unique = true)
-	private String userPhoneNumber;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "account_type",  nullable = true, unique = true)
+	private AccountType accountType;
 	
 	@Column(name = "receipt_number", nullable = false, unique = true)
 	@NotNull(message = "Receipt number is required")
@@ -59,10 +61,10 @@ public class Transaction extends BaseEntity {
 		return transactionRepository.save(this);
 	}
 	
-	public static Transaction createCreditTransaction(String user, String group, BigDecimal amount, String receipt, BigDecimal balance) {
+	public static Transaction createCreditTransaction(AccountType accountType, String alias, BigDecimal amount, String receipt, BigDecimal balance) {
 		Transaction tx = new Transaction();
-		tx.setGroupAlias(group);
-		tx.setUserPhoneNumber(user);
+		tx.setAlias(alias);
+		tx.setAccountType(accountType);
 		tx.setAmount(amount);
 		tx.setTransactionType(EntryCategory.CREDIT);
 		tx.setInternalReference(receipt);
@@ -72,10 +74,10 @@ public class Transaction extends BaseEntity {
 		return tx;
 	}
 	
-	public static Transaction createDebitTransaction(String user, String group, BigDecimal amount, String receipt, BigDecimal balance) {
+	public static Transaction createDebitTransaction(AccountType accountType, String alias, BigDecimal amount, String receipt, BigDecimal balance) {
 		Transaction tx = new Transaction();
-		tx.setGroupAlias(group);
-		tx.setUserPhoneNumber(user);
+		tx.setAlias(alias);
+		tx.setAccountType(accountType);
 		tx.setAmount(amount);
 		tx.setTransactionType(EntryCategory.DEBIT);
 		tx.setInternalReference(receipt);
