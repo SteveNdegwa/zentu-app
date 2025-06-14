@@ -45,7 +45,7 @@ public class PesaWayController {
         String channel = request.getChannel();
         String reason = request.getReason();
         String alias = request.getAlias();
-        Boolean isGroupTopup = true;
+        Boolean isGroupTopup = false;
         return ResponseEntity.ok(pesaWayApiClient.receiveC2BPayment(receipt, amount, phoneNumber, channel, alias, reason, isGroupTopup));
     }
 
