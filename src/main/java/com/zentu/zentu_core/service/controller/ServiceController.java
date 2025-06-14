@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/services")
+@RequestMapping("/service")
 @RequiredArgsConstructor
 public class ServiceController {
 
@@ -20,7 +20,7 @@ public class ServiceController {
     private final BidRepository bidRepository;
     private final ServiceReviewRepository reviewRepository;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Service> createService(@Valid @RequestBody CreateServiceDto dto) {
         Service service = new Service();
         service.setName(dto.getName());
