@@ -51,7 +51,7 @@ public class PesaWayApiClient {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.baseUrl = baseUrl;
-        this.callbackUrl = "https://pirates-packet-cellular-heat.trycloudflare.com/pesaway/callback";
+        this.callbackUrl = "https://zentu.rentwaveafrica.co.ke/pesaway/callback";
         this.restTemplate = new RestTemplate();
         this.objectMapper = new ObjectMapper();
     }
