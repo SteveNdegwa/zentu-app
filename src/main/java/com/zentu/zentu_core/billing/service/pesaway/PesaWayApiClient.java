@@ -46,13 +46,12 @@ public class PesaWayApiClient {
     public PesaWayApiClient(
             @Value("${pesaway.client-id}") String clientId,
             @Value("${pesaway.client-secret}") String clientSecret,
-            @Value("${pesaway.base-url}") String baseUrl,
-            @Value("${pesaway.callback-url}") String callbackUrl
+            @Value("${pesaway.base-url}") String baseUrl
     ) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.baseUrl = baseUrl;
-        this.callbackUrl = callbackUrl;
+        this.callbackUrl = "https://pirates-packet-cellular-heat.trycloudflare.com/pesaway/callback";
         this.restTemplate = new RestTemplate();
         this.objectMapper = new ObjectMapper();
     }
