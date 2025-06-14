@@ -2,6 +2,7 @@ package com.zentu.zentu_core.service.controller;
 
 import com.zentu.zentu_core.service.dto.*;
 import com.zentu.zentu_core.service.entity.*;
+import com.zentu.zentu_core.service.enums.ServiceType;
 import com.zentu.zentu_core.service.repository.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -67,5 +68,10 @@ public class ServiceController {
     @GetMapping("/{serviceId}/reviews")
     public List<ServiceReview> getReviewsForService(@PathVariable UUID serviceId) {
         return reviewRepository.findByServiceId(serviceId);
+    }
+
+    @GetMapping("/types")
+    public ServiceType[] getAllServiceTypes() {
+        return ServiceType.values();
     }
 }
