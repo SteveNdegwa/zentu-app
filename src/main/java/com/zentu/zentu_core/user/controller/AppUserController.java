@@ -45,22 +45,4 @@ public class AppUserController {
 		}
 	}
 
-	@PostMapping("/verify/phone")
-	public ResponseEntity<?> verifyPhoneNumber(@Valid @RequestBody VerifyPhoneNumberRequest request) {
-		try {
-			return appUserService.verifyPhoneNumber(request);
-		} catch (Exception e) {
-			return new ResponseProvider("500.002", "Failed to veify user phone number").exception();
-		}
-	}
-
-
-	@PostMapping("/verify/otp")
-	public ResponseEntity<?> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
-		try {
-			return appUserService.verifyOtp(request);
-		} catch (Exception e) {
-			return new ResponseProvider("500.002", "Failed to verify user otp").exception();
-		}
-	}
 }

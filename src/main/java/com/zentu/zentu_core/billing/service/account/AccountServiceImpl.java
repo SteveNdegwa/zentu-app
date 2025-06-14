@@ -11,7 +11,6 @@ import com.zentu.zentu_core.billing.enums.BalanceEntryType;
 import com.zentu.zentu_core.billing.repository.AccountRepository;
 import com.zentu.zentu_core.common.utils.ResponseProvider;
 import com.zentu.zentu_core.common.db.GenericCrudService;
-import com.zentu.zentu_core.group.repository.GroupRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +28,6 @@ public class AccountServiceImpl implements AccountService {
 
     private final GenericCrudService genericCrudService;
     private final AccountRepository accountService;
-    private final GroupRepository groupService;
 
     @Override
     @Transactional
