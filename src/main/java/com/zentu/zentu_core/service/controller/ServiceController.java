@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -32,7 +34,7 @@ public class ServiceController {
         return ResponseEntity.ok(serviceRepository.save(service));
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public List<Service> getAllServices() {
         return serviceRepository.findAll();
     }
@@ -71,7 +73,14 @@ public class ServiceController {
     }
 
     @GetMapping("/types")
-    public ServiceType[] getAllServiceTypes() {
-        return ServiceType.values();
+    public ResponseEntity<List<Map<String, String>>> getServiceTypes() {
+        List<Map<String, String>> types = Arrays.stream(ServiceType.values())
+                .map(type -> Map.of(
+                        "key", type.name(),
+                        "label", type.getDisplayName()
+                ))
+                .toList();
+        return ResponseEntity.ok(types);
     }
+
 }
