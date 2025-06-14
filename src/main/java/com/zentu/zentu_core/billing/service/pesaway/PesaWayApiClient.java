@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zentu.zentu_core.base.enums.State;
 import com.zentu.zentu_core.billing.entity.Account;
 import com.zentu.zentu_core.billing.entity.PesawayTransactionLog;
-import com.zentu.zentu_core.billing.entity.Transaction;
 import com.zentu.zentu_core.billing.enums.AccountType;
 import com.zentu.zentu_core.billing.enums.EntryCategory;
 import com.zentu.zentu_core.billing.repository.AccountRepository;
@@ -59,8 +58,8 @@ public class PesaWayApiClient {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.baseUrl = baseUrl;
-        this.callbackUrl = "https://cgi-baths-h-insert.trycloudflare.com/pesaway/c2b/callback";
-        this.b2cResultsUrl = "https://cgi-baths-h-insert.trycloudflare.com/pesaway/b2c/callback";
+        this.callbackUrl = "https://zentu.rentwaveafrica.co.ke/pesaway/c2b/callback";
+        this.b2cResultsUrl = "https://zentu.rentwaveafrica.co.ke/pesaway/b2c/callback";
         this.restTemplate = new RestTemplate();
         this.objectMapper = new ObjectMapper();
     }
