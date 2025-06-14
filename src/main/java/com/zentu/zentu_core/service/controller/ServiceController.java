@@ -31,7 +31,7 @@ public class ServiceController {
         return ResponseEntity.ok(serviceRepository.save(service));
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public List<Service> getAllServices() {
         return serviceRepository.findAll();
     }
