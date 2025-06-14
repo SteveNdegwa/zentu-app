@@ -29,6 +29,7 @@ public class ServiceController {
         service.setName(dto.getName());
         service.setDescription(dto.getDescription());
         service.setPrice(dto.getPrice());
+        service.setLocation(dto.getLocation());
         service.setProvider(dto.getProvider());
         service.setType(dto.getServiceType());
         return ResponseEntity.ok(serviceRepository.save(service));

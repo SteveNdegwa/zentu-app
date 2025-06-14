@@ -23,6 +23,9 @@ public class CreateServiceDto {
     private String provider;
 
     @NotNull
+    private String location;
+
+    @NotNull
     private ServiceType serviceType;
 
 }
