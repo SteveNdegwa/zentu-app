@@ -19,19 +19,19 @@ public class TransactionController {
     @PostMapping("/topup")
     public ResponseEntity<?> topUp(@Valid @RequestBody WalletRequest request) {
         try {
-            return accountService.topUp(request.getReceiptNumber(), request.getAlias(),  request.getAmount(), request.getIsGroup());
+            return accountService.topUp(request.getReceiptNumber(), request.getAlias(),  request.getAmount(), request.getAccountType());
 
         } catch (Exception e) {
-            return new ResponseProvider("500.000.001", "Failed to topup Account").exception();
+            return new ResponseProvider("500.001", "Failed to topup Account").exception();
         }
     }
 
     @PostMapping("/deduct")
     public ResponseEntity<?> deduct(@RequestBody WalletRequest request) {
         try {
-            return accountService.withdraw(request.getReceiptNumber(), request.getAlias(), request.getAmount(), request.getIsGroup());
+            return accountService.withdraw(request.getReceiptNumber(), request.getAlias(), request.getAmount(), request.getAccountType());
         } catch (Exception e) {
-            return new ResponseProvider("500.000.001", "Failed to topup Account").exception();
+            return new ResponseProvider("500.001", "Failed to withdraw Account").exception();
         }
     }
 }

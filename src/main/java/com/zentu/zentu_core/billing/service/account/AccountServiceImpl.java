@@ -31,13 +31,11 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> topUp(String receipt, String alias,  BigDecimal amount, Boolean isGroup) {
+    public ResponseEntity<?> topUp(String receipt, String alias,  BigDecimal amount, AccountType accountType) {
         try {
             log.info("TopUp request received for phone number: {} with amount: {}", alias, amount);
             Account account = accountService.findByAlias(alias).orElseThrow(() -> new RuntimeException("Account not found"));
-            Transaction transaction = isGroup
-                    ? Transaction.createCreditTransaction(AccountType.GROUP, alias, amount, receipt, account.getAvailable().add(amount))
-                    : Transaction.createCreditTransaction(AccountType.USER, alias, amount, receipt, account.getAvailable().add(amount));
+            Transaction transaction = Transaction.createCreditTransaction(accountType, alias, amount, receipt, account.getAvailable().add(amount));
             transaction.save();
             log.info("TOP-UP Transaction updated with ID: {}", transaction.getId());
 
@@ -68,14 +66,12 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> withdraw(String receipt, String alias, BigDecimal amount, Boolean isGroup) {
+    public ResponseEntity<?> withdraw(String receipt, String alias, BigDecimal amount, AccountType accountType) {
         try {
             log.info("Withdraw request received for phone number: {} with amount: {}", alias, amount);
             log.info("TopUp request received for phone number: {} with amount: {}", alias, amount);
             Account account = accountService.findByAlias(alias).orElseThrow(() -> new RuntimeException("Account not found"));
-            Transaction transaction = isGroup
-                    ? Transaction.createCreditTransaction(AccountType.GROUP, alias, amount, receipt, account.getAvailable().subtract(amount))
-                    : Transaction.createCreditTransaction(AccountType.USER, alias, amount, receipt, account.getAvailable().subtract(amount));
+            Transaction transaction = Transaction.createDebitTransaction(accountType, alias, amount, receipt, account.getAvailable().subtract(amount));
             transaction.save();
             BigDecimal newAvailableBalance = account.getAvailable().subtract(amount);
             log.info("WITHDRAW Transaction created with ID: {}", transaction.getId());
@@ -106,15 +102,12 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> approveWithdrawal(String receipt, String alias, BigDecimal amount, Boolean isGroup) {
+    public ResponseEntity<?> approveWithdrawal(String receipt, String alias, BigDecimal amount, AccountType accountType) {
         try {
             log.info("Withdraw request received for phone number: {} with amount: {}", alias, amount);
             log.info("TopUp request received for phone number: {} with amount: {}", alias, amount);
             Account account = accountService.findByAlias(alias).orElseThrow(() -> new RuntimeException("Account not found"));
-
-            Transaction transaction = isGroup
-                    ? Transaction.createCreditTransaction(AccountType.GROUP, alias, amount, receipt, account.getAvailable().add(amount))
-                    : Transaction.createCreditTransaction(AccountType.USER, alias, amount, receipt, account.getAvailable().add(amount));
+            Transaction transaction = Transaction.createCreditTransaction(accountType, alias, amount, receipt, account.getAvailable().add(amount));
             transaction.save();
             BigDecimal newAvailableBalance = account.getAvailable().subtract(amount);
 
