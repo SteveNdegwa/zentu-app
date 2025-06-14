@@ -1,7 +1,6 @@
 package com.zentu.zentu_core.billing.repository;
 
 import com.zentu.zentu_core.billing.entity.Account;
-import com.zentu.zentu_core.group.entity.Group;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

@@ -83,28 +83,6 @@ public class AppUserServiceImpl implements AppUserService {
 		data.put("message", response.get("message"));
 		return new ResponseProvider(data).success();
 	}
-
-	public ResponseEntity<?> verifyPhoneNumber(VerifyPhoneNumberRequest request) {
-		Map<String, Object> verifyData = new HashMap<>();
-		if (request.getPhoneNumber() != null) verifyData.put("phone_number", request.getPhoneNumber());
-		Map<String, Object> response = userServiceSync.sync("verify_phone_number", verifyData);
-		Map<String, Object> data = new HashMap<>();
-		data.put("code", "200.000");
-		data.put("message", response.get("message"));
-		// Todo Send Notification to user
-		return new ResponseProvider(data).success();
-	}
-
-	public ResponseEntity<?> verifyOtp(VerifyOtpRequest request) {
-		Map<String, Object> verifyData = new HashMap<>();
-		if (request.getPhoneNumber() != null) verifyData.put("phone_number", request.getPhoneNumber());
-		if (request.getOtp() != null) verifyData.put("otp", request.getOtp());
-		Map<String, Object> response = userServiceSync.sync("verify_otp", verifyData);
-		Map<String, Object> data = new HashMap<>();
-		data.put("code", "200.000");
-		data.put("message", response.get("message"));
-		return new ResponseProvider(data).success();
-	}
 	
 	public void logoutUser(String userId) {
 		userServiceSync.sync("logout", Map.of("user_id", userId));

@@ -4,8 +4,6 @@ import com.zentu.zentu_core.base.enums.State;
 import com.zentu.zentu_core.billing.enums.AccountType;
 import com.zentu.zentu_core.billing.enums.EntryCategory;
 import com.zentu.zentu_core.billing.repository.TransactionRepository;
-import com.zentu.zentu_core.group.entity.Group;
-import com.zentu.zentu_core.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
