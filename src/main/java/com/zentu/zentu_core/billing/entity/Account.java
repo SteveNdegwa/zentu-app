@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 public class Account extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "account_type", nullable = false)
+    @Column(name = "account_type", nullable = true)
     private AccountType accountType;
 
     @Column(name = "alias",  nullable = true, unique = true)

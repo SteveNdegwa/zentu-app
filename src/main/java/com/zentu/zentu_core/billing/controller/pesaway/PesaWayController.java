@@ -2,6 +2,7 @@ package com.zentu.zentu_core.billing.controller.pesaway;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.zentu.zentu_core.billing.dto.PesawayTopupRequest;
+import com.zentu.zentu_core.billing.enums.AccountType;
 import com.zentu.zentu_core.billing.service.pesaway.PesaWayApiClient;
 import com.zentu.zentu_core.common.utils.TransactionRefGenerator;
 import jakarta.validation.Valid;
@@ -33,8 +34,8 @@ public class PesaWayController {
         String channel = request.getChannel();
         String reason = request.getReason();
         String alias = request.getAlias();
-        Boolean isGroupTopup = true;
-        return ResponseEntity.ok(pesaWayApiClient.receiveC2BPayment(receipt, amount, phoneNumber, channel, alias, reason, isGroupTopup));
+        AccountType accountType = AccountType.GROUP;
+        return ResponseEntity.ok(pesaWayApiClient.receiveC2BPayment(receipt, amount, phoneNumber, channel, alias, reason, accountType));
     }
 
     @PostMapping("/user-topup")
@@ -45,13 +46,31 @@ public class PesaWayController {
         String channel = request.getChannel();
         String reason = request.getReason();
         String alias = request.getAlias();
-        Boolean isGroupTopup = false;
-        return ResponseEntity.ok(pesaWayApiClient.receiveC2BPayment(receipt, amount, phoneNumber, channel, alias, reason, isGroupTopup));
+        AccountType accountType = AccountType.USER;
+        return ResponseEntity.ok(pesaWayApiClient.receiveC2BPayment(receipt, amount, phoneNumber, channel, alias, reason, accountType));
     }
 
-    @PostMapping("/callback")
+
+    @PostMapping("/user-withdraw")
+    public ResponseEntity<JsonNode> withdrawUserAccount(@Valid @RequestBody PesawayTopupRequest request) {
+        double amount = request.getAmount();
+        String receipt = new TransactionRefGenerator().generate();
+        String phoneNumber = request.getPhoneNumber();
+        String channel = request.getChannel();
+        String reason = request.getReason();
+        String alias = request.getAlias();
+        AccountType accountType = AccountType.USER;
+        return ResponseEntity.ok(pesaWayApiClient.sendB2CPayment(receipt, amount, phoneNumber, channel, alias, reason, accountType));
+    }
+
+    @PostMapping("/c2b/callback")
     public ResponseEntity<?> handleCallback(@RequestBody Map<String, Object> payload) {
         return ResponseEntity.ok(pesaWayApiClient.processPesawayCallback(payload));
+    }
+
+    @PostMapping("/b2c/callback")
+    public ResponseEntity<?> handleB2CResults(@RequestBody Map<String, Object> payload) {
+        return ResponseEntity.ok(pesaWayApiClient.processPesawayB2Cresults(payload));
     }
 
 }

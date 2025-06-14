@@ -3,8 +3,12 @@ package com.zentu.zentu_core.billing.service.pesaway;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zentu.zentu_core.base.enums.State;
+import com.zentu.zentu_core.billing.entity.Account;
 import com.zentu.zentu_core.billing.entity.PesawayTransactionLog;
 import com.zentu.zentu_core.billing.entity.Transaction;
+import com.zentu.zentu_core.billing.enums.AccountType;
+import com.zentu.zentu_core.billing.enums.EntryCategory;
+import com.zentu.zentu_core.billing.repository.AccountRepository;
 import com.zentu.zentu_core.billing.repository.PesawayTransactionLogRepository;
 import com.zentu.zentu_core.billing.service.account.AccountService;
 import com.zentu.zentu_core.common.db.GenericCrudService;
@@ -33,12 +37,16 @@ public class PesaWayApiClient {
     private AccountService accountService;
 
     @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
     private PesawayTransactionLogRepository pesawayTransactionLogService;
 
     private final String clientId;
     private final String clientSecret;
     private final String baseUrl;
     private final String callbackUrl;
+    private final String b2cResultsUrl;
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
@@ -51,7 +59,8 @@ public class PesaWayApiClient {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.baseUrl = baseUrl;
-        this.callbackUrl = "https://zentu.rentwaveafrica.co.ke/pesaway/callback";
+        this.callbackUrl = "https://cgi-baths-h-insert.trycloudflare.com/pesaway/c2b/callback";
+        this.b2cResultsUrl = "https://cgi-baths-h-insert.trycloudflare.com/pesaway/b2c/callback";
         this.restTemplate = new RestTemplate();
         this.objectMapper = new ObjectMapper();
     }
@@ -133,19 +142,34 @@ public class PesaWayApiClient {
         return post("/api/v1/mobile-money/send-payment/", payload);
     }
 
-    public JsonNode sendB2CPayment(String externalReference, double amount, String phoneNumber, String channel, String reason, String resultsUrl) {
+    public JsonNode sendB2CPayment(String externalReference, double amount, String phoneNumber, String channel, String alias, String reason, AccountType accountType) {
         Map<String, Object> payload = Map.of(
                 "ExternalReference", externalReference,
                 "Amount", amount,
                 "PhoneNumber", phoneNumber,
                 "Channel", channel,
                 "Reason", reason,
-                "ResultsUrl", resultsUrl
+                "ResultsUrl", this.b2cResultsUrl
         );
+        Account account = accountRepository.findByAlias(alias)
+                .orElseThrow(() -> new RuntimeException("Account not found for alias: " + alias));
+        BigDecimal available = account.getAvailable();
+        if (available.compareTo(BigDecimal.valueOf(amount)) < 0) {
+            throw new RuntimeException("Insufficient funds in account: " + alias);
+        }
+        PesawayTransactionLog transaction = PesawayTransactionLog.builder()
+                .originatorReference(externalReference)
+                .alias(alias)
+                .accountType(accountType)
+                .phoneNumber(phoneNumber)
+                .transactionType(EntryCategory.DEBIT)
+                .state(State.COMPLETED)
+                .build();
+        genericCrudService.create(transaction);
         return post("/api/v1/mobile-money/send-payment/", payload);
     }
 
-    public JsonNode receiveC2BPayment(String externalReference, double amount, String phoneNumber, String channel, String groupAlias,  String reason, Boolean isGroupTopup) {
+    public JsonNode receiveC2BPayment(String externalReference, double amount, String phoneNumber, String channel, String alias,  String reason, AccountType accountType) {
         Map<String, Object> payload = Map.of(
                 "ExternalReference", externalReference,
                 "Amount", amount,
@@ -155,10 +179,10 @@ public class PesaWayApiClient {
                 "ResultsUrl", this.callbackUrl
         );
         PesawayTransactionLog transaction = PesawayTransactionLog.builder()
-                .groupAlias(groupAlias)
+                .alias(alias)
                 .originatorReference(externalReference)
-                .userPhoneNumber(phoneNumber)
-                .isGroupTopup(isGroupTopup)
+                .accountType(accountType)
+                .transactionType(EntryCategory.CREDIT)
                 .phoneNumber(phoneNumber)
                 .state(State.COMPLETED)
                 .build();
@@ -225,6 +249,47 @@ public class PesaWayApiClient {
         return post("/api/v1/airtime/send-airtime/", payload);
     }
 
+    public Map<String, Object> processPesawayB2Cresults(Map<String, Object> data) {
+        log.info("Received Pesaway B2C Callback: {}", data);
+
+        Integer resultCode = (Integer) data.get("ResultCode");
+        BigDecimal amount = new BigDecimal((String) data.get("TransactionAmount"));
+        log.info("Result Code: {}", resultCode);
+        log.info("Big Decimal amount: {}", amount);
+        String resultDesc = (String) data.getOrDefault("ResultDesc", "No description");
+        String originatorReference = (String) data.get("OriginatorReference");
+        String transactionId = (String) data.get("TransactionID");
+
+        if (originatorReference == null || resultCode == null) {
+            return response("200.200.001", "Missing callback data");
+        }
+        Optional<PesawayTransactionLog> transaction = pesawayTransactionLogService.findByOriginatorReference(originatorReference);
+        if (transaction.isEmpty()) {
+            return response("200.200.001", "Transaction not found");
+        }
+        try {
+            String jsonResponse = objectMapper.writeValueAsString(data);
+            log.info("Callback JSON: {}", jsonResponse);
+        } catch (Exception e) {
+            log.error("Failed to convert response to JSON: {}", e.getMessage());
+        }
+        if (resultCode == 0) {
+            log.info("amount Amount: {}", amount);
+            AccountType accountType = transaction.get().getAccountType();
+            var processWithdrawal = accountService.withdraw(
+                    transactionId,
+                    transaction.get().getAlias(),
+                    amount,
+                    accountType
+            );
+            return response("200.200.000", "Transaction is being processed");
+        } else {
+            return response("200.200.001", resultDesc);
+        }
+    }
+
+
+
     public Map<String, Object> processPesawayCallback(Map<String, Object> data) {
         log.info("Received Pesaway Callback: {}", data);
         Integer resultCode = (Integer) data.get("ResultCode");
@@ -251,18 +316,18 @@ public class PesaWayApiClient {
                 log.warn("Missing phone or amount: phone={}, amount={}", phone, amount);
                 return response("200.200.002", "Missing phone or amount");
             }
-            Boolean isGroup = transaction.get().getIsGroupTopup();
+            AccountType accountType = transaction.get().getAccountType();
             var processTopUp = accountService.topUp(
                     transactionReceipt,
-                    transaction.get().getGroupAlias(),
+                    transaction.get().getAlias(),
                     amount,
-                    isGroup
+                    accountType
             );
-            genericCrudService.updateFields(Transaction.class, transaction.get().getId(), Map.of(
-                    "receipt", transactionReceipt,
-                    "phoneNumber", phone,
-                    "state", State.COMPLETED
-            ));
+//            genericCrudService.updateFields(Transaction.class, transaction.get().getId(), Map.of(
+//                    "receipt", transactionReceipt,
+//                    "phoneNumber", phone,
+//                    "state", State.COMPLETED
+//            ));
             return response("200.200.001", "Transaction Successful");
         } else {
             return response("200.200.001", resultDesc);

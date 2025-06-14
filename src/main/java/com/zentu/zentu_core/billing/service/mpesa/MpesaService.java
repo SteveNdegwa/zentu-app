@@ -1,4 +1,5 @@
 package com.zentu.zentu_core.billing.service.mpesa;
+import com.zentu.zentu_core.billing.enums.AccountType;
 import jakarta.persistence.EntityManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zentu.zentu_core.billing.entity.MpesaTransactionLog;
@@ -99,8 +100,8 @@ public class MpesaService {
 			
 			log.info("Phone here: {}", phone);
 			log.info("Amount here: {}", amount);
-			boolean isGroup = true;
-			var processTopUp = accountService.topUp(receipt, groupAlias, amount, isGroup);
+			AccountType accountType = AccountType.USER;
+			var processTopUp = accountService.topUp(receipt, groupAlias, amount, accountType);
 			log.info("processTopUp here: {}", processTopUp);
 			genericCrudService.updateFields(MpesaTransactionLog.class, transaction.getId(), Map.of(
 					"receipt", receipt,
@@ -119,8 +120,8 @@ public class MpesaService {
 		String transId = (String) data.get("TransID");
 		double amount = Double.parseDouble(data.get("TransAmount").toString());
 		String phoneNumber = data.get("MSISDN").toString();
-		boolean isGroup = true;
-		accountService.topUp(transId, groupAlias, BigDecimal.valueOf(amount), isGroup);
+		AccountType accountType = AccountType.GROUP;
+		accountService.topUp(transId, groupAlias, BigDecimal.valueOf(amount), accountType);
 		MpesaTransactionLog transaction = MpesaTransactionLog.builder()
 				.groupAlias(groupAlias)
 				.phoneNumber(phoneNumber)
