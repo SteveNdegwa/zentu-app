@@ -17,11 +17,11 @@ import java.math.BigDecimal;
 @Setter
 public class Transaction extends BaseEntity {
 
-	@Column(name = "alias",  nullable = true, unique = true)
+	@Column(name = "alias",  nullable = true)
 	private String alias;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "account_type",  nullable = true, unique = true)
+	@Column(name = "account_type",  nullable=true)
 	private AccountType accountType;
 	
 	@Column(name = "receipt_number", nullable = false, unique = true)
