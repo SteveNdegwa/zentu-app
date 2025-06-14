@@ -3,7 +3,6 @@ package com.zentu.zentu_core.billing.service.pesaway;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zentu.zentu_core.base.enums.State;
-import com.zentu.zentu_core.billing.entity.MpesaTransactionLog;
 import com.zentu.zentu_core.billing.entity.PesawayTransactionLog;
 import com.zentu.zentu_core.billing.entity.Transaction;
 import com.zentu.zentu_core.billing.repository.PesawayTransactionLogRepository;
@@ -20,7 +19,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
