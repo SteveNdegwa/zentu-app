@@ -87,7 +87,7 @@ public class AppUserServiceImpl implements AppUserService {
 	
 	public ResponseEntity<?> checkPhoneNumber(CheckPhoneNumber request) {
 		Map<String, Object> checkPhoneData = new HashMap<>();
-		if (request.getPhoneNumber() != null) loginData.put("phone_number", request.getPhoneNumber());
+		if (request.getPhoneNumber() != null) checkPhoneData.put("phone_number", request.getPhoneNumber());
 		Map<String, Object> response = userServiceSync.sync("verify_phone_number", checkPhoneData);
 		Map<String, Object> data = new HashMap<>();
 		data.put("code", "200.000");

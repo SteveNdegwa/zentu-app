@@ -45,8 +45,8 @@ public class AppUserController {
 		}
 	}
 	
-	@PostMapping(/"verify/phone")
-	public ResponseEntity<?> retrieveProfile(@Valid @RequestBody RetrieveProfileRequest request) {
+	@PostMapping("/verify/phone")
+	public ResponseEntity<?> retrieveProfile(@Valid @RequestBody CheckPhoneNumber request) {
 		try {
 			return appUserService.checkPhoneNumber(request);
 		} catch (Exception e) {
@@ -54,8 +54,8 @@ public class AppUserController {
 		}
 	}
 	
-	@PostMapping(/"verify/otp")
-	public ResponseEntity<?> retrieveProfile(@Valid @RequestBody RetrieveProfileRequest request) {
+	@PostMapping("/verify/otp")
+	public ResponseEntity<?> retrieveProfile(@Valid @RequestBody VerifyOtp request) {
 		try {
 			return appUserService.verifyOtp(request);
 		} catch (Exception e) {
