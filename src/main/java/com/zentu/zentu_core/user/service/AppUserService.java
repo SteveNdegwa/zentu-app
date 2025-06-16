@@ -7,4 +7,6 @@ public interface AppUserService {
     ResponseEntity<?> createAppUser(CreateAppUserDto request);
     ResponseEntity<?> loginUser(LoginRequest request);
     ResponseEntity<?> retrieveProfile(RetrieveProfileRequest request);
+    ResponseEntity<?> checkPhoneNumber(CheckPhoneNumber request);
+    ResponseEntity<?> verifyOtp(VerifyOtp request);
 }

@@ -44,5 +44,23 @@ public class AppUserController {
 			return new ResponseProvider("500.002", "Failed to login user").exception();
 		}
 	}
+	
+	@PostMapping(/"verify/phone")
+	public ResponseEntity<?> retrieveProfile(@Valid @RequestBody RetrieveProfileRequest request) {
+		try {
+			return appUserService.checkPhoneNumber(request);
+		} catch (Exception e) {
+			return new ResponseProvider("500.002", "Failed to login user").exception();
+		}
+	}
+	
+	@PostMapping(/"verify/otp")
+	public ResponseEntity<?> retrieveProfile(@Valid @RequestBody RetrieveProfileRequest request) {
+		try {
+			return appUserService.verifyOtp(request);
+		} catch (Exception e) {
+			return new ResponseProvider("500.002", "Failed to login user").exception();
+		}
+	}
 
 }
