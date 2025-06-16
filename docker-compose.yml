@@ -12,7 +12,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: zentu_prod
       DARAJA_CALLBACK_URL: https://stage-billing.spinmobile.co/api/payments/callback/
       NOTIFY_URL: https://notify.rentwaveafrica.co.ke/core/send-notification/
-      IDENTITY_URL: https://identity.rentwaveafrica.co.ke
+      IDENTITY_URL: https://identity.rentwaveafrica.co.ke/api/
       PESAWAY_BASE_URL: https://api.sandbox.pesaway.com
       IDENTITY_BASE_URL: https://identity.rentwaveafrica.co.ke/auth/
       PESAWAY_CLIENT_ID: 4yN4wTqhNDRRKY6oMksGVbTa9Q8xP0px
