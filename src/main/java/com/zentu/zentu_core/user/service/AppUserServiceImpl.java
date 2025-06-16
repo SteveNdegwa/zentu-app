@@ -90,7 +90,7 @@ public class AppUserServiceImpl implements AppUserService {
 		if (request.getPhoneNumber() != null) checkPhoneData.put("phone_number", request.getPhoneNumber());
 		Map<String, Object> response = userServiceSync.sync("verify_phone_number", checkPhoneData);
 		Map<String, Object> data = new HashMap<>();
-		data.put("code", "200.000");
+		data.put("code", response.get("code"));
 		data.put("message", response.get("message"));
 		return new ResponseProvider(data).success();
 	}
@@ -101,7 +101,7 @@ public class AppUserServiceImpl implements AppUserService {
 		if (request.getOtp() != null) otpData.put("otp", request.getOtp());
 		Map<String, Object> response = userServiceSync.sync("verify_otp", otpData);
 		Map<String, Object> data = new HashMap<>();
-		data.put("code", "200.000");
+		data.put("code", response.get("code"));
 		data.put("message", response.get("message"));
 		return new ResponseProvider(data).success();
 	}
