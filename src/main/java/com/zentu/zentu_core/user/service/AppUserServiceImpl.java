@@ -27,15 +27,11 @@ public class AppUserServiceImpl implements AppUserService {
 		if (request.getLastName() != null) userData.put("last_name", request.getLastName());
 		if (request.getOtherName() != null) userData.put("other_name", request.getOtherName());
 		if (request.getPhoneNumber() != null) userData.put("phone_number", request.getPhoneNumber());
-		if (request.getEmail() != null) userData.put("email", request.getEmail());
 		if (request.getApp() != null) userData.put("app", request.getApp());
-		userData.put("set_random_password", request.isSetRandomPin());
 		userData.put("role", "Customer");
-		if (!request.isSetRandomPin()) {
-			if (request.getNewPin() != null) userData.put("new_password", request.getNewPin());
-			if (request.getConfirmPin() != null) userData.put("confirm_password", request.getConfirmPin());
-		}
-		userData.put("change_password_next_login", request.isChangePinNextLogin());
+		if (request.getNewPin() != null) userData.put("new_password", request.getNewPin());
+		if (request.getConfirmPin() != null) userData.put("confirm_password", request.getConfirmPin());
+		userData.put("change_password_next_login", false);
 		log.info("Creating user with data: {}", userData);
 		log.info("Creating user with data: {}", userData);
 		Map<String, Object> response = userServiceSync.sync("register", userData);

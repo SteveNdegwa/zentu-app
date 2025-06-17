@@ -8,10 +8,7 @@ public class CreateAppUserDto {
 	private String lastName;
 	private String otherName;
 	private String phoneNumber;
-	private String email;
 	private String app;
-	private boolean setRandomPin;
 	private String newPin;
 	private String confirmPin;
-	private boolean changePinNextLogin;
 }
