@@ -4,6 +4,7 @@ import com.zentu.zentu_core.billing.enums.AccountType;
 import com.zentu.zentu_core.billing.repository.AccountRepository;
 import com.zentu.zentu_core.common.utils.AccountNumberGenerator;
 import com.zentu.zentu_core.common.utils.ResponseProvider;
+import com.zentu.zentu_core.common.utils.TransactionRefGenerator;
 import com.zentu.zentu_core.user.dto.*;
 import com.zentu.zentu_core.user.service.util.UserServiceSync;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +26,6 @@ public class AppUserServiceImpl implements AppUserService {
 		if (request.getFirstName() != null) userData.put("first_name", request.getFirstName());
 		if (request.getLastName() != null) userData.put("last_name", request.getLastName());
 		if (request.getPhoneNumber() != null) userData.put("phone_number", request.getPhoneNumber());
-		if (request.getPhoneNumber() != null) {
-			String firstName = request.getFirstName() != null ? request.getFirstName() : "";
-			String lastName = request.getLastName() != null ? request.getLastName() : "";
-			userData.put("username", request.getPhoneNumber() + firstName + lastName);
-		}
 		if (request.getApp() != null) userData.put("app", request.getApp());
 		userData.put("role", "Customer");
 		if (request.getPin() != null) userData.put("pin", request.getPin());
