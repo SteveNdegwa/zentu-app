@@ -22,15 +22,17 @@ public class AppUserServiceImpl implements AppUserService {
 	private final AccountNumberGenerator accountNumberGenerator;
 	public ResponseEntity<?> createAppUser(CreateAppUserDto request) {
 		Map<String, Object> userData = new HashMap<>();
-		if (request.getPhoneNumber() != null) userData.put("username", request.getPhoneNumber());
 		if (request.getFirstName() != null) userData.put("first_name", request.getFirstName());
 		if (request.getLastName() != null) userData.put("last_name", request.getLastName());
-		if (request.getOtherName() != null) userData.put("other_name", request.getOtherName());
 		if (request.getPhoneNumber() != null) userData.put("phone_number", request.getPhoneNumber());
+		if (request.getPhoneNumber() != null) {
+			String firstName = request.getFirstName() != null ? request.getFirstName() : "";
+			String lastName = request.getLastName() != null ? request.getLastName() : "";
+			userData.put("username", request.getPhoneNumber() + firstName + lastName);
+		}
 		if (request.getApp() != null) userData.put("app", request.getApp());
 		userData.put("role", "Customer");
-		if (request.getNewPin() != null) userData.put("new_password", request.getNewPin());
-		if (request.getConfirmPin() != null) userData.put("confirm_password", request.getConfirmPin());
+		if (request.getPin() != null) userData.put("pin", request.getPin());
 		userData.put("change_password_next_login", false);
 		log.info("Creating user with data: {}", userData);
 		log.info("Creating user with data: {}", userData);
