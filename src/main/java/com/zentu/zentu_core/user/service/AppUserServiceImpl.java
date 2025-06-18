@@ -69,9 +69,9 @@ public class AppUserServiceImpl implements AppUserService {
 	
 	public ResponseEntity<?> loginUser(LoginRequest request) {
 		Map<String, Object> loginData = new HashMap<>();
-		if (request.getPhoneNumber() != null) loginData.put("username", request.getPhoneNumber());
+		if (request.getPhoneNumber() != null) loginData.put("phone_number", request.getPhoneNumber());
 		if (request.getApp() != null) loginData.put("app", request.getApp());
-		if (request.getPin() != null) loginData.put("password", request.getPin());
+		if (request.getPin() != null) loginData.put("pin", request.getPin());
 		Map<String, Object> response = userServiceSync.sync("token", loginData);
 		Map<String, Object> data = new HashMap<>();
 		data.put("code", "200.000");
