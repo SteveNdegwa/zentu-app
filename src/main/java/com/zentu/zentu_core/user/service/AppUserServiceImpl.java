@@ -4,7 +4,6 @@ import com.zentu.zentu_core.billing.enums.AccountType;
 import com.zentu.zentu_core.billing.repository.AccountRepository;
 import com.zentu.zentu_core.common.utils.AccountNumberGenerator;
 import com.zentu.zentu_core.common.utils.ResponseProvider;
-import com.zentu.zentu_core.common.utils.TransactionRefGenerator;
 import com.zentu.zentu_core.user.dto.*;
 import com.zentu.zentu_core.user.service.util.UserServiceSync;
 import lombok.RequiredArgsConstructor;
