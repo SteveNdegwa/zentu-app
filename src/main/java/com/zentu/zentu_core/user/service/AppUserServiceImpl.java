@@ -29,27 +29,39 @@ public class AppUserServiceImpl implements AppUserService {
 		userData.put("role", "Customer");
 		if (request.getPin() != null) userData.put("pin", request.getPin());
 		userData.put("change_password_next_login", false);
+		
 		log.info("Creating user with data: {}", userData);
-		log.info("Creating user with data: {}", userData);
+		
 		Map<String, Object> response = userServiceSync.sync("register", userData);
 		log.info("User creation response: {}", response);
+		
 		Map<String, Object> data = new HashMap<>();
 		data.put("code", response.get("code"));
 		data.put("message", response.get("message"));
+		
 		if ("200.000".equals(response.get("code"))) {
 			Object messageObj = response.get("message");
-			if (messageObj instanceof Map<?, ?> messageMap) {
+			
+			if (messageObj instanceof Map<?, ?>) {
+				Map<?, ?> messageMap = (Map<?, ?>) messageObj;
+				
 				Object userId = messageMap.get("user");
 				if (userId instanceof String userIdStr) {
 					log.info("User created with ID: {}", userIdStr);
 				}
+				Object aliasObj = messageMap.get("alias");
+				String userAlias = aliasObj instanceof String ? (String) aliasObj : null;
+				Account account = new Account();
+				account.setAccountNumber(accountNumberGenerator.generate());
+				account.setAccountType(AccountType.USER);
+				account.setAlias(userAlias);
+				accountRepository.save(account);
+				
+				return new ResponseProvider(data).success();
+			} else {
+				log.warn("Expected 'message' to be a Map, got: {}", messageObj.getClass().getSimpleName());
+				return new ResponseProvider(data).exception();
 			}
-			Account account = new Account();
-			account.setAccountNumber(accountNumberGenerator.generate());
-			account.setAccountType(AccountType.USER);
-			account.setAlias(request.getPhoneNumber());
-			accountRepository.save(account);
-			return new ResponseProvider(data).success();
 		} else {
 			return new ResponseProvider(data).exception();
 		}
