@@ -56,7 +56,13 @@ public class AppUserServiceImpl implements AppUserService {
 				account.setAccountType(AccountType.USER);
 				account.setAlias(userAlias);
 				accountRepository.save(account);
-				
+				Map<String, Object> loginData = new HashMap<>();
+				loginData.put("phone_number", request.getPhoneNumber());
+				loginData.put("app", request.getApp());
+				loginData.put("pin", request.getPin());
+				Map<String, Object> resp = userServiceSync.sync("token", loginData);
+				data.put("code", resp.get("code"));
+				data.put("message", resp.get("message"));
 				return new ResponseProvider(data).success();
 			} else {
 				log.warn("Expected 'message' to be a Map, got: {}", messageObj.getClass().getSimpleName());
