@@ -27,7 +27,7 @@ public class HomeServiceImpl implements HomeService{
 	public ResponseEntity<?> retrieveUserInformation(HomeDTO request) {
 		Map<String, Object> userData = new HashMap<>();
 		if (request.getAlias() != null) userData.put("alias", request.getAlias());
-		Map<String, Object> response = userServiceSync.sync("sync_user_profile", userData);
+		Map<String, Object> response = userServiceSync.sync("profile", userData);
 		Map<String, Object> data = new HashMap<>();
 		data.put("code", response.get("code"));
 		data.put("message", response.get("message"));
