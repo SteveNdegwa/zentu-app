@@ -1,6 +1,7 @@
 package com.zentu.zentu_core.home.controller;
 import com.zentu.zentu_core.common.utils.ResponseProvider;
 import com.zentu.zentu_core.home.dto.HomeDTO;
+import com.zentu.zentu_core.home.service.HomeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,10 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1")
 @RequiredArgsConstructor
 public class HomeController {
+	private final HomeService homeService;
 	@PostMapping("/home")
 	public ResponseEntity<?> createUser(@Valid @RequestBody HomeDTO request) {
 		try {
-			return new ResponseProvider("200.000", "User Information retrieve").success();
+			return homeService.retrieveUserInformation(request);
 		} catch (Exception e) {
 			return new ResponseProvider("500.001", "Failed to retrieve user Information").exception();
 		}
