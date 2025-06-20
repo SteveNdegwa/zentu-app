@@ -80,17 +80,17 @@ public class AppUserServiceImpl implements AppUserService {
 		if (request.getPin() != null) loginData.put("pin", request.getPin());
 		Map<String, Object> response = userServiceSync.sync("token", loginData);
 		Map<String, Object> data = new HashMap<>();
-		data.put("code", "200.000");
+		data.put("code", response.get("code"));
 		data.put("message", response.get("message"));
 		return new ResponseProvider(data).success();
 	}
 	
 	public ResponseEntity<?> retrieveProfile(RetrieveProfileRequest request) {
 		Map<String, Object> loginData = new HashMap<>();
-		if (request.getUser() != null) loginData.put("user", request.getUser());
+		if (request.getUser() != null) loginData.put("home", request.getUser());
 		Map<String, Object> response = userServiceSync.sync("sync_user_profile", loginData);
 		Map<String, Object> data = new HashMap<>();
-		data.put("code", "200.000");
+		data.put("code", response.get("code"));
 		data.put("message", response.get("message"));
 		return new ResponseProvider(data).success();
 	}
