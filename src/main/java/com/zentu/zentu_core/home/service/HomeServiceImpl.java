@@ -45,10 +45,10 @@ public class HomeServiceImpl implements HomeService{
 				String userAlias = aliasObj instanceof String ? (String) aliasObj : null;
 				Optional<Account> account = accountRepository.findByAlias(request.getAlias());
 				if (account.isPresent()) {
-					response.put("available", account.map(Account::getAvailable).orElse(BigDecimal.ZERO));
+					data.put("available", account.map(Account::getAvailable).orElse(BigDecimal.ZERO));
 				} else {
 					log.warn("No account found for alias: {}", request.getAlias());
-					response.put("available", BigDecimal.ZERO);
+					data.put("available", BigDecimal.ZERO);
 				}
 				return new ResponseProvider(data).success();
 			} else {
