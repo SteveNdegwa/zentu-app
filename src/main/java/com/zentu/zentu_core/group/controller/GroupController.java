@@ -21,7 +21,7 @@ public class GroupController {
     private final GroupService groupService;
 
     @PostMapping
-    @ProtectedEndpoint
+//    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<Map<String, Object>>> createGroup(
             @RequestBody @Valid CreateGroupRequest request,
             @AuthenticationPrincipal Map<String, Object> user) {
@@ -30,7 +30,7 @@ public class GroupController {
     }
 
     @PutMapping("/{id}")
-    @ProtectedEndpoint
+//    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<Void>> updateGroup(
             @PathVariable("id") String groupId,
             @RequestBody @Valid UpdateGroupRequest request,
@@ -40,7 +40,7 @@ public class GroupController {
     }
 
     @DeleteMapping("/{id}")
-    @ProtectedEndpoint
+//    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<Void>> deleteGroup(
             @PathVariable("id") String groupId,
             @AuthenticationPrincipal Map<String, Object> user) {
@@ -49,14 +49,14 @@ public class GroupController {
     }
 
     @GetMapping("/{id}")
-    @ProtectedEndpoint
+//    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<Map<String, Object>>> getGroup(@PathVariable("id") String groupId) {
         Map<String, Object> group = groupService.getGroupById(groupId);
         return ResponseEntity.ok(ApiResponse.success("Group fetched successfully", group));
     }
 
     @PostMapping("/{groupId}/users/{userId}")
-    @ProtectedEndpoint
+//    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<Void>> addUserToGroup(
             @PathVariable String groupId,
             @PathVariable String userId) {
@@ -65,7 +65,7 @@ public class GroupController {
     }
 
     @DeleteMapping("/{groupId}/users/{userId}")
-    @ProtectedEndpoint
+//    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<Void>> removeUserFromGroup(
             @PathVariable String groupId,
             @PathVariable String userId,
@@ -75,7 +75,7 @@ public class GroupController {
     }
 
     @PostMapping("/{groupId}/admins/{userId}")
-    @ProtectedEndpoint
+//    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<Void>> setUserAsGroupAdmin(
             @PathVariable String groupId,
             @PathVariable String userId) {
@@ -84,7 +84,7 @@ public class GroupController {
     }
 
     @DeleteMapping("/{groupId}/admins/{userId}")
-    @ProtectedEndpoint
+//    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<Void>> removeUserFromGroupAdmins(
             @PathVariable String groupId,
             @PathVariable String userId) {
@@ -93,7 +93,7 @@ public class GroupController {
     }
 
     @PatchMapping("/{groupId}/members/{userId}/role")
-    @ProtectedEndpoint
+//    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<Void>> updateUserGroupRole(
             @PathVariable String groupId,
             @PathVariable String userId,
@@ -103,7 +103,7 @@ public class GroupController {
     }
 
     @GetMapping("/{groupId}/members")
-    @ProtectedEndpoint
+//    @ProtectedEndpoint
     public ResponseEntity<ApiResponse<Map<String, Object>>> getGroupMembers(@PathVariable String groupId) {
         Map<String, Object> members = groupService.getGroupMembers(groupId);
         return ResponseEntity.ok(ApiResponse.success("Group members fetched successfully", members));

@@ -1,6 +1,10 @@
 package com.zentu.zentu_core.group.service;
 
 import com.zentu.zentu_core.base.dto.JsonResponse;
+import com.zentu.zentu_core.billing.entity.Account;
+import com.zentu.zentu_core.billing.enums.AccountType;
+import com.zentu.zentu_core.billing.repository.AccountRepository;
+import com.zentu.zentu_core.common.utils.AccountNumberGenerator;
 import com.zentu.zentu_core.group.client.GroupServiceClient;
 import com.zentu.zentu_core.group.dto.*;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +18,8 @@ import java.util.*;
 public class GroupService {
 
     private final GroupServiceClient groupServiceClient;
+    private final AccountRepository accountRepository;
+    private final AccountNumberGenerator accountNumberGenerator;
 
     public Map<String, Object> createGroup(CreateGroupRequest request, Map<String, Object> user) {
         Map<String, Object> data = new HashMap<>();
@@ -27,7 +33,17 @@ public class GroupService {
             throw new RuntimeException(response.getMessage());
         }
 
-        return Map.of("groupId", response.getExtraFields().get("group_id"));
+        Map<String, Object> extraFields = response.getExtraFields();
+        String groupId = extraFields.get("groupId").toString();
+        String alias = extraFields.get("alias").toString();
+
+        Account account = new Account();
+        account.setAccountNumber(accountNumberGenerator.generate());
+        account.setAccountType(AccountType.GROUP);
+        account.setAlias(alias);
+        accountRepository.save(account);
+
+        return Map.of("groupId", groupId, "alias", alias);
     }
 
     public void updateGroup(String groupId, UpdateGroupRequest request, Map<String, Object> user) {
