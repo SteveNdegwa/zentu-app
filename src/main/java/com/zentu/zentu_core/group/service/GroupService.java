@@ -43,7 +43,7 @@ public class GroupService {
         account.setAlias(alias);
         accountRepository.save(account);
 
-        return Map.of("groupId", groupId, "alias", alias);
+        return Map.of("id", groupId, "alias", alias);
     }
 
     public void updateGroup(String groupId, UpdateGroupRequest request, Map<String, Object> user) {
@@ -70,7 +70,7 @@ public class GroupService {
         }
     }
 
-    public Map<String, Object> getGroupById(String groupId) {
+    public Object getGroupById(String groupId) {
         Map<String, Object> data = new HashMap<>();
         data.put("group_id", groupId);
 
@@ -79,10 +79,10 @@ public class GroupService {
             throw new RuntimeException(response.getMessage());
         }
 
-        return Map.of("group", response.getExtraFields().get("group"));
+        return response.getExtraFields().get("group");
     }
 
-    public Map<String, Object> filterGroups(FilterGroupsRequest request){
+    public Object filterGroups(FilterGroupsRequest request){
         Map<String, Object> data = new HashMap<>();
         data.put("user_id", request.getUserId());
         data.put("creator_id", request.getCreatorId());
@@ -94,7 +94,7 @@ public class GroupService {
             throw new RuntimeException(response.getMessage());
         }
 
-        return Map.of("groups", response.getExtraFields().get("groups"));
+        return response.getExtraFields().get("groups");
     }
 
     public void joinGroup(String groupId, String userId){
@@ -153,7 +153,7 @@ public class GroupService {
         }
     }
 
-    public Map<String, Object> getGroupMembers(String groupId) {
+    public Object getGroupMembers(String groupId) {
         Map<String, Object> data = new HashMap<>();
         data.put("group_id", groupId);
 
@@ -162,6 +162,6 @@ public class GroupService {
             throw new RuntimeException(response.getMessage());
         }
 
-        return Map.of("members", response.getExtraFields().get("members"));
+        return response.getExtraFields().get("members");
     }
 }

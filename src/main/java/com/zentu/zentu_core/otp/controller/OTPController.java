@@ -14,20 +14,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/otps")
+@RequestMapping("/api/otps")
 public class OTPController {
 
     private final OTPService otpService;
 
     @PostMapping("/send")
-    public ResponseEntity<ApiResponse<Void>> sendOTP(@RequestBody @Valid SendOtpRequest request) {
+    public ResponseEntity<ApiResponse> sendOTP(@RequestBody @Valid SendOtpRequest request) {
         otpService.sendOTP(request);
-        return ResponseEntity.ok(ApiResponse.success("OTP sent successfully", null));
+        return ApiResponse.ok("OTP sent successfully", null);
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<ApiResponse<Void>> verifyOTP(@RequestBody @Valid VerifyOtpRequest request) {
+    public ResponseEntity<ApiResponse> verifyOTP(@RequestBody @Valid VerifyOtpRequest request) {
         otpService.verifyOTP(request);
-        return ResponseEntity.ok(ApiResponse.success("OTP verified successfully", null));
+        return ApiResponse.ok("OTP verified successfully", null);
     }
 }

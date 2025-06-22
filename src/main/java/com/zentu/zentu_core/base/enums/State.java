@@ -7,4 +7,5 @@ public enum State {
     PENDING,
     COMPLETED,
     FAILED,
+    DELETED,
 }
