@@ -56,6 +56,4 @@ public class AuditAspect {
             return "ERROR_SERIALIZING_ARGS";
         }
     }
-
-//    @Auditable(action = "CREATE_USER")
 }

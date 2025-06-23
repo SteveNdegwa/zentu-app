@@ -64,6 +64,13 @@ public class GroupController {
         return ApiResponse.ok("Group fetched successfully", Map.of("group", group));
     }
 
+    @GetMapping
+    @ProtectedEndpoint
+    public ResponseEntity<ApiResponse> getUserGroups(@AuthenticationPrincipal Map<String, Object> user) {
+        Object groups = groupService.getUserGroups(user);
+        return ApiResponse.ok("User groups fetched successfully", Map.of("groups", groups));
+    }
+
     @PostMapping("/filter")
     @ProtectedEndpoint
     public ResponseEntity<ApiResponse> filterGroups(@RequestBody FilterGroupsRequest request) {

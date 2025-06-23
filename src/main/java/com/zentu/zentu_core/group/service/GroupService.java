@@ -82,6 +82,18 @@ public class GroupService {
         return response.getExtraFields().get("group");
     }
 
+    public Object getUserGroups(Map<String, Object> user){
+        Map<String, Object> data = new HashMap<>();
+        data.put("user_id", user.get("id"));
+
+        JsonResponse response = groupServiceClient.filterGroups(data);
+        if (!Objects.equals(response.getCode(), "200.000")){
+            throw new RuntimeException(response.getMessage());
+        }
+
+        return response.getExtraFields().get("groups");
+    }
+
     public Object filterGroups(FilterGroupsRequest request){
         Map<String, Object> data = new HashMap<>();
         data.put("user_id", request.getUserId());
