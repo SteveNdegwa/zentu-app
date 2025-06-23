@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -19,6 +20,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final UserServiceSync userServiceSync;
@@ -32,6 +34,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         if (token != null && !token.isBlank()) {
             Map<String, Object> resp = userServiceSync.sync("check-login-status", Map.of("token", token));
             if (resp.get("code") == "200.000.000"){
+                log.error("Filter ---- User: {}", resp.get("user"));
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
                         resp.get("user"), null, Collections.emptyList());
                 SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -9,6 +9,7 @@ import com.zentu.zentu_core.group.dto.FilterGroupsRequest;
 import com.zentu.zentu_core.group.dto.UpdateGroupRequest;
 import com.zentu.zentu_core.group.service.GroupService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/groups")
+@Slf4j
 public class GroupController {
 
     private final GroupService groupService;
@@ -29,6 +31,7 @@ public class GroupController {
     public ResponseEntity<ApiResponse> createGroup(
             @RequestBody @Valid CreateGroupRequest request,
             @AuthenticationPrincipal Map<String, Object> user) {
+        log.error("create group ---- User: {}", user);
         Map<String, Object> groupData = groupService.createGroup(request, user);
         return ApiResponse.created("Group created successfully", groupData);
     }
