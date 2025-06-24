@@ -33,7 +33,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
         if (token != null && !token.isBlank()) {
             Map<String, Object> resp = userServiceSync.sync("check-login-status", Map.of("token", token));
-            if (resp.get("code") == "200.000.000"){
+            if ("200.000.000".equals(resp.get("code"))) {
                 log.error("Filter ---- User: {}", resp.get("user"));
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
                         resp.get("user"), null, Collections.emptyList());

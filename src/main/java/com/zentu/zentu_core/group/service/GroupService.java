@@ -1,5 +1,7 @@
 package com.zentu.zentu_core.group.service;
 
+import com.zentu.zentu_core.audit.annotation.Auditable;
+import com.zentu.zentu_core.audit.enums.AuditAction;
 import com.zentu.zentu_core.base.dto.JsonResponse;
 import com.zentu.zentu_core.billing.entity.Account;
 import com.zentu.zentu_core.billing.enums.AccountType;
@@ -21,6 +23,7 @@ public class GroupService {
     private final AccountRepository accountRepository;
     private final AccountNumberGenerator accountNumberGenerator;
 
+    @Auditable(action = AuditAction.CREATE_GROUP)
     public Map<String, Object> createGroup(CreateGroupRequest request, Map<String, Object> user) {
         Map<String, Object> data = new HashMap<>();
         data.put("name", request.getName());
@@ -46,6 +49,7 @@ public class GroupService {
         return Map.of("id", groupId, "alias", alias);
     }
 
+    @Auditable(action = AuditAction.UPDATE_GROUP)
     public void updateGroup(String groupId, UpdateGroupRequest request, Map<String, Object> user) {
         Map<String, Object> data = new HashMap<>();
         data.put("group_id", groupId);
@@ -59,6 +63,7 @@ public class GroupService {
         }
     }
 
+    @Auditable(action = AuditAction.DELETE_GROUP)
     public void deleteGroup(String groupId, Map<String, Object> user) {
         Map<String, Object> data = new HashMap<>();
         data.put("group_id", groupId);

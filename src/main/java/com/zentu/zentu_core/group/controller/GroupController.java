@@ -1,7 +1,5 @@
 package com.zentu.zentu_core.group.controller;
 
-import com.zentu.zentu_core.audit.annotation.Auditable;
-import com.zentu.zentu_core.audit.enums.AuditAction;
 import com.zentu.zentu_core.auth.annotation.ProtectedEndpoint;
 import com.zentu.zentu_core.base.dto.ApiResponse;
 import com.zentu.zentu_core.group.dto.CreateGroupRequest;
@@ -27,7 +25,6 @@ public class GroupController {
 
     @PostMapping
     @ProtectedEndpoint
-    @Auditable(action = AuditAction.CREATE_GROUP)
     public ResponseEntity<ApiResponse> createGroup(
             @RequestBody @Valid CreateGroupRequest request,
             @AuthenticationPrincipal Map<String, Object> user) {
@@ -38,7 +35,6 @@ public class GroupController {
 
     @PutMapping("/{id}")
     @ProtectedEndpoint
-    @Auditable(action = AuditAction.UPDATE_GROUP)
     public ResponseEntity<ApiResponse> updateGroup(
             @PathVariable("id") String groupId,
             @RequestBody @Valid UpdateGroupRequest request,
@@ -49,7 +45,6 @@ public class GroupController {
 
     @DeleteMapping("/{id}")
     @ProtectedEndpoint
-    @Auditable(action = AuditAction.DELETE_GROUP)
     public ResponseEntity<ApiResponse> deleteGroup(
             @PathVariable("id") String groupId,
             @AuthenticationPrincipal Map<String, Object> user) {
