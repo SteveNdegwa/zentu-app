@@ -90,6 +90,7 @@ public class GroupService {
     public Object getUserGroups(Map<String, Object> user){
         Map<String, Object> data = new HashMap<>();
         data.put("user_id", user.get("id"));
+        data.put("app", "zentu");
 
         JsonResponse response = groupServiceClient.filterGroups(data);
         if (!Objects.equals(response.getCode(), "200.000")){
