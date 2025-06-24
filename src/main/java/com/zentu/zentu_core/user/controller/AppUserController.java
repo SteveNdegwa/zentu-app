@@ -45,6 +45,15 @@ public class AppUserController {
 		}
 	}
 	
+	@PostMapping("/match")
+	public ResponseEntity<?> matchContact(@Valid @RequestBody MatchContactDTO request) {
+		try {
+			return appUserService.matchContact(request);
+		} catch (Exception e) {
+			return new ResponseProvider("500.002", "Failed to login user").exception();
+		}
+	}
+	
 	@PostMapping("/verify/phone")
 	public ResponseEntity<?> retrieveProfile(@Valid @RequestBody CheckPhoneNumber request) {
 		try {

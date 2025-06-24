@@ -9,4 +9,5 @@ public interface AppUserService {
     ResponseEntity<?> retrieveProfile(RetrieveProfileRequest request);
     ResponseEntity<?> checkPhoneNumber(CheckPhoneNumber request);
     ResponseEntity<?> verifyOtp(VerifyOtp request);
+    ResponseEntity<?> matchContact(MatchContactDTO request);
 }
