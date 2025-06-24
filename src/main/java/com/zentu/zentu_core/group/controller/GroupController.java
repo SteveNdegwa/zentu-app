@@ -28,7 +28,6 @@ public class GroupController {
     public ResponseEntity<ApiResponse> createGroup(
             @RequestBody @Valid CreateGroupRequest request,
             @AuthenticationPrincipal Map<String, Object> user) {
-        log.error("create group ---- User: {}", user);
         Map<String, Object> groupData = groupService.createGroup(request, user);
         return ApiResponse.created("Group created successfully", groupData);
     }

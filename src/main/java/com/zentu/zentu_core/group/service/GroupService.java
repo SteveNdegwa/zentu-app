@@ -29,7 +29,7 @@ public class GroupService {
         data.put("name", request.getName());
         data.put("description", request.getDescription());
         data.put("user_id", user.get("id"));
-        data.put("system", "zentu");
+        data.put("app", "zentu");
 
         JsonResponse response = groupServiceClient.createGroup(data);
         if (!Objects.equals(response.getCode(), "200.000")){
