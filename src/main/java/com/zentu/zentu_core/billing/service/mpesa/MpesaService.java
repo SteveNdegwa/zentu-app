@@ -81,8 +81,8 @@ public class MpesaService {
 					}
 				}
 			}
-			String groupAlias = transactionOpt.get().getGroupAlias();
-			log.info("Alias here ++++++++++++++++++++{}", groupAlias);
+			String communityAlias = transactionOpt.get().getCommunityAlias();
+			log.info("Alias here ++++++++++++++++++++{}", communityAlias);
 			String receipt = (String) metadataMap.get("MpesaReceiptNumber");
 			log.info("Receipt here ++++++++++++++++++++{}", receipt);
 			BigDecimal amount = metadataMap.get("Amount") instanceof Number
@@ -101,7 +101,7 @@ public class MpesaService {
 			log.info("Phone here: {}", phone);
 			log.info("Amount here: {}", amount);
 			AccountType accountType = AccountType.USER;
-			var processTopUp = accountService.topUp(receipt, groupAlias, amount, accountType);
+			var processTopUp = accountService.topUp(receipt, communityAlias, amount, accountType);
 			log.info("processTopUp here: {}", processTopUp);
 			genericCrudService.updateFields(MpesaTransactionLog.class, transaction.getId(), Map.of(
 					"receipt", receipt,
@@ -116,14 +116,14 @@ public class MpesaService {
 	}
 
 	public Map<String, Object> processConfirmation(Map<String, Object> data) {
-		String groupAlias = (String) data.get("BillRefNumber");
+		String communityAlias = (String) data.get("BillRefNumber");
 		String transId = (String) data.get("TransID");
 		double amount = Double.parseDouble(data.get("TransAmount").toString());
 		String phoneNumber = data.get("MSISDN").toString();
-		AccountType accountType = AccountType.GROUP;
-		accountService.topUp(transId, groupAlias, BigDecimal.valueOf(amount), accountType);
+		AccountType accountType = AccountType.COMMUNITY;
+		accountService.topUp(transId, communityAlias, BigDecimal.valueOf(amount), accountType);
 		MpesaTransactionLog transaction = MpesaTransactionLog.builder()
-				.groupAlias(groupAlias)
+				.communityAlias(communityAlias)
 				.phoneNumber(phoneNumber)
 				.receipt(transId)
 				.amount(amount)
@@ -141,7 +141,7 @@ public class MpesaService {
 	}
 
 	public Map<String, Object> initiateStkPush(Map<String, Object> data) {
-		if (Stream.of("phone_number", "amount", "account_reference", "group_alias", "transaction_desc")
+		if (Stream.of("phone_number", "amount", "account_reference", "community_alias", "transaction_desc")
 				.anyMatch(key -> !data.containsKey(key))) {
 			return response("500.200.001", "Missing required fields");
 		}
@@ -155,11 +155,11 @@ public class MpesaService {
 		);
 
 		String checkoutRequestId = result.get("CheckoutRequestID").toString();
-		String groupAlias = data.get("group_alias").toString();
+		String communityAlias = data.get("community_alias").toString();
 
 		MpesaTransactionLog transaction = MpesaTransactionLog.builder()
 				.checkoutRequestId(checkoutRequestId)
-				.groupAlias(groupAlias)
+				.communityAlias(communityAlias)
 				.phoneNumber(data.get("phone_number").toString())
 				.state(State.COMPLETED)
 				.response(convertMapToJson(result))

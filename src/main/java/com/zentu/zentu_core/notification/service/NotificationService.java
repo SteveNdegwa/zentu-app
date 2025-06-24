@@ -19,14 +19,14 @@ public class NotificationService {
 
     public void sendNotification(
             List<String> userIds,
-            List<String> groupIds,
+            List<String> communityIds,
             NotificationType notificationType,
             String template,
             Map<String, Object> context
     ){
         Map<String, Object> data  = new HashMap<>();
         data.put("user_ids", userIds);
-        data.put("group_ids", groupIds);
+        data.put("community_ids", communityIds);
         data.put("notification_type", notificationType.toString());
         data.put("template", template);
         data.put("context", context);

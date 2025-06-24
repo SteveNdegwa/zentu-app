@@ -1,4 +1,4 @@
-package com.zentu.zentu_core.group.service;
+package com.zentu.zentu_core.community.service;
 
 import com.zentu.zentu_core.audit.annotation.Auditable;
 import com.zentu.zentu_core.audit.enums.AuditAction;
@@ -7,8 +7,8 @@ import com.zentu.zentu_core.billing.entity.Account;
 import com.zentu.zentu_core.billing.enums.AccountType;
 import com.zentu.zentu_core.billing.repository.AccountRepository;
 import com.zentu.zentu_core.common.utils.AccountNumberGenerator;
-import com.zentu.zentu_core.group.client.GroupServiceClient;
-import com.zentu.zentu_core.group.dto.*;
+import com.zentu.zentu_core.community.client.CommunityServiceClient;
+import com.zentu.zentu_core.community.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,165 +17,165 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 
-public class GroupService {
+public class CommunityService {
 
-    private final GroupServiceClient groupServiceClient;
+    private final CommunityServiceClient communityServiceClient;
     private final AccountRepository accountRepository;
     private final AccountNumberGenerator accountNumberGenerator;
 
-    @Auditable(action = AuditAction.CREATE_GROUP)
-    public Map<String, Object> createGroup(CreateGroupRequest request, Map<String, Object> user) {
+    @Auditable(action = AuditAction.CREATE_COMMUNITY)
+    public Map<String, Object> createCommunity(CreateCommunityRequest request, Map<String, Object> user) {
         Map<String, Object> data = new HashMap<>();
         data.put("name", request.getName());
         data.put("description", request.getDescription());
         data.put("user_id", user.get("id"));
         data.put("app", "zentu");
 
-        JsonResponse response = groupServiceClient.createGroup(data);
+        JsonResponse response = communityServiceClient.createCommunity(data);
         if (!Objects.equals(response.getCode(), "200.000")){
             throw new RuntimeException(response.getMessage());
         }
 
         Map<String, Object> extraFields = response.getExtraFields();
-        String groupId = extraFields.get("groupId").toString();
+        String communityId = extraFields.get("communityId").toString();
         String alias = extraFields.get("alias").toString();
 
         Account account = new Account();
         account.setAccountNumber(accountNumberGenerator.generate());
-        account.setAccountType(AccountType.GROUP);
+        account.setAccountType(AccountType.COMMUNITY);
         account.setAlias(alias);
         accountRepository.save(account);
 
-        return Map.of("id", groupId, "alias", alias);
+        return Map.of("id", communityId, "alias", alias);
     }
 
-    @Auditable(action = AuditAction.UPDATE_GROUP)
-    public void updateGroup(String groupId, UpdateGroupRequest request, Map<String, Object> user) {
+    @Auditable(action = AuditAction.UPDATE_COMMUNITY)
+    public void updateCommunity(String communityId, UpdateCommunityRequest request, Map<String, Object> user) {
         Map<String, Object> data = new HashMap<>();
-        data.put("group_id", groupId);
+        data.put("community_id", communityId);
         data.put("name", request.getName());
         data.put("description", request.getDescription());
         data.put("user_id", user.get("id"));
 
-        JsonResponse response = groupServiceClient.updateGroup(data);
+        JsonResponse response = communityServiceClient.updateCommunity(data);
         if (!Objects.equals(response.getCode(), "200.000")){
             throw new RuntimeException(response.getMessage());
         }
     }
 
-    @Auditable(action = AuditAction.DELETE_GROUP)
-    public void deleteGroup(String groupId, Map<String, Object> user) {
+    @Auditable(action = AuditAction.DELETE_COMMUNITY)
+    public void deleteCommunity(String communityId, Map<String, Object> user) {
         Map<String, Object> data = new HashMap<>();
-        data.put("group_id", groupId);
+        data.put("community_id", communityId);
         data.put("user_id", user.get("id"));
 
-        JsonResponse response = groupServiceClient.deleteGroup(data);
+        JsonResponse response = communityServiceClient.deleteCommunity(data);
         if (!Objects.equals(response.getCode(), "200.000")){
             throw new RuntimeException(response.getMessage());
         }
     }
 
-    public Object getGroupById(String groupId) {
+    public Object getCommunityById(String communityId) {
         Map<String, Object> data = new HashMap<>();
-        data.put("group_id", groupId);
+        data.put("community_id", communityId);
 
-        JsonResponse response = groupServiceClient.getGroup(data);
+        JsonResponse response = communityServiceClient.getCommunity(data);
         if (!Objects.equals(response.getCode(), "200.000")){
             throw new RuntimeException(response.getMessage());
         }
 
-        return response.getExtraFields().get("group");
+        return response.getExtraFields().get("community");
     }
 
-    public Object getUserGroups(Map<String, Object> user){
+    public Object getUserCommunities(Map<String, Object> user){
         Map<String, Object> data = new HashMap<>();
         data.put("user_id", user.get("id"));
         data.put("app", "zentu");
 
-        JsonResponse response = groupServiceClient.filterGroups(data);
+        JsonResponse response = communityServiceClient.filterCommunities(data);
         if (!Objects.equals(response.getCode(), "200.000")){
             throw new RuntimeException(response.getMessage());
         }
 
-        return response.getExtraFields().get("groups");
+        return response.getExtraFields().get("communities");
     }
 
-    public Object filterGroups(FilterGroupsRequest request){
+    public Object filterCommunities(FilterCommunitiesRequest request){
         Map<String, Object> data = new HashMap<>();
         data.put("user_id", request.getUserId());
         data.put("creator_id", request.getCreatorId());
         data.put("state", request.getState());
         data.put("search_term", request.getSearchTerm());
 
-        JsonResponse response = groupServiceClient.filterGroups(data);
+        JsonResponse response = communityServiceClient.filterCommunities(data);
         if (!Objects.equals(response.getCode(), "200.000")){
             throw new RuntimeException(response.getMessage());
         }
 
-        return response.getExtraFields().get("groups");
+        return response.getExtraFields().get("communities");
     }
 
-    public void joinGroup(String groupId, String userId){
+    public void joinCommunity(String communityId, String userId){
         Map<String, Object> data = new HashMap<>();
-        data.put("group_id", groupId);
+        data.put("community_id", communityId);
         data.put("user_id", userId);
 
-        JsonResponse response = groupServiceClient.joinGroup(data);
+        JsonResponse response = communityServiceClient.joinCommunity(data);
         if (!Objects.equals(response.getCode(), "200.000")){
             throw new RuntimeException(response.getMessage());
         }
     }
 
-    public void exitGroup(String groupId, String userId){
+    public void exitCommunity(String communityId, String userId){
         Map<String, Object> data = new HashMap<>();
-        data.put("group_id", groupId);
+        data.put("community_id", communityId);
         data.put("user_id", userId);
 
-        JsonResponse response = groupServiceClient.exitGroup(data);
+        JsonResponse response = communityServiceClient.exitCommunity(data);
         if (!Objects.equals(response.getCode(), "200.000")){
             throw new RuntimeException(response.getMessage());
         }
     }
 
-    public void addUserToGroupAdmins(String groupId, String userId) {
+    public void addUserToCommunityAdmins(String communityId, String userId) {
         Map<String, Object> data = new HashMap<>();
-        data.put("group_id", groupId);
+        data.put("community_id", communityId);
         data.put("user_id", userId);
 
-        JsonResponse response = groupServiceClient.addUserToGroupAdmins(data);
+        JsonResponse response = communityServiceClient.addUserToCommunityAdmins(data);
         if (!Objects.equals(response.getCode(), "200.000")){
             throw new RuntimeException(response.getMessage());
         }
     }
 
-    public void removeUserFromGroupAdmins(String groupId, String userId) {
+    public void removeUserFromCommunityAdmins(String communityId, String userId) {
         Map<String, Object> data = new HashMap<>();
-        data.put("group_id", groupId);
+        data.put("community_id", communityId);
         data.put("user_id", userId);
 
-        JsonResponse response = groupServiceClient.removeUserFromGroupAdmins(data);
+        JsonResponse response = communityServiceClient.removeUserFromCommunityAdmins(data);
         if (!Objects.equals(response.getCode(), "200.000")){
             throw new RuntimeException(response.getMessage());
         }
     }
 
-    public void updateGroupRole(String groupId, String userId, String role) {
+    public void updateCommunityRole(String communityId, String userId, String role) {
         Map<String, Object> data = new HashMap<>();
-        data.put("group_id", groupId);
+        data.put("community_id", communityId);
         data.put("user_id", userId);
         data.put("role", role);
 
-        JsonResponse response = groupServiceClient.updateGroupRole(data);
+        JsonResponse response = communityServiceClient.updateCommunityRole(data);
         if (!Objects.equals(response.getCode(), "200.000")){
             throw new RuntimeException(response.getMessage());
         }
     }
 
-    public Object getGroupMembers(String groupId) {
+    public Object getCommunityMembers(String communityId) {
         Map<String, Object> data = new HashMap<>();
-        data.put("group_id", groupId);
+        data.put("community_id", communityId);
 
-        JsonResponse response = groupServiceClient.getGroupMembers(data);
+        JsonResponse response = communityServiceClient.getCommunityMembers(data);
         if (!Objects.equals(response.getCode(), "200.000")){
             throw new RuntimeException(response.getMessage());
         }

@@ -11,6 +11,6 @@ import java.math.BigDecimal;
 public class ReserveAmount {
 	@NonNull
 	private BigDecimal amount;
-	private String groupId;
+	private String communityId;
 	private String phoneNumber;
 }

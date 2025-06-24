@@ -12,9 +12,9 @@ public class CreateContributionRequest {
     @NotBlank
     private String name;
 
-    private String groupId;
+    private String communityId;
 
-    private String groupName;
+    private String communityName;
 
     @NotNull
     @DecimalMin("0.00")

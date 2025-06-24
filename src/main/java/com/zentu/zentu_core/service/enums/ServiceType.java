@@ -43,13 +43,13 @@ public enum ServiceType {
     TRUCK_HIRE("Truck Hire"),
     MOTORBIKE_DELIVERY("Motorbike Delivery"),
 
-    // Finance & Group Support
+    // Finance & Community Support
     LOAN_PROVIDER("Loan Provider"),
     SAVINGS_PLANNER("Savings Planner"),
     TREASURY_SUPPORT("Treasury Support"),
     CONTRIBUTION_AGENT("Contribution Agent"),
 
-    // Group Activities
+    // Community Activities
     TEAM_BUILDING("Team Building"),
     FITNESS_TRAINER("Fitness Trainer"),
     MOTIVATIONAL_SPEAKER("Motivational Speaker"),

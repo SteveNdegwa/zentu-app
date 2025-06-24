@@ -25,7 +25,7 @@ public class Contribution extends BaseEntity {
     private String alias;
 
     @Column(nullable = false)
-    private String groupId;
+    private String communityId;
 
     @Column(nullable = false)
     private String creatorId;

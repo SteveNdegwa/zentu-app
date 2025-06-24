@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Positive;
 @Data
 public class WalletRequest {
 
-	@NotNull(message = "Group alias must not be null")
+	@NotNull(message = "Community alias must not be null")
 	private String alias;
 
 	@NotNull(message = "Account Type must not be null")

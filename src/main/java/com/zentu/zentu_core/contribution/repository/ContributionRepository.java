@@ -13,13 +13,13 @@ import java.util.UUID;
 public interface ContributionRepository extends JpaRepository<Contribution, UUID> {
     Optional<Contribution> findByIdAndState(UUID id, State state);
 
-    List<Contribution> findAllByNameAndGroupIdAndState(String name, String groupAlias, State state);
+    List<Contribution> findAllByNameAndCommunityIdAndState(String name, String communityId, State state);
 
     Optional<Contribution> findByAliasAndState(String alias, State state);
 
     List<Contribution> findAllByCreatorIdAndState(String creatorId, State state);
 
-    List<Contribution> findAllByGroupIdAndState(String groupAlias, State state);
+    List<Contribution> findAllByCommunityIdAndState(String communityId, State state);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Contribution> findTopByOrderByAliasDesc();

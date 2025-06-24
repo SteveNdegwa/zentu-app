@@ -1,9 +1,9 @@
-package com.zentu.zentu_core.group.dto;
+package com.zentu.zentu_core.community.dto;
 
 import lombok.Data;
 
 @Data
-public class FilterGroupsRequest {
+public class FilterCommunitiesRequest {
     private String state;
     private String userId;
     private String creatorId;

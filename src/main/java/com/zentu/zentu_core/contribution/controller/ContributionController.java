@@ -63,12 +63,12 @@ public class ContributionController {
         return ApiResponse.ok("Contribution fetched successfully", Map.of("contribution", contribution));
     }
 
-    @GetMapping("/group/{groupId}")
+    @GetMapping("/communities/{communityId}")
     @ProtectedEndpoint
-    public ResponseEntity<ApiResponse> getGroupContributions(@PathVariable String groupId) {
-        List<Contribution> contributions = contributionService.fetchGroupContributions(groupId);
+    public ResponseEntity<ApiResponse> getCommunityContributions(@PathVariable String communityId) {
+        List<Contribution> contributions = contributionService.fetchCommunityContributions(communityId);
         return ApiResponse.ok(
-                "Group contributions fetched successfully", Map.of("contributions", contributions));
+                "Community contributions fetched successfully", Map.of("contributions", contributions));
     }
 
     @GetMapping("/creator")

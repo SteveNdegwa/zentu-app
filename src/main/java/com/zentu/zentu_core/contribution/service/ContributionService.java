@@ -5,8 +5,8 @@ import com.zentu.zentu_core.contribution.dto.CreateContributionRequest;
 import com.zentu.zentu_core.contribution.dto.UpdateContributionRequest;
 import com.zentu.zentu_core.contribution.entity.Contribution;
 import com.zentu.zentu_core.contribution.repository.ContributionRepository;
-import com.zentu.zentu_core.group.dto.CreateGroupRequest;
-import com.zentu.zentu_core.group.service.GroupService;
+import com.zentu.zentu_core.community.dto.CreateCommunityRequest;
+import com.zentu.zentu_core.community.service.CommunityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +21,7 @@ import java.util.UUID;
 public class ContributionService {
 
     private final ContributionRepository contributionRepository;
-    private final GroupService groupService;
+    private final CommunityService communityService;
 
     @Transactional
     private String generateNextAlias() {
@@ -45,21 +45,21 @@ public class ContributionService {
 
     @Transactional
     public UUID createContribution(CreateContributionRequest request, Map<String, Object> user){
-        if (request.getGroupId() == null || request.getGroupId().isBlank()){
-            if (request.getGroupName() == null || request.getGroupName().isBlank()){
-                throw new RuntimeException("Group ID or group name must be provided");
+        if (request.getCommunityId() == null || request.getCommunityId().isBlank()){
+            if (request.getCommunityName() == null || request.getCommunityName().isBlank()){
+                throw new RuntimeException("Community ID or community name must be provided");
             }
-            CreateGroupRequest createGroupRequest = new CreateGroupRequest();
-            createGroupRequest.setName(request.getName().trim());
-            Map<String, Object> response = groupService.createGroup(createGroupRequest, user);
-            request.setGroupId(response.get("id").toString());
+            CreateCommunityRequest createCommunityRequest = new CreateCommunityRequest();
+            createCommunityRequest.setName(request.getName().trim());
+            Map<String, Object> response = communityService.createCommunity(createCommunityRequest, user);
+            request.setCommunityId(response.get("id").toString());
         }
         Contribution contribution = contributionRepository.save(
                 Contribution.builder()
                         .name(request.getName())
                         .amount(request.getAmount())
                         .alias(generateNextAlias())
-                        .groupId(request.getGroupId())
+                        .communityId(request.getCommunityId())
                         .creatorId(user.get("id").toString())
                         .build()
         );
@@ -102,8 +102,8 @@ public class ContributionService {
     }
 
     @Transactional(readOnly = true)
-    public List<Contribution> fetchGroupContributions(String groupId) {
-        return contributionRepository.findAllByGroupIdAndState(groupId, State.ACTIVE);
+    public List<Contribution> fetchCommunityContributions(String communityId) {
+        return contributionRepository.findAllByCommunityIdAndState(communityId, State.ACTIVE);
     }
 
     @Transactional(readOnly = true)

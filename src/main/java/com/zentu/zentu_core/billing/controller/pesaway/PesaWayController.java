@@ -26,15 +26,15 @@ public class PesaWayController {
         return ResponseEntity.ok(pesaWayApiClient.getAccountBalance());
     }
 
-    @PostMapping("/group-topup")
-    public ResponseEntity<JsonNode> topupGroupAccount(@Valid @RequestBody PesawayTopupRequest request) {
+    @PostMapping("/community-topup")
+    public ResponseEntity<JsonNode> topupCommunityAccount(@Valid @RequestBody PesawayTopupRequest request) {
         double amount = request.getAmount();
         String receipt = new TransactionRefGenerator().generate();
         String phoneNumber = request.getPhoneNumber();
         String channel = request.getChannel();
         String reason = request.getReason();
         String alias = request.getAlias();
-        AccountType accountType = AccountType.GROUP;
+        AccountType accountType = AccountType.COMMUNITY;
         return ResponseEntity.ok(pesaWayApiClient.receiveC2BPayment(receipt, amount, phoneNumber, channel, alias, reason, accountType));
     }
 

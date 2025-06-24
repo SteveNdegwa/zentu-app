@@ -1,4 +1,4 @@
-package com.zentu.zentu_core.group.dto;
+package com.zentu.zentu_core.community.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -6,7 +6,7 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateGroupRequest {
+public class UpdateCommunityRequest {
     @NotBlank
     private String name;
 

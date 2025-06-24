@@ -23,7 +23,7 @@ public class MpesaTransactionLog extends BaseEntity {
 	private String checkoutRequestId;
 	
 	@Column(name = "alias")
-	private String groupAlias;
+	private String communityAlias;
 	
 	@Column(name = "source_key")
 	private String sourceKey;
