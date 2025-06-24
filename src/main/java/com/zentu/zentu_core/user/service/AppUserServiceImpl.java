@@ -85,6 +85,16 @@ public class AppUserServiceImpl implements AppUserService {
 		return new ResponseProvider(data).success();
 	}
 	
+	public ResponseEntity<?> matchContact(MatchContactDTO request) {
+		Map<String, Object> contactData = new HashMap<>();
+		if (request.getPhoneNumbers() != null) contactData.put("phone_numbers", request.getPhoneNumbers());
+		Map<String, Object> response = userServiceSync.sync("match-contacts", contactData);
+		Map<String, Object> data = new HashMap<>();
+		data.put("code", response.get("code"));
+		data.put("message", response.get("message"));
+		return new ResponseProvider(data).success();
+	}
+	
 	public ResponseEntity<?> retrieveProfile(RetrieveProfileRequest request) {
 		Map<String, Object> loginData = new HashMap<>();
 		if (request.getUser() != null) loginData.put("home", request.getUser());
