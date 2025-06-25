@@ -91,7 +91,6 @@ public class CommunityService {
         Map<String, Object> data = new HashMap<>();
         data.put("user_id", user.get("id"));
         data.put("app", "ZENTU_APP");
-
         JsonResponse response = communityServiceClient.filterCommunities(data);
         if (!Objects.equals(response.getCode(), "200.000")){
             throw new RuntimeException(response.getMessage());
