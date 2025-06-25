@@ -90,7 +90,7 @@ public class CommunityService {
     public Object getUserCommunities(Map<String, Object> user){
         Map<String, Object> data = new HashMap<>();
         data.put("user_id", user.get("id"));
-        data.put("app", "zentu");
+        data.put("app", "ZENTU_APP");
 
         JsonResponse response = communityServiceClient.filterCommunities(data);
         if (!Objects.equals(response.getCode(), "200.000")){
