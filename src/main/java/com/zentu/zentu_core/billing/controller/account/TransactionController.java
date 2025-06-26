@@ -1,4 +1,5 @@
 package com.zentu.zentu_core.billing.controller.account;
+import com.zentu.zentu_core.base.enums.State;
 import com.zentu.zentu_core.billing.dto.WalletRequest;
 import com.zentu.zentu_core.billing.repository.TransactionRepository;
 import com.zentu.zentu_core.billing.service.account.AccountService;
@@ -51,7 +52,7 @@ public class TransactionController {
     @PostMapping("/topup")
     public ResponseEntity<?> topUp(@Valid @RequestBody WalletRequest request) {
         try {
-            return accountService.topUp(request.getReceiptNumber(), request.getAlias(),  request.getAmount(), request.getAccountType());
+            return accountService.topUp(request.getReceiptNumber(), request.getAlias(),  request.getAmount(), request.getAccountType(), State.COMPLETED);
 
         } catch (Exception e) {
             return new ResponseProvider("500.001", "Failed to topup Account").exception();

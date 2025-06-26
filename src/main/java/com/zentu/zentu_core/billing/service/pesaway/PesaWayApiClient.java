@@ -5,10 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zentu.zentu_core.base.enums.State;
 import com.zentu.zentu_core.billing.entity.Account;
 import com.zentu.zentu_core.billing.entity.PesawayTransactionLog;
+import com.zentu.zentu_core.billing.entity.Transaction;
 import com.zentu.zentu_core.billing.enums.AccountType;
 import com.zentu.zentu_core.billing.enums.EntryCategory;
 import com.zentu.zentu_core.billing.repository.AccountRepository;
 import com.zentu.zentu_core.billing.repository.PesawayTransactionLogRepository;
+import com.zentu.zentu_core.billing.repository.TransactionRepository;
 import com.zentu.zentu_core.billing.service.account.AccountService;
 import com.zentu.zentu_core.common.db.GenericCrudService;
 import com.zentu.zentu_core.common.utils.ChargeCalculator;
@@ -30,6 +32,9 @@ import java.util.Optional;
 @Slf4j
 public class PesaWayApiClient {
 
+    private final TransactionRepository transactionRepository;
+
+
     @Autowired
     private GenericCrudService genericCrudService;
 
@@ -39,8 +44,10 @@ public class PesaWayApiClient {
     @Autowired
     private AccountRepository accountRepository;
 
+
     @Autowired
     private PesawayTransactionLogRepository pesawayTransactionLogService;
+
 
     private final String clientId;
     private final String clientSecret;
@@ -52,10 +59,11 @@ public class PesaWayApiClient {
     private final ObjectMapper objectMapper;
 
     public PesaWayApiClient(
-            @Value("${pesaway.client-id}") String clientId,
+            TransactionRepository transactionRepository, @Value("${pesaway.client-id}") String clientId,
             @Value("${pesaway.client-secret}") String clientSecret,
             @Value("${pesaway.base-url}") String baseUrl
     ) {
+        this.transactionRepository = transactionRepository;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.baseUrl = baseUrl;
@@ -143,9 +151,6 @@ public class PesaWayApiClient {
     }
 
     public JsonNode sendB2CPayment(String externalReference, double amount, String phoneNumber, String channel, String alias, String reason, AccountType accountType) {
-//        BigDecimal amountDecimal = BigDecimal.valueOf(amount);
-//        BigDecimal charge = ChargeCalculator.calculateCharge(amountDecimal);
-//        amount = amountDecimal.add(charge).doubleValue();
         Map<String, Object> payload = Map.of(
                 "ExternalReference", externalReference,
                 "Amount", amount,
@@ -169,11 +174,13 @@ public class PesaWayApiClient {
                 .state(State.COMPLETED)
                 .build();
         genericCrudService.create(transaction);
+        var resp = post("/api/v1/mobile-money/send-payment/", payload);
+        log.info("Send B2C Payment Response: {}", resp);
         return post("/api/v1/mobile-money/send-payment/", payload);
     }
 
     public JsonNode receiveC2BPayment(String externalReference, double amount, String phoneNumber, String channel, String alias,  String reason, AccountType accountType) {
-//        BigDecimal amountDecimal = BigDecimal.valueOf(amount);
+        BigDecimal amountDecimal = BigDecimal.valueOf(amount);
 //        BigDecimal charge = ChargeCalculator.calculateCharge(amountDecimal);
 //        amount = amountDecimal.add(charge).doubleValue();
         Map<String, Object> payload = Map.of(
@@ -184,6 +191,14 @@ public class PesaWayApiClient {
                 "Reason", reason,
                 "ResultsUrl", this.callbackUrl
         );
+        var processTopUp = accountService.topUp(
+                externalReference,
+                alias,
+                amountDecimal,
+                accountType,
+                State.PROCESSING
+        );
+        log.info("Process Topup Logger : {}", processTopUp);
         PesawayTransactionLog transaction = PesawayTransactionLog.builder()
                 .alias(alias)
                 .originatorReference(externalReference)
@@ -307,36 +322,32 @@ public class PesaWayApiClient {
         if (originatorReference == null || resultCode == null) {
             return response("200.200.001", "Missing callback data");
         }
-        Optional<PesawayTransactionLog> transaction = pesawayTransactionLogService.findByOriginatorReference(originatorReference);
-        if (transaction.isEmpty()) {
-            return response("200.200.001", "Transaction not found");
-        }
         try {
             String jsonResponse = objectMapper.writeValueAsString(data);
             log.info("Callback JSON: {}", jsonResponse);
         } catch (Exception e) {
             log.error("Failed to convert response to JSON: {}", e.getMessage());
         }
+        Optional<Transaction> optionalTransaction = this.transactionRepository.findByInternalReference(originatorReference);
+        if (optionalTransaction.isEmpty()) {
+            log.warn("Transaction not found for originatorReference: {}", originatorReference);
+            return response("200.001", "Transaction not found");
+        }
         if (resultCode == 0) {
             if (phone == null || amount == null) {
                 log.warn("Missing phone or amount: phone={}, amount={}", phone, amount);
                 return response("200.200.002", "Missing phone or amount");
             }
-            AccountType accountType = transaction.get().getAccountType();
-            var processTopUp = accountService.topUp(
-                    transactionReceipt,
-                    transaction.get().getAlias(),
-                    amount,
-                    accountType
-            );
-//            genericCrudService.updateFields(Transaction.class, transaction.get().getId(), Map.of(
-//                    "receipt", transactionReceipt,
-//                    "phoneNumber", phone,
-//                    "state", State.COMPLETED
-//            ));
-            return response("200.200.001", "Transaction Successful");
+            Transaction transaction = optionalTransaction.get();
+            transaction.setReceiptNumber(transactionReceipt);
+            transaction.setStatus(State.COMPLETED);
+            transactionRepository.save(transaction);
+            return response("200.001", "Transaction Successful");
         } else {
-            return response("200.200.001", resultDesc);
+            Transaction transaction = optionalTransaction.get();
+            transaction.setStatus(State.FAILED);
+            transactionRepository.save(transaction);
+            return response("200.001", resultDesc);
         }
     }
 

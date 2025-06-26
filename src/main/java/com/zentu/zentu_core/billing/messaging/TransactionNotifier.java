@@ -8,22 +8,33 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class TransactionNotifier {
-	
+
 	private final SimpMessagingTemplate messagingTemplate;
-	
+
 	public TransactionNotifier(SimpMessagingTemplate messagingTemplate) {
 		this.messagingTemplate = messagingTemplate;
 	}
-	
+
+	/**
+	 * Send a transaction to the global transactions topic.
+	 *
+	 * @param transaction the transaction to send
+	 */
 	public void send(Transaction transaction) {
-		messagingTemplate.convertAndSend("/topic/transactions", transaction);
-		log.info("🔔 Sent transaction to /topic/transactions");
+		String destination = "/topic/transactions";
+		messagingTemplate.convertAndSend(destination, transaction);
+		log.info("🔔 Sent transaction to {}", destination);
 	}
-	
+
+	/**
+	 * Send a transaction to a user-specific topic using alias.
+	 *
+	 * @param alias       the user or client alias
+	 * @param transaction the transaction to send
+	 */
 	public void sendToAlias(String alias, Transaction transaction) {
-		log.info("🔔 Sent transaction to /topic/transactions/" + alias);
-		messagingTemplate.convertAndSend("/topic/transactions/" + alias, transaction);
-		log.info("🔔 Sent transaction to /topic/transactions/" + alias);
+		String destination = "/topic/transactions/" + alias;
+		messagingTemplate.convertAndSend(destination, transaction);
+		log.info("🔔 Sent transaction to {}", destination);
 	}
 }
-

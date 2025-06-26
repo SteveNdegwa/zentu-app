@@ -4,10 +4,7 @@ import com.zentu.zentu_core.billing.entity.Account;
 import com.zentu.zentu_core.billing.entity.BalanceLog;
 import com.zentu.zentu_core.billing.entity.BalanceLogEntry;
 import com.zentu.zentu_core.billing.entity.Transaction;
-import com.zentu.zentu_core.billing.enums.AccountType;
-import com.zentu.zentu_core.billing.enums.EntryCategory;
-import com.zentu.zentu_core.billing.enums.AccountFieldType;
-import com.zentu.zentu_core.billing.enums.BalanceEntryType;
+import com.zentu.zentu_core.billing.enums.*;
 import com.zentu.zentu_core.billing.messaging.TransactionNotifier;
 import com.zentu.zentu_core.billing.repository.AccountRepository;
 import com.zentu.zentu_core.common.utils.ResponseProvider;
@@ -29,14 +26,16 @@ public class AccountServiceImpl implements AccountService {
 
     private final GenericCrudService genericCrudService;
     private final AccountRepository accountService;
+    private final TransactionNotifier transactionNotifier;
+
 
     @Override
     @Transactional
-    public ResponseEntity<?> topUp(String receipt, String alias,  BigDecimal amount, AccountType accountType) {
+    public ResponseEntity<?> topUp(String receipt, String alias, BigDecimal amount, AccountType accountType, State status) {
         try {
             log.info("TopUp request received for phone number: {} with amount: {}", alias, amount);
             Account account = accountService.findByAlias(alias).orElseThrow(() -> new RuntimeException("Account not found"));
-            Transaction transaction = Transaction.createCreditTransaction(accountType, alias, amount, receipt, account.getAvailable().add(amount));
+            Transaction transaction = Transaction.createCreditTransaction(accountType, alias, amount, receipt, account.getAvailable().add(amount), status);
             transaction.save();
             
             log.info("TOP-UP Transaction updated with ID: {}", transaction.getId());
@@ -53,6 +52,7 @@ public class AccountServiceImpl implements AccountService {
             account.addAvailableAmount(amount);
             saveBalanceLog(receipt, transaction, amount, account.getCurrent(), AccountFieldType.AVAILABLE, BalanceEntryType.APPROVE_ACCOUNT_DEPOSIT, EntryCategory.CREDIT);
             log.info("Account created with ID: ");
+            transactionNotifier.sendToAlias(transaction.getAlias(), transaction);
             Map<String, Object> data = new HashMap<>();
             data.put("code", "200.000.000");
             data.put("data", account.getAvailable());
