@@ -8,5 +8,5 @@ import java.math.BigDecimal;
 public interface AccountService {
     ResponseEntity<?> topUp(String receiptNumber, String alias,  BigDecimal amount, AccountType accountType);
     ResponseEntity<?> withdraw(String receiptNumber, String alias, BigDecimal amount, AccountType accountType);
-    ResponseEntity<?> approveWithdrawal(String receiptNumber, String alias, BigDecimal amount, AccountType accountType);
+    ResponseEntity<?> accountTransfer(String receiptNumber, String alias, BigDecimal amount, AccountType accountType);
 }

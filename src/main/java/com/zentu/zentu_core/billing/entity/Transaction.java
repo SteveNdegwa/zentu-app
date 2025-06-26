@@ -4,6 +4,7 @@ import com.zentu.zentu_core.base.enums.State;
 import com.zentu.zentu_core.billing.enums.AccountType;
 import com.zentu.zentu_core.billing.enums.EntryCategory;
 import com.zentu.zentu_core.billing.repository.TransactionRepository;
+import com.zentu.zentu_core.common.utils.ChargeCalculator;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -37,6 +38,9 @@ public class Transaction extends BaseEntity {
 	@Column(name = "balance", nullable = false)
 	private BigDecimal balance;
 	
+	@Column(name = "charge", nullable = false)
+	private BigDecimal charge = BigDecimal.ZERO;
+	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "transaction_type", nullable = false)
 	@NotNull(message = "Transaction type is required")
@@ -61,6 +65,8 @@ public class Transaction extends BaseEntity {
 	
 	public static Transaction createCreditTransaction(AccountType accountType, String alias, BigDecimal amount, String receipt, BigDecimal balance) {
 		Transaction tx = new Transaction();
+		BigDecimal charge = ChargeCalculator.calculateCharge(amount);
+		tx.setCharge(charge);
 		tx.setAlias(alias);
 		tx.setAccountType(accountType);
 		tx.setAmount(amount);
@@ -74,6 +80,8 @@ public class Transaction extends BaseEntity {
 	
 	public static Transaction createDebitTransaction(AccountType accountType, String alias, BigDecimal amount, String receipt, BigDecimal balance) {
 		Transaction tx = new Transaction();
+		BigDecimal charge = ChargeCalculator.calculateCharge(amount);
+		tx.setCharge(charge);
 		tx.setAlias(alias);
 		tx.setAccountType(accountType);
 		tx.setAmount(amount);
