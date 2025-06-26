@@ -1,5 +1,6 @@
 package com.zentu.zentu_core.billing.controller.account;
 import com.zentu.zentu_core.billing.dto.WalletRequest;
+import com.zentu.zentu_core.billing.repository.TransactionRepository;
 import com.zentu.zentu_core.billing.service.account.AccountService;
 import com.zentu.zentu_core.billing.service.transactions.TransactionExportService;
 import com.zentu.zentu_core.common.utils.ResponseProvider;
@@ -10,17 +11,18 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.zentu.zentu_core.billing.entity.Transaction;
+import java.util.List;
 
 @RestController
 @RequestMapping("/account")
 @RequiredArgsConstructor
 public class TransactionController {
     private final AccountService accountService;
-    
     private final TransactionExportService transactionExportService;
+    private final TransactionRepository transactionRepository;
     
-    @GetMapping("/export")
+    @GetMapping("/export/excel")
     public ResponseEntity<InputStreamResource> exportTransactions(@RequestParam String alias) {
         InputStreamResource file = new InputStreamResource(transactionExportService.exportTransactionsByAlias(alias));
         
@@ -28,6 +30,22 @@ public class TransactionController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=transactions_" + alias + ".xlsx")
                 .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                 .body(file);
+    }
+    
+    @GetMapping("/export/pdf")
+    public ResponseEntity<InputStreamResource> exportTransactionsAsPdf(@RequestParam String alias) {
+        InputStreamResource file = new InputStreamResource(transactionExportService.exportTransactionsToPdf(alias));
+        
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=transactions_" + alias + ".pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(file);
+    }
+    
+    @GetMapping("/transactions")
+    public ResponseEntity<List<Transaction>> getTransactionsByAlias(@RequestParam String alias) {
+        List<Transaction> transactions = transactionRepository.findByAlias(alias);
+        return ResponseEntity.ok(transactions);
     }
     
     @PostMapping("/topup")
