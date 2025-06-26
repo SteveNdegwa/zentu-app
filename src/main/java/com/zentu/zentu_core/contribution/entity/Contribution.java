@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "contributions")
@@ -29,6 +30,9 @@ public class Contribution extends BaseEntity {
 
     @Column(nullable = false)
     private String creatorId;
+
+    @Column(nullable = false)
+    private LocalDate deadline;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

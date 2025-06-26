@@ -62,6 +62,7 @@ public class ContributionService {
                 Contribution.builder()
                         .name(request.getName())
                         .amount(request.getAmount())
+                        .deadline(request.getDeadline())
                         .alias(generateNextAlias())
                         .communityId(request.getCommunityId())
                         .creatorId(user.get("id").toString())
