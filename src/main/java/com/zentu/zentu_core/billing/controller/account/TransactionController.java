@@ -42,7 +42,7 @@ public class TransactionController {
                 .body(file);
     }
     
-    @GetMapping
+    @GetMapping("/transactions")
     public ResponseEntity<List<Transaction>> getTransactionsByAlias(@RequestParam String alias) {
         List<Transaction> transactions = transactionRepository.findByAlias(alias);
         return ResponseEntity.ok(transactions);
