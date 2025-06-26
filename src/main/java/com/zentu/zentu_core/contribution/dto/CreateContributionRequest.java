@@ -23,6 +23,7 @@ public class CreateContributionRequest {
     @DecimalMin("0.00")
     private BigDecimal amount;
 
+    @NotNull
     private LocalDate deadline;
 
     private List<String> phoneNumbers; // invite to join group

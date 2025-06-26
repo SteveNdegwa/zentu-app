@@ -6,11 +6,15 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Data
 public class UpdateContributionRequest {
     @NotBlank
     private String name;
+
+    @NotNull
+    private LocalDate deadline;
 
     @NotNull
     @DecimalMin("0.00")

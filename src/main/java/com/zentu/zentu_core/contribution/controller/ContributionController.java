@@ -1,7 +1,5 @@
 package com.zentu.zentu_core.contribution.controller;
 
-import com.zentu.zentu_core.audit.annotation.Auditable;
-import com.zentu.zentu_core.audit.enums.AuditAction;
 import com.zentu.zentu_core.auth.annotation.ProtectedEndpoint;
 import com.zentu.zentu_core.base.dto.ApiResponse;
 import com.zentu.zentu_core.contribution.dto.CreateContributionRequest;
@@ -27,7 +25,6 @@ public class ContributionController {
 
     @PostMapping
     @ProtectedEndpoint
-    @Auditable(action = AuditAction.CREATE_CONTRIBUTION)
     public ResponseEntity<ApiResponse> createContribution(
             @RequestBody @Valid CreateContributionRequest request,
             @AuthenticationPrincipal Map<String, Object> user) {
@@ -37,7 +34,6 @@ public class ContributionController {
 
     @PutMapping("/{id}")
     @ProtectedEndpoint
-    @Auditable(action = AuditAction.UPDATE_CONTRIBUTION)
     public ResponseEntity<ApiResponse> updateContribution(
             @PathVariable("id") UUID contributionId,
             @RequestBody @Valid UpdateContributionRequest request,
@@ -48,7 +44,6 @@ public class ContributionController {
 
     @DeleteMapping("/{id}")
     @ProtectedEndpoint
-    @Auditable(action = AuditAction.DELETE_CONTRIBUTION)
     public ResponseEntity<ApiResponse> deleteContribution(
             @PathVariable("id") UUID contributionId,
             @AuthenticationPrincipal Map<String, Object> user) {

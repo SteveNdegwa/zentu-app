@@ -1,5 +1,7 @@
 package com.zentu.zentu_core.contribution.service;
 
+import com.zentu.zentu_core.audit.annotation.Auditable;
+import com.zentu.zentu_core.audit.enums.AuditAction;
 import com.zentu.zentu_core.base.enums.State;
 import com.zentu.zentu_core.contribution.dto.CreateContributionRequest;
 import com.zentu.zentu_core.contribution.dto.UpdateContributionRequest;
@@ -46,6 +48,7 @@ public class ContributionService {
     }
 
     @Transactional
+    @Auditable(action = AuditAction.CREATE_CONTRIBUTION)
     public UUID createContribution(CreateContributionRequest request, Map<String, Object> user){
         if (request.getCommunityId() == null ||
                 request.getCommunityId().isBlank() ||
@@ -83,6 +86,7 @@ public class ContributionService {
     }
 
     @Transactional
+    @Auditable(action = AuditAction.UPDATE_CONTRIBUTION)
     public void updateContribution(UUID contributionId, UpdateContributionRequest request, Map<String, Object> user) {
         Contribution contribution = contributionRepository.findByIdAndState(contributionId, State.ACTIVE)
                 .orElseThrow(() -> new RuntimeException("Contribution not found"));
@@ -98,6 +102,7 @@ public class ContributionService {
     }
 
     @Transactional
+    @Auditable(action = AuditAction.DELETE_CONTRIBUTION)
     public void deleteContribution(UUID contributionId, Map<String, Object> user) {
         Contribution contribution = contributionRepository.findByIdAndState(contributionId, State.ACTIVE)
                 .orElseThrow(() -> new RuntimeException("Contribution not found"));
