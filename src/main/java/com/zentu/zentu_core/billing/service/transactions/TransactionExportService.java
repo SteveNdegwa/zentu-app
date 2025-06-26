@@ -2,8 +2,15 @@ package com.zentu.zentu_core.billing.service.transactions;
 
 import com.zentu.zentu_core.billing.entity.Transaction;
 import com.zentu.zentu_core.billing.repository.TransactionRepository;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -55,7 +62,74 @@ public class TransactionExportService {
 		}
 	}
 	
+	public ByteArrayInputStream exportTransactionsToPdf(String alias) {
+		List<Transaction> transactions = transactionRepository.findByAlias(alias);
+		
+		try (PDDocument document = new PDDocument(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+			PDRectangle rotated = new PDRectangle(PDRectangle.LETTER.getHeight(), PDRectangle.LETTER.getWidth());
+			PDPage page = new PDPage(rotated);
+			document.addPage(page);
+			
+			PDFont font = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+			PDPageContentStream contentStream = new PDPageContentStream(document, page);
+			
+			float margin = 40;
+			float yStart = rotated.getHeight() - margin;
+			float xStart = margin;
+			float leading = 14f;
+			
+			contentStream.beginText();
+			contentStream.setFont(font, 16);
+			contentStream.newLineAtOffset(xStart, yStart);
+			contentStream.showText("Transactions for Alias: " + alias);
+			contentStream.endText();
+			
+			float yPos = yStart - 30;
+			contentStream.setFont(font, 10);
+			contentStream.beginText();
+			contentStream.newLineAtOffset(xStart, yPos);
+			
+			String[] headers = {"Receipt", "Reference", "Amount", "Charge", "Balance", "Type", "Status", "Created"};
+			for (String header : headers) {
+				contentStream.showText(padRight(header, 20));
+			}
+			contentStream.newLineAtOffset(0, -leading);
+			
+			for (Transaction tx : transactions) {
+				String[] row = {
+						tx.getReceiptNumber(),
+						tx.getInternalReference(),
+						formatBigDecimal(tx.getAmount()),
+						formatBigDecimal(tx.getCharge()),
+						formatBigDecimal(tx.getBalance()),
+						tx.getTransactionType().name(),
+						tx.getStatus().name(),
+						tx.getCreatedAt() != null ? tx.getCreatedAt().toString() : ""
+				};
+				
+				for (String col : row) {
+					contentStream.showText(padRight(col, 20));
+				}
+				contentStream.newLineAtOffset(0, -leading);
+			}
+			
+			contentStream.endText();
+			contentStream.close();
+			
+			document.save(out);
+			return new ByteArrayInputStream(out.toByteArray());
+			
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to export transactions to PDF", e);
+		}
+	}
+	
 	private String formatBigDecimal(BigDecimal value) {
 		return value != null ? value.toPlainString() : "0.00";
+	}
+	
+	private String padRight(String text, int length) {
+		if (text == null) return " ".repeat(length);
+		return String.format("%-" + length + "s", text.length() > length ? text.substring(0, length - 1) + "…" : text);
 	}
 }
