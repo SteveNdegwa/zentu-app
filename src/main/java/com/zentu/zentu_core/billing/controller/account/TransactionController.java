@@ -20,13 +20,23 @@ public class TransactionController {
     
     private final TransactionExportService transactionExportService;
     
-    @GetMapping("/export")
+    @GetMapping("/export/excel")
     public ResponseEntity<InputStreamResource> exportTransactions(@RequestParam String alias) {
         InputStreamResource file = new InputStreamResource(transactionExportService.exportTransactionsByAlias(alias));
         
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=transactions_" + alias + ".xlsx")
                 .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(file);
+    }
+    
+    @GetMapping("/export/pdf")
+    public ResponseEntity<InputStreamResource> exportTransactionsAsPdf(@RequestParam String alias) {
+        InputStreamResource file = new InputStreamResource(transactionExportService.exportTransactionsToPdf(alias));
+        
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=transactions_" + alias + ".pdf")
+                .contentType(MediaType.APPLICATION_PDF)
                 .body(file);
     }
     
