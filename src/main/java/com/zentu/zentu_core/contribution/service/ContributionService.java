@@ -124,5 +124,4 @@ public class ContributionService {
     public List<Contribution> fetchContributionsByCreator(String creatorId) {
         return contributionRepository.findAllByCreatorIdAndState(creatorId, State.ACTIVE);
     }
-
 }
