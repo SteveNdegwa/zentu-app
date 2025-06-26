@@ -6,12 +6,14 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class CreateContributionRequest {
     @NotBlank
     private String name;
 
+    @NotBlank
     private String communityId;
 
     private String communityName;
@@ -19,4 +21,6 @@ public class CreateContributionRequest {
     @NotNull
     @DecimalMin("0.00")
     private BigDecimal amount;
+
+    private List<String> phoneNumbers; // invite to join group
 }

@@ -48,4 +48,7 @@ public interface CommunityServiceClient {
 
     @PostMapping("/members/get/")
     JsonResponse getCommunityMembers(@RequestBody Map<String, Object> data);
+
+    @PostMapping("/invite/")
+    JsonResponse inviteToCommunity(@RequestBody Map<String, Object> data);
 }

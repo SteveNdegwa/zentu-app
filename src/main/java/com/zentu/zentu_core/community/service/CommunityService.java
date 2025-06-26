@@ -182,4 +182,15 @@ public class CommunityService {
 
         return response.getExtraFields().get("members");
     }
+
+    public void inviteToCommunity(String communityId, List<String> phoneNumbers){
+        Map<String, Object> data = new HashMap<>();
+        data.put("community_id", communityId);
+        data.put("phoneNumbers", phoneNumbers);
+
+        JsonResponse response = communityServiceClient.inviteToCommunity(data);
+        if (!Objects.equals(response.getCode(), "200.000")){
+            throw new RuntimeException(response.getMessage());
+        }
+    }
 }

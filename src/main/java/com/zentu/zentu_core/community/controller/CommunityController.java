@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -122,5 +123,14 @@ public class CommunityController {
     public ResponseEntity<ApiResponse> getCommunityMembers(@PathVariable String communityId) {
         Object members = communityService.getCommunityMembers(communityId);
         return ApiResponse.ok("Community members fetched successfully", Map.of("members", members));
+    }
+
+    @PostMapping("/{id}/invite")
+    @ProtectedEndpoint
+    public ResponseEntity<ApiResponse> inviteToCommunity(
+            @PathVariable String communityId,
+            @RequestBody List<String> phoneNumbers){
+        communityService.inviteToCommunity(communityId, phoneNumbers);
+        return ApiResponse.ok("Invite to community successful", null);
     }
 }

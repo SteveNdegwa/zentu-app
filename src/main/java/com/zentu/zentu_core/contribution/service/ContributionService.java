@@ -8,6 +8,7 @@ import com.zentu.zentu_core.contribution.repository.ContributionRepository;
 import com.zentu.zentu_core.community.dto.CreateCommunityRequest;
 import com.zentu.zentu_core.community.service.CommunityService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ContributionService {
 
     private final ContributionRepository contributionRepository;
@@ -45,7 +47,9 @@ public class ContributionService {
 
     @Transactional
     public UUID createContribution(CreateContributionRequest request, Map<String, Object> user){
-        if (request.getCommunityId() == null || request.getCommunityId().isBlank()){
+        if (request.getCommunityId() == null ||
+                request.getCommunityId().isBlank() ||
+                "1".equals(request.getCommunityId())){
             if (request.getCommunityName() == null || request.getCommunityName().isBlank()){
                 throw new RuntimeException("Community ID or community name must be provided");
             }
@@ -63,6 +67,16 @@ public class ContributionService {
                         .creatorId(user.get("id").toString())
                         .build()
         );
+
+        if (!request.getPhoneNumbers().isEmpty()){
+            try{
+                communityService.inviteToCommunity(request.getCommunityId(), request.getPhoneNumbers());
+            } catch (Exception e) {
+                // Fail silently
+                log.error("Invite to community failed for communityId={}, phones={}", request.getCommunityId(),
+                        request.getPhoneNumbers(), e);
+            }
+        }
 
         return contribution.getId();
     }
