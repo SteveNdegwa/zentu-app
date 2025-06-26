@@ -143,9 +143,9 @@ public class PesaWayApiClient {
     }
 
     public JsonNode sendB2CPayment(String externalReference, double amount, String phoneNumber, String channel, String alias, String reason, AccountType accountType) {
-        BigDecimal amountDecimal = BigDecimal.valueOf(amount);
-        BigDecimal charge = ChargeCalculator.calculateCharge(amountDecimal);
-        amount = amountDecimal.add(charge).doubleValue();
+//        BigDecimal amountDecimal = BigDecimal.valueOf(amount);
+//        BigDecimal charge = ChargeCalculator.calculateCharge(amountDecimal);
+//        amount = amountDecimal.add(charge).doubleValue();
         Map<String, Object> payload = Map.of(
                 "ExternalReference", externalReference,
                 "Amount", amount,
@@ -173,9 +173,9 @@ public class PesaWayApiClient {
     }
 
     public JsonNode receiveC2BPayment(String externalReference, double amount, String phoneNumber, String channel, String alias,  String reason, AccountType accountType) {
-        BigDecimal amountDecimal = BigDecimal.valueOf(amount);
-        BigDecimal charge = ChargeCalculator.calculateCharge(amountDecimal);
-        amount = amountDecimal.add(charge).doubleValue();
+//        BigDecimal amountDecimal = BigDecimal.valueOf(amount);
+//        BigDecimal charge = ChargeCalculator.calculateCharge(amountDecimal);
+//        amount = amountDecimal.add(charge).doubleValue();
         Map<String, Object> payload = Map.of(
                 "ExternalReference", externalReference,
                 "Amount", amount,
