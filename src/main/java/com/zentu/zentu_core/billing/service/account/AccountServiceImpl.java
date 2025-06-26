@@ -29,7 +29,6 @@ public class AccountServiceImpl implements AccountService {
 
     private final GenericCrudService genericCrudService;
     private final AccountRepository accountService;
-    private final TransactionNotifier transactionNotifier;
 
     @Override
     @Transactional
@@ -54,7 +53,6 @@ public class AccountServiceImpl implements AccountService {
             account.addAvailableAmount(amount);
             saveBalanceLog(receipt, transaction, amount, account.getCurrent(), AccountFieldType.AVAILABLE, BalanceEntryType.APPROVE_ACCOUNT_DEPOSIT, EntryCategory.CREDIT);
             log.info("Account created with ID: ");
-            transactionNotifier.sendToAlias(transaction.getAlias(), transaction);
             Map<String, Object> data = new HashMap<>();
             data.put("code", "200.000.000");
             data.put("data", account.getAvailable());
@@ -89,7 +87,7 @@ public class AccountServiceImpl implements AccountService {
             account.subtractCurrentAmount(amount);
             saveBalanceLog(receipt, transaction, amount, newAvailableBalance, AccountFieldType.CURRENT, BalanceEntryType.APPROVE_ACCOUNT_WITHDRAW, EntryCategory.DEBIT);
             log.info("Account updated with ID");
-            transactionNotifier.sendToAlias(transaction.getAlias(), transaction);
+//            transactionNotifier.sendToAlias(transaction.getAlias(), transaction);
             Map<String, Object> data = new HashMap<>();
             data.put("code", "200.000.000");
             data.put("data", newAvailableBalance);

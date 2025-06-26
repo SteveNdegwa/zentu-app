@@ -3,6 +3,7 @@ import com.zentu.zentu_core.base.entity.BaseEntity;
 import com.zentu.zentu_core.base.enums.State;
 import com.zentu.zentu_core.billing.enums.AccountType;
 import com.zentu.zentu_core.billing.enums.EntryCategory;
+import com.zentu.zentu_core.billing.messaging.TransactionNotifier;
 import com.zentu.zentu_core.billing.repository.TransactionRepository;
 import com.zentu.zentu_core.common.utils.ChargeCalculator;
 import jakarta.persistence.*;
@@ -51,7 +52,7 @@ public class Transaction extends BaseEntity {
 	private State status = State.ACTIVE;
 	
 	private static TransactionRepository transactionRepository;
-	
+	private static TransactionNotifier transactionNotifier;
 	public static void setTransactionRepository(TransactionRepository repo) {
 		transactionRepository = repo;
 	}
@@ -75,6 +76,7 @@ public class Transaction extends BaseEntity {
 		tx.setReceiptNumber(receipt);
 		tx.setStatus(State.COMPLETED);
 		tx.setBalance(balance);
+		transactionNotifier.sendToAlias(tx.getAlias(), tx);
 		return tx;
 	}
 	
@@ -90,6 +92,7 @@ public class Transaction extends BaseEntity {
 		tx.setReceiptNumber(receipt);
 		tx.setStatus(State.COMPLETED);
 		tx.setBalance(balance);
+		transactionNotifier.sendToAlias(tx.getAlias(), tx);
 		return tx;
 	}
 }
