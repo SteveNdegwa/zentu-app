@@ -18,11 +18,13 @@ public class AuditLog extends BaseEntity {
 
     private String method;
 
+    @Column(columnDefinition = "TEXT")
     private String arguments;
 
     private String userId;
 
     private boolean success;
 
+    @Column(columnDefinition = "TEXT")
     private String errorMessage;
 }
