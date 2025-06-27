@@ -36,7 +36,7 @@ public class AccountServiceImpl implements AccountService {
             Transaction transaction = Transaction.createCreditTransaction(accountType, alias, amount, receipt, account.getAvailable().add(amount), status);
             transaction.save();
             Map<String, Object> data = new HashMap<>();
-            data.put("code", "200.000.000");
+            data.put("code", "200.000");
             data.put("data", account.getAvailable());
             return new ResponseProvider(data).success();
         } catch (Exception e) {
@@ -73,24 +73,40 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> withdraw(String receipt, String alias, BigDecimal amount, AccountType accountType) {
+    public ResponseEntity<?> withdraw(String receipt,  String alias, BigDecimal amount, AccountType accountType, State status) {
         try {
             log.info("Withdraw request received for phone number: {} with amount: {}", alias, amount);
             log.info("TopUp request received for phone number: {} with amount: {}", alias, amount);
             Account account = accountService.findByAlias(alias).orElseThrow(() -> new RuntimeException("Account not found"));
-            Transaction transaction = Transaction.createDebitTransaction(accountType, alias, amount, receipt, account.getAvailable().subtract(amount));
+            Transaction transaction = Transaction.createDebitTransaction(accountType, alias, amount, receipt, account.getAvailable().subtract(amount), status);
             transaction.save();
+            Map<String, Object> data = new HashMap<>();
+            data.put("code", "200.000");
+            return new ResponseProvider(data).success();
+        } catch (Exception e) {
+            log.error("Error in withdraw: {}", e.getMessage());
+            return new ResponseProvider("500.000.001", "Failed to withdraw from Account").exception();
+        }
+    }
+    
+    @Override
+    @Transactional
+    public ResponseEntity<?> approveAccountWithdraw(String receipt, Transaction transaction, String alias, BigDecimal amount, AccountType accountType, State status) {
+        try {
+            log.info("Withdraw request received for phone number: {} with amount: {}", alias, amount);
+            log.info("TopUp request received for phone number: {} with amount: {}", alias, amount);
+            Account account = accountService.findByAlias(alias).orElseThrow(() -> new RuntimeException("Account not found"));
             BigDecimal newAvailableBalance = account.getAvailable().subtract(amount);
             log.info("WITHDRAW Transaction created with ID: {}", transaction.getId());
             account.subtractAvailableAmount(amount);
             saveBalanceLog(receipt, transaction, amount, newAvailableBalance, AccountFieldType.AVAILABLE, BalanceEntryType.ACCOUNT_WITHDRAW, EntryCategory.DEBIT);
-
+            
             account.addReservedAmount(amount);
             saveBalanceLog(receipt, transaction, amount, newAvailableBalance, AccountFieldType.RESERVED, BalanceEntryType.ACCOUNT_WITHDRAW, EntryCategory.DEBIT);
-
+            
             account.subtractReservedAmount(amount);
             saveBalanceLog(receipt, transaction, amount, newAvailableBalance, AccountFieldType.RESERVED, BalanceEntryType.APPROVE_ACCOUNT_WITHDRAW, EntryCategory.DEBIT);
-
+            
             account.subtractCurrentAmount(amount);
             saveBalanceLog(receipt, transaction, amount, newAvailableBalance, AccountFieldType.CURRENT, BalanceEntryType.APPROVE_ACCOUNT_WITHDRAW, EntryCategory.DEBIT);
             log.info("Account updated with ID");
@@ -99,7 +115,7 @@ public class AccountServiceImpl implements AccountService {
             data.put("code", "200.000.000");
             data.put("data", newAvailableBalance);
             return new ResponseProvider(data).success();
-
+            
         } catch (Exception e) {
             log.error("Error in withdraw: {}", e.getMessage());
             return new ResponseProvider("500.000.001", "Failed to withdraw from Account").exception();

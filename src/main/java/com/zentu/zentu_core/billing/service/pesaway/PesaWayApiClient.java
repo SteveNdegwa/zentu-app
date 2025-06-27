@@ -165,6 +165,15 @@ public class PesaWayApiClient {
         if (available.compareTo(BigDecimal.valueOf(amount)) < 0) {
             throw new RuntimeException("Insufficient funds in account: " + alias);
         }
+        BigDecimal amountDecimal = BigDecimal.valueOf(amount);
+        var processWithdraw = accountService.withdraw(
+                externalReference,
+                alias,
+                amountDecimal,
+                accountType,
+                State.PROCESSING
+        );
+        log.info("Process Topup Logger : {}", processWithdraw);
         PesawayTransactionLog transaction = PesawayTransactionLog.builder()
                 .originatorReference(externalReference)
                 .alias(alias)
@@ -284,9 +293,10 @@ public class PesaWayApiClient {
         if (originatorReference == null || resultCode == null) {
             return response("200.200.001", "Missing callback data");
         }
-        Optional<PesawayTransactionLog> transaction = pesawayTransactionLogService.findByOriginatorReference(originatorReference);
-        if (transaction.isEmpty()) {
-            return response("200.200.001", "Transaction not found");
+        Optional<Transaction> optionalTransaction = this.transactionRepository.findByInternalReference(originatorReference);
+        if (optionalTransaction.isEmpty()) {
+            log.warn("Transaction not found for originatorReference: {}", originatorReference);
+            return response("200.001", "Transaction not found");
         }
         try {
             String jsonResponse = objectMapper.writeValueAsString(data);
@@ -296,13 +306,19 @@ public class PesaWayApiClient {
         }
         if (resultCode == 0) {
             log.info("amount Amount: {}", amount);
-            AccountType accountType = transaction.get().getAccountType();
-            var processWithdrawal = accountService.withdraw(
+            Transaction transaction = optionalTransaction.get();
+            transaction.setReceiptNumber(transactionId);
+            transaction.setStatus(State.COMPLETED);
+            transaction.save();
+            var approveTopUp = accountService.approveAccountWithdraw(
                     transactionId,
-                    transaction.get().getAlias(),
+                    transaction,
+                    transaction.getAlias(),
                     amount,
-                    accountType
+                    transaction.getAccountType(),
+                    State.COMPLETED
             );
+            log.info("Process Topup Logger : {}", approveTopUp);
             return response("200.200.000", "Transaction is being processed");
         } else {
             return response("200.200.001", resultDesc);

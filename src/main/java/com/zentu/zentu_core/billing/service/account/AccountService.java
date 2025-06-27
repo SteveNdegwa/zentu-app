@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 public interface AccountService {
     ResponseEntity<?> topUp(String receiptNumber, String alias, BigDecimal amount, AccountType accountType, State status);
     ResponseEntity<?> approveAccountTopUp(String receiptNumber, Transaction transaction, String alias, BigDecimal amount, AccountType accountType, State status);
-    ResponseEntity<?> withdraw(String receiptNumber, String alias, BigDecimal amount, AccountType accountType);
+    ResponseEntity<?> approveAccountWithdraw(String receiptNumber, Transaction transaction, String alias, BigDecimal amount, AccountType accountType, State status);
+    ResponseEntity<?> withdraw(String receiptNumber, String alias, BigDecimal amount, AccountType accountType, State status);
     ResponseEntity<?> accountTransfer(String receiptNumber, String alias, BigDecimal amount, AccountType accountType);
 }
