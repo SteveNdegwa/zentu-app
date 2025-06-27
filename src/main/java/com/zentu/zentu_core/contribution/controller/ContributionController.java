@@ -28,8 +28,8 @@ public class ContributionController {
     public ResponseEntity<ApiResponse> createContribution(
             @RequestBody @Valid CreateContributionRequest request,
             @AuthenticationPrincipal Map<String, Object> user) {
-        UUID contributionId = contributionService.createContribution(request, user);
-        return ApiResponse.created("Contribution created successfully", Map.of("id", contributionId));
+        Map<String, String> data = contributionService.createContribution(request, user);
+        return ApiResponse.created("Contribution created successfully", data);
     }
 
     @PutMapping("/{id}")

@@ -49,7 +49,7 @@ public class ContributionService {
 
     @Transactional
     @Auditable(action = AuditAction.CREATE_CONTRIBUTION)
-    public UUID createContribution(CreateContributionRequest request, Map<String, Object> user){
+    public Map<String, String> createContribution(CreateContributionRequest request, Map<String, Object> user){
         if (request.getCommunityId() == null ||
                 request.getCommunityId().isBlank() ||
                 "1".equals(request.getCommunityId())){
@@ -82,7 +82,10 @@ public class ContributionService {
             }
         }
 
-        return contribution.getId();
+        return Map.of(
+                "communityId", request.getCommunityId(),
+                "contributionId", contribution.getId().toString()
+        );
     }
 
     @Transactional
