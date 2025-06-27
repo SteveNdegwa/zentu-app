@@ -377,6 +377,10 @@ public class PesaWayApiClient {
                 );
                 log.info("Process Topup Logger : {}", approveTopUp);
                 transactionRepository.save(transaction);
+            }  else {
+                Transaction transaction = optionalTransaction.get();
+                transaction.setStatus(State.FAILED);
+                transactionRepository.save(transaction);
             }
             return response("200.001", "Transaction Successful");
         } else {
