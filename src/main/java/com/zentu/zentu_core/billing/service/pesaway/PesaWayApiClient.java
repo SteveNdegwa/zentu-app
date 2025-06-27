@@ -340,6 +340,8 @@ public class PesaWayApiClient {
             }
             Transaction transaction = optionalTransaction.get();
             transaction.setReceiptNumber(transactionReceipt);
+            transaction.setStatus(State.COMPLETED);
+            transaction.save();
             var approveTopUp = accountService.approveAccountTopUp(
                     transactionReceipt,
                     transaction,
