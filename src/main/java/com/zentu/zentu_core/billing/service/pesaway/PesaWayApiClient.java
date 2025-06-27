@@ -321,6 +321,10 @@ public class PesaWayApiClient {
                         State.COMPLETED
                 );
                 log.info("Process Topup Logger : {}", approveTopUp);
+            } else {
+                Transaction transaction = optionalTransaction.get();
+                transaction.setStatus(State.FAILED);
+                transactionRepository.save(transaction);
             }
             return response("200.200.000", "Transaction is being processed");
         } else {
