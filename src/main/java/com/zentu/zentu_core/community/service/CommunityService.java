@@ -192,4 +192,5 @@ public class CommunityService {
             throw new RuntimeException(response.getMessage());
         }
     }
+
 }
