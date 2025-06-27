@@ -40,11 +40,11 @@ public class CommunityService {
         String communityId = extraFields.get("community_id").toString();
         String alias = extraFields.get("alias").toString();
 
-        Account account = new Account();
-        account.setAccountNumber(accountNumberGenerator.generate());
-        account.setAccountType(AccountType.COMMUNITY);
-        account.setAlias(alias);
-        accountRepository.save(account);
+//        Account account = new Account();
+//        account.setAccountNumber(accountNumberGenerator.generate());
+//        account.setAccountType(AccountType.COMMUNITY);
+//        account.setAlias(alias);
+//        accountRepository.save(account);
 
         return Map.of("id", communityId, "alias", alias);
     }
