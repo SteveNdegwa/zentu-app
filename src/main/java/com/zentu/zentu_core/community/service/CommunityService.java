@@ -37,7 +37,7 @@ public class CommunityService {
         }
 
         Map<String, Object> extraFields = response.getExtraFields();
-        String communityId = extraFields.get("communityId").toString();
+        String communityId = extraFields.get("community_id").toString();
         String alias = extraFields.get("alias").toString();
 
         Account account = new Account();
