@@ -97,8 +97,6 @@ public class PesaWayController {
         }
     }
     
-    
-    
 
     @PostMapping("/c2b/callback")
     public ResponseEntity<?> handleCallback(@RequestBody Map<String, Object> payload) {

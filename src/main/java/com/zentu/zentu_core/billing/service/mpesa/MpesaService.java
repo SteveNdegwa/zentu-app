@@ -101,7 +101,7 @@ public class MpesaService {
 			log.info("Phone here: {}", phone);
 			log.info("Amount here: {}", amount);
 			AccountType accountType = AccountType.USER;
-			var processTopUp = accountService.topUp(receipt, communityAlias, amount, accountType);
+			var processTopUp = accountService.topUp(receipt, communityAlias, amount, accountType, State.PROCESSING);
 			log.info("processTopUp here: {}", processTopUp);
 			genericCrudService.updateFields(MpesaTransactionLog.class, transaction.getId(), Map.of(
 					"receipt", receipt,
@@ -121,7 +121,7 @@ public class MpesaService {
 		double amount = Double.parseDouble(data.get("TransAmount").toString());
 		String phoneNumber = data.get("MSISDN").toString();
 		AccountType accountType = AccountType.COMMUNITY;
-		accountService.topUp(transId, communityAlias, BigDecimal.valueOf(amount), accountType);
+		accountService.topUp(transId, communityAlias, BigDecimal.valueOf(amount), accountType, State.COMPLETED);
 		MpesaTransactionLog transaction = MpesaTransactionLog.builder()
 				.communityAlias(communityAlias)
 				.phoneNumber(phoneNumber)
