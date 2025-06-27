@@ -37,27 +37,37 @@ public class AccountServiceImpl implements AccountService {
             Account account = accountService.findByAlias(alias).orElseThrow(() -> new RuntimeException("Account not found"));
             Transaction transaction = Transaction.createCreditTransaction(accountType, alias, amount, receipt, account.getAvailable().add(amount), status);
             transaction.save();
-            
-            log.info("TOP-UP Transaction updated with ID: {}", transaction.getId());
-
-            account.addUnclearedAmount(amount);
-            saveBalanceLog(receipt, transaction, amount, account.getCurrent().add(amount), AccountFieldType.UNCLEARED, BalanceEntryType.ACCOUNT_DEPOSIT, EntryCategory.CREDIT);
-
-            account.addCurrentAmount(amount);
-            saveBalanceLog(receipt, transaction, amount, account.getCurrent(), AccountFieldType.CURRENT, BalanceEntryType.ACCOUNT_DEPOSIT, EntryCategory.CREDIT);
-
-            account.subtractUnclearedAmount(amount);
-            saveBalanceLog(receipt, transaction, amount, account.getCurrent(), AccountFieldType.UNCLEARED, BalanceEntryType.APPROVE_ACCOUNT_DEPOSIT, EntryCategory.DEBIT);
-
-            account.addAvailableAmount(amount);
-            saveBalanceLog(receipt, transaction, amount, account.getCurrent(), AccountFieldType.AVAILABLE, BalanceEntryType.APPROVE_ACCOUNT_DEPOSIT, EntryCategory.CREDIT);
-            log.info("Account created with ID: ");
-            transactionNotifier.sendToAlias(transaction.getAlias(), transaction);
             Map<String, Object> data = new HashMap<>();
             data.put("code", "200.000.000");
             data.put("data", account.getAvailable());
             return new ResponseProvider(data).success();
-
+        } catch (Exception e) {
+            log.error("Error in topUp: {}", e.getMessage());
+            return new ResponseProvider("500.000.001", "Failed to topup Account").exception();
+        }
+    }
+    
+    @Override
+    @Transactional
+    public ResponseEntity<?> approveAccountTopUp(String receipt, Transaction transaction,String alias, BigDecimal amount, AccountType accountType, State status) {
+        try {
+            log.info("TopUp request received for phone number: {} with amount: {}", alias, amount);
+            Account account = accountService.findByAlias(alias).orElseThrow(() -> new RuntimeException("Account not found"));
+            account.addUnclearedAmount(amount);
+            saveBalanceLog(receipt, transaction, amount, account.getCurrent().add(amount), AccountFieldType.UNCLEARED, BalanceEntryType.ACCOUNT_DEPOSIT, EntryCategory.CREDIT);
+            account.addCurrentAmount(amount);
+            saveBalanceLog(receipt, transaction, amount, account.getCurrent(), AccountFieldType.CURRENT, BalanceEntryType.ACCOUNT_DEPOSIT, EntryCategory.CREDIT);
+            account.subtractUnclearedAmount(amount);
+            saveBalanceLog(receipt, transaction, amount, account.getCurrent(), AccountFieldType.UNCLEARED, BalanceEntryType.APPROVE_ACCOUNT_DEPOSIT, EntryCategory.DEBIT);
+            account.addAvailableAmount(amount);
+            saveBalanceLog(receipt, transaction, amount, account.getCurrent(), AccountFieldType.AVAILABLE, BalanceEntryType.APPROVE_ACCOUNT_DEPOSIT, EntryCategory.CREDIT);
+            log.info("Account created with ID: ");
+//            transactionNotifier.sendToAlias(transaction.getAlias(), transaction);
+            Map<String, Object> data = new HashMap<>();
+            data.put("code", "200.000.000");
+            data.put("data", account.getAvailable());
+            return new ResponseProvider(data).success();
+            
         } catch (Exception e) {
             log.error("Error in topUp: {}", e.getMessage());
             return new ResponseProvider("500.000.001", "Failed to topup Account").exception();

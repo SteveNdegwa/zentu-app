@@ -3,8 +3,6 @@ import com.zentu.zentu_core.base.entity.BaseEntity;
 import com.zentu.zentu_core.base.enums.State;
 import com.zentu.zentu_core.billing.enums.AccountType;
 import com.zentu.zentu_core.billing.enums.EntryCategory;
-import com.zentu.zentu_core.billing.enums.TransactionStatus;
-import com.zentu.zentu_core.billing.messaging.TransactionNotifier;
 import com.zentu.zentu_core.billing.repository.TransactionRepository;
 import com.zentu.zentu_core.common.utils.ChargeCalculator;
 import jakarta.persistence.*;
@@ -74,7 +72,6 @@ public class Transaction extends BaseEntity {
 		tx.setTransactionType(EntryCategory.CREDIT);
 		tx.setInternalReference(receipt);
 		tx.setReceiptNumber(receipt);
-		tx.setStatus(status);
 		tx.setBalance(balance);
 		return tx;
 	}
