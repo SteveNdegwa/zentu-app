@@ -306,19 +306,22 @@ public class PesaWayApiClient {
         }
         if (resultCode == 0) {
             log.info("amount Amount: {}", amount);
-            Transaction transaction = optionalTransaction.get();
-            transaction.setReceiptNumber(transactionId);
-            transaction.setStatus(State.COMPLETED);
-            transaction.save();
-            var approveTopUp = accountService.approveAccountWithdraw(
-                    transactionId,
-                    transaction,
-                    transaction.getAlias(),
-                    amount,
-                    transaction.getAccountType(),
-                    State.COMPLETED
-            );
-            log.info("Process Topup Logger : {}", approveTopUp);
+            String code = (String) data.get("code");
+            if ("200.001".equals(code)) {
+                Transaction transaction = optionalTransaction.get();
+                transaction.setReceiptNumber(transactionId);
+                transaction.setStatus(State.COMPLETED);
+                transaction.save();
+                var approveTopUp = accountService.approveAccountWithdraw(
+                        transactionId,
+                        transaction,
+                        transaction.getAlias(),
+                        amount,
+                        transaction.getAccountType(),
+                        State.COMPLETED
+                );
+                log.info("Process Topup Logger : {}", approveTopUp);
+            }
             return response("200.200.000", "Transaction is being processed");
         } else {
             return response("200.200.001", resultDesc);
@@ -336,7 +339,7 @@ public class PesaWayApiClient {
         BigDecimal amount = new BigDecimal(data.get("TransactionAmount").toString());
         String phone = (String) data.get("ReceiverPartyPublicName");
         if (originatorReference == null || resultCode == null) {
-            return response("200.200.001", "Missing callback data");
+            return response("200.001", "Missing callback data");
         }
         try {
             String jsonResponse = objectMapper.writeValueAsString(data);
@@ -354,20 +357,23 @@ public class PesaWayApiClient {
                 log.warn("Missing phone or amount: phone={}, amount={}", phone, amount);
                 return response("200.200.002", "Missing phone or amount");
             }
-            Transaction transaction = optionalTransaction.get();
-            transaction.setReceiptNumber(transactionReceipt);
-            transaction.setStatus(State.COMPLETED);
-            transaction.save();
-            var approveTopUp = accountService.approveAccountTopUp(
-                    transactionReceipt,
-                    transaction,
-                    transaction.getAlias(),
-                    amount,
-                    transaction.getAccountType(),
-                    State.COMPLETED
-            );
-            log.info("Process Topup Logger : {}", approveTopUp);
-            transactionRepository.save(transaction);
+            String code = (String) data.get("code");
+            if ("200.001".equals(code)) {
+                Transaction transaction = optionalTransaction.get();
+                transaction.setReceiptNumber(transactionReceipt);
+                transaction.setStatus(State.COMPLETED);
+                transaction.save();
+                var approveTopUp = accountService.approveAccountTopUp(
+                        transactionReceipt,
+                        transaction,
+                        transaction.getAlias(),
+                        amount,
+                        transaction.getAccountType(),
+                        State.COMPLETED
+                );
+                log.info("Process Topup Logger : {}", approveTopUp);
+                transactionRepository.save(transaction);
+            }
             return response("200.001", "Transaction Successful");
         } else {
             Transaction transaction = optionalTransaction.get();
