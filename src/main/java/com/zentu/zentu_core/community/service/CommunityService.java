@@ -29,7 +29,7 @@ public class CommunityService {
         data.put("name", request.getName());
         data.put("description", request.getDescription());
         data.put("user_id", user.get("id"));
-        data.put("app", "zentu");
+        data.put("app", "ZENTU_APP");
 
         JsonResponse response = communityServiceClient.createCommunity(data);
         if (!Objects.equals(response.getCode(), "200.000")){
