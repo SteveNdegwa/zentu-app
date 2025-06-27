@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -65,7 +66,7 @@ public class ContributionService {
                 Contribution.builder()
                         .name(request.getName())
                         .amount(request.getAmount())
-                        .deadline(request.getDeadline())
+                        .deadline(LocalDate.parse(request.getDeadline()))
                         .alias(generateNextAlias())
                         .communityId(request.getCommunityId())
                         .creatorId(user.get("id").toString())

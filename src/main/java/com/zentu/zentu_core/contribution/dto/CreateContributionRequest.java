@@ -24,7 +24,7 @@ public class CreateContributionRequest {
     private BigDecimal amount;
 
     @NotNull
-    private LocalDate deadline;
+    private String deadline;
 
     private List<String> phoneNumbers; // invite to join group
 }
