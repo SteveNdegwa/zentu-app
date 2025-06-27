@@ -48,10 +48,9 @@ public class Transaction extends BaseEntity {
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
-	private State status = State.ACTIVE;
+	private State status = State.PROCESSING;
 	
 	private static TransactionRepository transactionRepository;
-	
 	public static void setTransactionRepository(TransactionRepository repo) {
 		transactionRepository = repo;
 	}
@@ -63,7 +62,7 @@ public class Transaction extends BaseEntity {
 		return transactionRepository.save(this);
 	}
 	
-	public static Transaction createCreditTransaction(AccountType accountType, String alias, BigDecimal amount, String receipt, BigDecimal balance) {
+	public static Transaction createCreditTransaction(AccountType accountType, String alias, BigDecimal amount, String receipt, BigDecimal balance, State status) {
 		Transaction tx = new Transaction();
 		BigDecimal charge = ChargeCalculator.calculateCharge(amount);
 		tx.setCharge(charge);
@@ -73,7 +72,6 @@ public class Transaction extends BaseEntity {
 		tx.setTransactionType(EntryCategory.CREDIT);
 		tx.setInternalReference(receipt);
 		tx.setReceiptNumber(receipt);
-		tx.setStatus(State.COMPLETED);
 		tx.setBalance(balance);
 		return tx;
 	}

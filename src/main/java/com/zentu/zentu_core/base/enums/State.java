@@ -8,4 +8,5 @@ public enum State {
     COMPLETED,
     FAILED,
     DELETED,
+    PROCESSING
 }
