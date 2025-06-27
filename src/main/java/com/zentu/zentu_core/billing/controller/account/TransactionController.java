@@ -62,7 +62,7 @@ public class TransactionController {
     @PostMapping("/deduct")
     public ResponseEntity<?> deduct(@RequestBody WalletRequest request) {
         try {
-            return accountService.withdraw(request.getReceiptNumber(), request.getAlias(), request.getAmount(), request.getAccountType());
+            return accountService.withdraw(request.getReceiptNumber(), request.getAlias(), request.getAmount(), request.getAccountType(), State.COMPLETED);
         } catch (Exception e) {
             return new ResponseProvider("500.001", "Failed to withdraw Account").exception();
         }

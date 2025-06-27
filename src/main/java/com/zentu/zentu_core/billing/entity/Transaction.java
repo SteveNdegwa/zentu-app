@@ -76,7 +76,7 @@ public class Transaction extends BaseEntity {
 		return tx;
 	}
 	
-	public static Transaction createDebitTransaction(AccountType accountType, String alias, BigDecimal amount, String receipt, BigDecimal balance) {
+	public static Transaction createDebitTransaction(AccountType accountType, String alias, BigDecimal amount, String receipt, BigDecimal balance, State status) {
 		Transaction tx = new Transaction();
 		BigDecimal charge = ChargeCalculator.calculateCharge(amount);
 		tx.setCharge(charge);
@@ -86,7 +86,7 @@ public class Transaction extends BaseEntity {
 		tx.setTransactionType(EntryCategory.DEBIT);
 		tx.setInternalReference(receipt);
 		tx.setReceiptNumber(receipt);
-		tx.setStatus(State.COMPLETED);
+		tx.setStatus(status);
 		tx.setBalance(balance);
 		return tx;
 	}
