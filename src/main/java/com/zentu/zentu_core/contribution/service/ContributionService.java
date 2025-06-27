@@ -70,6 +70,7 @@ public class ContributionService {
                         .alias(generateNextAlias())
                         .communityId(request.getCommunityId())
                         .creatorId(user.get("id").toString())
+                        .state(State.ACTIVE)
                         .build()
         );
 

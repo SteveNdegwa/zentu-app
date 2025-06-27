@@ -36,5 +36,5 @@ public class Contribution extends BaseEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private State state = State.ACTIVE;
+    private State state;
 }
