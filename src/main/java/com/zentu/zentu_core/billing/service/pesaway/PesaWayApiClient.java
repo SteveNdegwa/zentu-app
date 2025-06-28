@@ -14,6 +14,7 @@ import com.zentu.zentu_core.billing.repository.TransactionRepository;
 import com.zentu.zentu_core.billing.service.account.AccountService;
 import com.zentu.zentu_core.common.db.GenericCrudService;
 import com.zentu.zentu_core.common.utils.ChargeCalculator;
+import com.zentu.zentu_core.common.utils.TransactionRefGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -151,8 +152,9 @@ public class PesaWayApiClient {
     }
 
     public JsonNode sendB2CPayment(String externalReference, double amount, String phoneNumber, String channel, String alias, String reason, AccountType accountType) {
+        String receipt = new TransactionRefGenerator().generate();
         Map<String, Object> payload = Map.of(
-                "ExternalReference", externalReference,
+                "ExternalReference", receipt,
                 "Amount", amount,
                 "PhoneNumber", phoneNumber,
                 "Channel", channel,
