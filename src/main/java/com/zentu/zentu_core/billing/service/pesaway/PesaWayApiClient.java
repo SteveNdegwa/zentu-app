@@ -186,8 +186,6 @@ public class PesaWayApiClient {
                 .state(State.COMPLETED)
                 .build();
         genericCrudService.create(transaction);
-        var resp = post("/api/v1/mobile-money/send-payment/", payload);
-        log.info("Send B2C Payment Response: {}", resp);
         return post("/api/v1/mobile-money/send-payment/", payload);
     }
 
