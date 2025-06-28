@@ -151,33 +151,40 @@ public class PesaWayApiClient {
         return post("/api/v1/mobile-money/send-payment/", payload);
     }
 
-    public JsonNode sendB2CPayment(String externalReference, double amount, String phoneNumber, String channel, String alias, String reason, AccountType accountType) {
-        String receipt = new TransactionRefGenerator().generate();
+    public JsonNode sendB2CPayment(String externalReference, double amount, String phoneNumber,
+                                   String channel, String alias, String reason, AccountType accountType) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Amount must be greater than zero");
+        }
         Map<String, Object> payload = Map.of(
-                "ExternalReference", receipt,
+                "ExternalReference", externalReference,
                 "Amount", amount,
                 "PhoneNumber", phoneNumber,
                 "Channel", channel,
                 "Reason", reason,
                 "ResultsUrl", this.b2cResultsUrl
         );
-        log.info("This is the transaction payload: {}", payload);
+        log.info("Transaction payload: {}", payload);
         Account account = accountRepository.findByAlias(alias)
                 .orElseThrow(() -> new RuntimeException("Account not found for alias: " + alias));
+        BigDecimal amountDecimal = BigDecimal.valueOf(amount);
         BigDecimal available = account.getAvailable();
-        if (available.compareTo(BigDecimal.valueOf(amount)) < 0) {
+        if (available.compareTo(amountDecimal) < 0) {
             throw new RuntimeException("Insufficient funds in account: " + alias);
         }
-        BigDecimal amountDecimal = BigDecimal.valueOf(amount);
-        var processWithdraw = accountService.withdraw(
-                externalReference,
+        JsonNode response = post("/api/v1/mobile-money/send-payment/", payload);
+        String originatorRef = response.has("OriginatorReference") ?
+                response.get("OriginatorReference").asText() :
+                externalReference;
+        var withdrawalResult = accountService.withdraw(
+                originatorRef,
                 alias,
                 amountDecimal,
                 accountType,
                 State.PROCESSING
         );
-        log.info("Process Topup Logger : {}", processWithdraw);
-        PesawayTransactionLog transaction = PesawayTransactionLog.builder()
+        log.info("Withdrawal result: {}", withdrawalResult);
+        PesawayTransactionLog transactionLog = PesawayTransactionLog.builder()
                 .originatorReference(externalReference)
                 .alias(alias)
                 .accountType(accountType)
@@ -185,9 +192,10 @@ public class PesaWayApiClient {
                 .transactionType(EntryCategory.DEBIT)
                 .state(State.COMPLETED)
                 .build();
-        genericCrudService.create(transaction);
-        return post("/api/v1/mobile-money/send-payment/", payload);
+        genericCrudService.create(transactionLog);
+        return response;
     }
+
 
     public JsonNode receiveC2BPayment(String externalReference, double amount, String phoneNumber, String channel, String alias,  String reason, AccountType accountType) {
         BigDecimal amountDecimal = BigDecimal.valueOf(amount);
