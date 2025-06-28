@@ -161,6 +161,7 @@ public class PesaWayApiClient {
                 "Reason", reason,
                 "ResultsUrl", this.b2cResultsUrl
         );
+        log.info("This is the transaction payload: {}", payload);
         Account account = accountRepository.findByAlias(alias)
                 .orElseThrow(() -> new RuntimeException("Account not found for alias: " + alias));
         BigDecimal available = account.getAvailable();
@@ -364,7 +365,7 @@ public class PesaWayApiClient {
                 return response("200.200.002", "Missing phone or amount");
             }
             String code = (String) data.get("code");
-            if ("200.001".equals(code)) {
+            if ("The service request is processed successfully.".equals(resultDesc)) {
                 Transaction transaction = optionalTransaction.get();
                 transaction.setReceiptNumber(transactionReceipt);
                 transaction.setStatus(State.COMPLETED);
