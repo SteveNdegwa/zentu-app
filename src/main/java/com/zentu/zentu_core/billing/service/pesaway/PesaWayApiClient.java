@@ -181,15 +181,6 @@ public class PesaWayApiClient {
                 State.PROCESSING
         );
         log.info("Withdrawal result: {}", withdrawalResult);
-        PesawayTransactionLog transactionLog = PesawayTransactionLog.builder()
-                .originatorReference(externalReference)
-                .alias(alias)
-                .accountType(accountType)
-                .phoneNumber(phoneNumber)
-                .transactionType(EntryCategory.DEBIT)
-                .state(State.COMPLETED)
-                .build();
-        genericCrudService.create(transactionLog);
         return response;
     }
 
@@ -214,15 +205,6 @@ public class PesaWayApiClient {
                 State.PROCESSING
         );
         log.info("Process Topup Logger : {}", processTopUp);
-        PesawayTransactionLog transaction = PesawayTransactionLog.builder()
-                .alias(alias)
-                .originatorReference(externalReference)
-                .accountType(accountType)
-                .transactionType(EntryCategory.CREDIT)
-                .phoneNumber(phoneNumber)
-                .state(State.COMPLETED)
-                .build();
-        genericCrudService.create(transaction);
         return post("/api/v1/mobile-money/receive-payment/", payload);
 
     }
