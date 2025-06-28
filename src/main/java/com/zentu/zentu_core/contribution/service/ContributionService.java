@@ -58,7 +58,7 @@ public class ContributionService {
                 throw new RuntimeException("Community ID or community name must be provided");
             }
             CreateCommunityRequest createCommunityRequest = new CreateCommunityRequest();
-            createCommunityRequest.setName(request.getName().trim());
+            createCommunityRequest.setName(request.getCommunityName().trim());
             Map<String, Object> response = communityService.createCommunity(createCommunityRequest, user);
             request.setCommunityId(response.get("id").toString());
         }
