@@ -173,11 +173,8 @@ public class PesaWayApiClient {
             throw new RuntimeException("Insufficient funds in account: " + alias);
         }
         JsonNode response = post("/api/v1/mobile-money/send-payment/", payload);
-        String originatorRef = response.has("OriginatorReference") ?
-                response.get("OriginatorReference").asText() :
-                externalReference;
         var withdrawalResult = accountService.withdraw(
-                originatorRef,
+                externalReference,
                 alias,
                 amountDecimal,
                 accountType,
