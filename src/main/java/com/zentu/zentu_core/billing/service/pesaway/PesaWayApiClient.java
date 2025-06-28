@@ -309,28 +309,31 @@ public class PesaWayApiClient {
             log.error("Failed to convert response to JSON: {}", e.getMessage());
         }
         if (resultCode == 0) {
-            log.info("amount Amount: {}", amount);
-            Transaction transaction = optionalTransaction.get();
-            transaction.setReceiptNumber(transactionId);
-            transaction.setStatus(State.COMPLETED);
-            transaction.save();
-            var approveWithdrawal = accountService.approveAccountWithdraw(
-                    transactionId,
-                    transaction,
-                    transaction.getAlias(),
-                    amount,
-                    transaction.getAccountType(),
-                    State.COMPLETED
-            );
-            log.info("Process Topup Logger : {}", approveWithdrawal);
-//            } else {
-//                Transaction transaction = optionalTransaction.get();
-//                transaction.setStatus(State.FAILED);
-//                transactionRepository.save(transaction);
-//            }
-            return response("200.200.000", "Transaction is being processed");
+            if ("The service request is processed successfully.".equals(resultDesc)) {
+                log.info("amount Amount: {}", amount);
+                Transaction transaction = optionalTransaction.get();
+                transaction.setReceiptNumber(transactionId);
+                transaction.setStatus(State.COMPLETED);
+                transaction.save();
+                var approveWithdrawal = accountService.approveAccountWithdraw(
+                        transactionId,
+                        transaction,
+                        transaction.getAlias(),
+                        amount,
+                        transaction.getAccountType(),
+                        State.COMPLETED
+                );
+                log.info("Process Topup Logger : {}", approveWithdrawal);
+            } else {
+                log.warn("Transaction failed with resultDesc: {}", resultDesc);
+                Transaction transaction = optionalTransaction.get();
+                transaction.setStatus(State.FAILED);
+                transactionRepository.save(transaction);
+            }
+
+            return response("200.000", "Transaction is being processed");
         } else {
-            return response("200.200.001", resultDesc);
+            return response("200.000", resultDesc);
         }
     }
 
