@@ -287,7 +287,6 @@ public class PesaWayApiClient {
 
     public Map<String, Object> processPesawayB2Cresults(Map<String, Object> data) {
         log.info("Received Pesaway B2C Callback: {}", data);
-
         Integer resultCode = (Integer) data.get("ResultCode");
         BigDecimal amount = new BigDecimal((String) data.get("TransactionAmount"));
         log.info("Result Code: {}", resultCode);
@@ -295,7 +294,6 @@ public class PesaWayApiClient {
         String resultDesc = (String) data.getOrDefault("ResultDesc", "No description");
         String originatorReference = (String) data.get("OriginatorReference");
         String transactionId = (String) data.get("TransactionID");
-
         if (originatorReference == null || resultCode == null) {
             return response("200.200.001", "Missing callback data");
         }
@@ -312,26 +310,24 @@ public class PesaWayApiClient {
         }
         if (resultCode == 0) {
             log.info("amount Amount: {}", amount);
-            String code = (String) data.get("code");
-            if ("200.001".equals(code)) {
-                Transaction transaction = optionalTransaction.get();
-                transaction.setReceiptNumber(transactionId);
-                transaction.setStatus(State.COMPLETED);
-                transaction.save();
-                var approveTopUp = accountService.approveAccountWithdraw(
-                        transactionId,
-                        transaction,
-                        transaction.getAlias(),
-                        amount,
-                        transaction.getAccountType(),
-                        State.COMPLETED
-                );
-                log.info("Process Topup Logger : {}", approveTopUp);
-            } else {
-                Transaction transaction = optionalTransaction.get();
-                transaction.setStatus(State.FAILED);
-                transactionRepository.save(transaction);
-            }
+            Transaction transaction = optionalTransaction.get();
+            transaction.setReceiptNumber(transactionId);
+            transaction.setStatus(State.COMPLETED);
+            transaction.save();
+            var approveWithdrawal = accountService.approveAccountWithdraw(
+                    transactionId,
+                    transaction,
+                    transaction.getAlias(),
+                    amount,
+                    transaction.getAccountType(),
+                    State.COMPLETED
+            );
+            log.info("Process Topup Logger : {}", approveWithdrawal);
+//            } else {
+//                Transaction transaction = optionalTransaction.get();
+//                transaction.setStatus(State.FAILED);
+//                transactionRepository.save(transaction);
+//            }
             return response("200.200.000", "Transaction is being processed");
         } else {
             return response("200.200.001", resultDesc);
