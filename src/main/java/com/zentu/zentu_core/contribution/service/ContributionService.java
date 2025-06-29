@@ -57,8 +57,11 @@ public class ContributionService {
             if (request.getCommunityName() == null || request.getCommunityName().isBlank()){
                 throw new RuntimeException("Community ID or community name must be provided");
             }
+
+            // Create a new community if none is provided
             CreateCommunityRequest createCommunityRequest = new CreateCommunityRequest();
             createCommunityRequest.setName(request.getCommunityName().trim());
+            createCommunityRequest.setPhoneNumbers(request.getPhoneNumbers());
             Map<String, Object> response = communityService.createCommunity(createCommunityRequest, user);
             request.setCommunityId(response.get("id").toString());
         }
@@ -73,16 +76,6 @@ public class ContributionService {
                         .state(State.ACTIVE)
                         .build()
         );
-
-        if (!request.getPhoneNumbers().isEmpty()){
-            try{
-                communityService.inviteToCommunity(request.getCommunityId(), request.getPhoneNumbers());
-            } catch (Exception e) {
-                // Fail silently
-                log.error("Invite to community failed for communityId={}, phones={}", request.getCommunityId(),
-                        request.getPhoneNumbers(), e);
-            }
-        }
 
         return Map.of(
                 "communityId", request.getCommunityId(),
