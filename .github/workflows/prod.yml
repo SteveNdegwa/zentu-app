@@ -102,7 +102,6 @@ jobs:
             git pull origin main
             docker-compose pull
             docker-compose up -d --build
-
   clean:
     name: Clean up Docker Cache
     runs-on: ubuntu-22.04
