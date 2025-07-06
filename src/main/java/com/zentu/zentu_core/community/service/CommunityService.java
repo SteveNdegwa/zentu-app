@@ -28,6 +28,7 @@ public class CommunityService {
         Map<String, Object> data = new HashMap<>();
         data.put("name", request.getName());
         data.put("description", request.getDescription());
+        data.put("phone_numbers", request.getPhoneNumbers());
         data.put("user_id", user.get("id"));
         data.put("app", "ZENTU_APP");
 
