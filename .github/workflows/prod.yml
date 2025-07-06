@@ -34,18 +34,12 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build with Maven
-        run: mvn clean install
+      - name: Build and Test with Maven
+        run: mvn clean verify
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/zentu_test_db
           SPRING_DATASOURCE_USERNAME: zentu_user
           SPRING_DATASOURCE_PASSWORD: zentu_pass
-
-      - name: Upload built JAR
-        uses: actions/upload-artifact@v4
-        with:
-          name: zentu-app-jar
-          path: target/*.jar
 
   docker-build-push:
     runs-on: ubuntu-latest
@@ -54,12 +48,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Download built JAR
-        uses: actions/download-artifact@v4
-        with:
-          name: zentu-app-jar
-          path: target
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -96,9 +84,9 @@ jobs:
           key: ${{ secrets.ZENTU_PASSWORD_SSH_KEY }}
           script_stop: true
           script: |
-            sudo chown -R $USER:$USER /srv/apps/live/zentu-app
-            cd /srv/apps/live/zentu-app/
-            sudo git config --system --add safe.directory /srv/apps/live/zentu-app
+            sudo chown -R $USER:$USER /mnt/data/zentu-app
+            cd /mnt/data/zentu-app
+            sudo git config --system --add safe.directory /mnt/data/zentu-app
             git pull origin main
             docker-compose pull
             docker-compose up -d --build
