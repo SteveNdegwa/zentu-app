@@ -4,4 +4,5 @@ import lombok.Data;
 @Data
 public class CheckPhoneNumber {
 	private String phoneNumber;
+	private String app;
 }
