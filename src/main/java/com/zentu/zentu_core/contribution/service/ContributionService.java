@@ -167,13 +167,13 @@ public class ContributionService {
 
         List<Map<String, Object>> members = communityService.getCommunityMembers(contribution.getCommunityId());
         for (Map<String, Object> member : members){
-            log.info("Member : {}", member);
             String phoneNumber = member.get("phone_number").toString();
             if (phoneNumber == null || phoneNumber.isBlank()) {
                 continue;
             }
             try {
                 String normalized = "+" + PhoneUtils.normalizePhoneNumber(phoneNumber, "254", 12);
+                log.info("Normalized: {}", normalized);
                 wassengerApiClient.checkNumberExists(Map.of("phone", normalized));
                 if (phoneNumber.equals(user.get("phone_number"))) {
                     participants.add(Map.of("phone", normalized, "admin", true));
