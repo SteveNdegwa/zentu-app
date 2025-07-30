@@ -34,6 +34,8 @@ public class Contribution extends BaseEntity {
     @Column(nullable = false)
     private LocalDate deadline;
 
+    private String whatsappGroupId;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private State state;

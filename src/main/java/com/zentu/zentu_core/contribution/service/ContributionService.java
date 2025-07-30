@@ -3,22 +3,26 @@ package com.zentu.zentu_core.contribution.service;
 import com.zentu.zentu_core.audit.annotation.Auditable;
 import com.zentu.zentu_core.audit.enums.AuditAction;
 import com.zentu.zentu_core.base.enums.State;
+import com.zentu.zentu_core.billing.entity.Account;
+import com.zentu.zentu_core.billing.enums.AccountType;
+import com.zentu.zentu_core.billing.repository.AccountRepository;
+import com.zentu.zentu_core.common.utils.AccountNumberGenerator;
+import com.zentu.zentu_core.common.utils.PhoneUtils;
+import com.zentu.zentu_core.contribution.client.WassengerApiClient;
 import com.zentu.zentu_core.contribution.dto.CreateContributionRequest;
 import com.zentu.zentu_core.contribution.dto.UpdateContributionRequest;
 import com.zentu.zentu_core.contribution.entity.Contribution;
 import com.zentu.zentu_core.contribution.repository.ContributionRepository;
 import com.zentu.zentu_core.community.dto.CreateCommunityRequest;
 import com.zentu.zentu_core.community.service.CommunityService;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +30,10 @@ import java.util.UUID;
 public class ContributionService {
 
     private final ContributionRepository contributionRepository;
+    private final AccountRepository accountRepository;
+    private final AccountNumberGenerator accountNumberGenerator;
     private final CommunityService communityService;
+    private final WassengerApiClient wassengerApiClient;
 
     @Transactional
     private String generateNextAlias() {
@@ -76,6 +83,20 @@ public class ContributionService {
                         .state(State.ACTIVE)
                         .build()
         );
+
+        // Create contribution wallet
+        Account account = new Account();
+        account.setAccountNumber(accountNumberGenerator.generate());
+        account.setAccountType(AccountType.CONTRIBUTION);
+        account.setAlias(contribution.getAlias());
+        accountRepository.save(account);
+
+        // Optionally create whatsapp group
+        if (request.isCreateWhatsappGroup()){
+            String whatsappGroupId = createWhatsappGroup(contribution.getId(), user);
+            contribution.setWhatsappGroupId(whatsappGroupId);
+            contributionRepository.save(contribution);
+        }
 
         return Map.of(
                 "communityId", request.getCommunityId(),
@@ -127,5 +148,47 @@ public class ContributionService {
     @Transactional(readOnly = true)
     public List<Contribution> fetchContributionsByCreator(String creatorId) {
         return contributionRepository.findAllByCreatorIdAndState(creatorId, State.ACTIVE);
+    }
+
+    @Transactional(readOnly = true)
+    public String createWhatsappGroup(UUID contributionId, Map<String, Object> user) {
+        Contribution contribution = contributionRepository.findByIdAndState(contributionId, State.ACTIVE)
+                .orElseThrow(() -> new RuntimeException("Contribution not found"));
+
+        if (!contribution.getCreatorId().equals(user.get("id"))) {
+            throw new RuntimeException("Not authorized to create this group");
+        }
+
+        if (!contribution.getWhatsappGroupId().isBlank()) {
+            return contribution.getWhatsappGroupId();
+        }
+
+        List<Map<String, Object>> participants = new ArrayList<>();
+
+        List<Map<String, Object>> members = communityService.getCommunityMembers(contribution.getCommunityId());
+        for (Map<String, Object> member : members){
+            String phoneNumber = member.get("phone_number").toString();
+            if (phoneNumber == null || phoneNumber.isBlank()) {
+                continue;
+            }
+            try {
+                String normalized = "+" + PhoneUtils.normalizePhoneNumber(phoneNumber, "254", 12);
+                wassengerApiClient.checkNumberExists(Map.of("phone", normalized));
+                if (phoneNumber.equals(user.get("phone_number"))) {
+                    participants.add(Map.of("phone", normalized, "admin", true));
+                }
+                else {
+                    participants.add(Map.of("phone", normalized, "admin", false));
+                }
+            } catch (FeignException.BadRequest ignored) {}
+        }
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("name", contribution.getName());
+        payload.put("participants", participants);
+
+        Map<String, Object> groupInfo = wassengerApiClient.createGroup(payload);
+
+        return groupInfo.get("wid").toString();
     }
 }

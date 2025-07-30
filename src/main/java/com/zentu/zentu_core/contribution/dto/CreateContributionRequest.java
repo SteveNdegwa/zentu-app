@@ -27,4 +27,6 @@ public class CreateContributionRequest {
     private String deadline;
 
     private List<String> phoneNumbers; // invite to join group
+
+    private boolean createWhatsappGroup;
 }

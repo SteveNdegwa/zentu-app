@@ -53,41 +53,40 @@ public class CommunityController {
     @GetMapping("/{id}")
     @ProtectedEndpoint
     public ResponseEntity<ApiResponse> getCommunity(@PathVariable("id") String communityId) {
-        Object community = communityService.getCommunityById(communityId);
+        Map<String, Object> community = communityService.getCommunityById(communityId);
         return ApiResponse.ok("Community fetched successfully", Map.of("community", community));
     }
 
     @GetMapping
     @ProtectedEndpoint
     public ResponseEntity<ApiResponse> getUserCommunities(@AuthenticationPrincipal Map<String, Object> user) {
-        Object communities = communityService.getUserCommunities(user);
+        List<Map<String, Object>> communities = communityService.getUserCommunities(user);
         return ApiResponse.ok("User communities fetched successfully", Map.of("communities", communities));
     }
 
     @PostMapping("/filter")
     @ProtectedEndpoint
     public ResponseEntity<ApiResponse> filterCommunities(@RequestBody FilterCommunitiesRequest request) {
-        Object communities = communityService.filterCommunities(request);
+        List<Map<String, Object>> communities = communityService.filterCommunities(request);
         return ApiResponse.ok("Communities filtered successfully", Map.of("communities", communities));
     }
 
-    @PostMapping("/{id}/users/{userId}")
+    @PostMapping("/{id}/members")
     @ProtectedEndpoint
-    public ResponseEntity<ApiResponse> addUserToCommunity(
+    public ResponseEntity<ApiResponse> joinCommunity(
             @PathVariable String communityId,
-            @PathVariable String userId) {
-        communityService.joinCommunity(communityId, userId);
-        return ApiResponse.ok("User added to the community successfully", null);
+            @AuthenticationPrincipal Map<String, Object> user) {
+        communityService.joinCommunity(communityId, user);
+        return ApiResponse.ok("User joined the community successfully", null);
     }
 
-    @DeleteMapping("/{id}/users/{userId}")
+    @DeleteMapping("/{id}/members")
     @ProtectedEndpoint
-    public ResponseEntity<ApiResponse> removeUserFromCommunity(
+    public ResponseEntity<ApiResponse> exitCommunity(
             @PathVariable String communityId,
-            @PathVariable String userId,
             @AuthenticationPrincipal Map<String, Object> user) {
-        communityService.exitCommunity(communityId, userId);
-        return ApiResponse.ok("User removed from the community successfully", null);
+        communityService.exitCommunity(communityId, user);
+        return ApiResponse.ok("User exited the community successfully", null);
     }
 
     @PostMapping("/{id}/admins/{userId}")
@@ -121,7 +120,7 @@ public class CommunityController {
     @GetMapping("/{id}/members")
     @ProtectedEndpoint
     public ResponseEntity<ApiResponse> getCommunityMembers(@PathVariable String communityId) {
-        Object members = communityService.getCommunityMembers(communityId);
+        List<Map<String, Object>> members = communityService.getCommunityMembers(communityId);
         return ApiResponse.ok("Community members fetched successfully", Map.of("members", members));
     }
 
