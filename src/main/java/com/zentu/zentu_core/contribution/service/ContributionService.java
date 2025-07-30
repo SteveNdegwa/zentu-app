@@ -187,7 +187,11 @@ public class ContributionService {
         payload.put("name", contribution.getName());
         payload.put("participants", participants);
 
+        log.info("Payload: {}", payload);
+
         Map<String, Object> groupInfo = wassengerApiClient.createGroup(payload);
+
+        log.info("response: {}", payload);
 
         return groupInfo.get("wid").toString();
     }
