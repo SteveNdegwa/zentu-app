@@ -22,6 +22,9 @@ public interface WassengerApiClient {
     @GetMapping("/devices/${wassenger.device-id}/groups/{groupId}")
     Map<String, Object> getGroup(@PathVariable("groupId") String groupId);
 
+    @GetMapping("/devices/${wassenger.device-id}/groups/{groupId}/invite")
+    Map<String, Object> getGroupInviteCode(@PathVariable("groupId") String groupId);
+
     @PostMapping("/devices/${wassenger.device-id}/groups/{groupId}/participants")
     void addParticipantsToGroup(
             @PathVariable("groupId") String groupId,

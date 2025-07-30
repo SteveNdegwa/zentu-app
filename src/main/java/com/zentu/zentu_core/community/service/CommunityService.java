@@ -9,6 +9,7 @@ import com.zentu.zentu_core.billing.entity.Account;
 import com.zentu.zentu_core.billing.enums.AccountType;
 import com.zentu.zentu_core.billing.repository.AccountRepository;
 import com.zentu.zentu_core.common.utils.AccountNumberGenerator;
+import com.zentu.zentu_core.common.utils.CommonUtils;
 import com.zentu.zentu_core.common.utils.PhoneUtils;
 import com.zentu.zentu_core.community.client.CommunityServiceClient;
 import com.zentu.zentu_core.community.dto.*;
@@ -222,6 +223,45 @@ public class CommunityService {
         JsonResponse response = communityServiceClient.inviteToCommunity(data);
         if (!Objects.equals(response.getCode(), "200.000")){
             throw new RuntimeException(response.getMessage());
+        }
+
+        // Invite to community contributions' whatsapp groups
+        List<String> validPhoneNumbers = new ArrayList<>();
+        for (String phoneNumber : phoneNumbers) {
+            String normalized = "+" + PhoneUtils.normalizePhoneNumber(phoneNumber, "254", 12);
+            try{
+                wassengerApiClient.checkNumberExists(Map.of("phone", normalized));
+                validPhoneNumbers.add(normalized);
+            } catch (FeignException.BadRequest ignored) {}
+        }
+
+        if (validPhoneNumbers.isEmpty()){
+            return;
+        }
+
+        List<Contribution> contributions = contributionRepository.findAllByCommunityIdAndState(
+                communityId, State.ACTIVE);
+        for (Contribution contribution : contributions){
+            String whatsappGroupId = contribution.getWhatsappGroupId();
+            if (whatsappGroupId == null || whatsappGroupId.isBlank()){
+                continue;
+            }
+            try {
+                Map<String, Object> groupInviteCode = wassengerApiClient.getGroupInviteCode(whatsappGroupId);
+
+                List<List<String>> phoneChunks = CommonUtils.chunkList(validPhoneNumbers, 10);
+                for (List<String> chunk : phoneChunks) {
+                    Map<String, Object> payload = new HashMap<>();
+                    payload.put("contacts", chunk);
+                    payload.put("message", String.format(
+                            "You’ve been invited to contribute to **%s**.\nTap below to view and join:\n%s",
+                            contribution.getName(), groupInviteCode.get("url")
+                    ));
+
+                    wassengerApiClient.sendMessage(payload);
+                }
+
+            } catch (Exception ignored) {}
         }
     }
 }
