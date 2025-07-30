@@ -159,7 +159,7 @@ public class ContributionService {
             throw new RuntimeException("Not authorized to create this group");
         }
 
-        if (!contribution.getWhatsappGroupId().isBlank()) {
+        if (contribution.getWhatsappGroupId() != null && !contribution.getWhatsappGroupId().isBlank()) {
             return contribution.getWhatsappGroupId();
         }
 
