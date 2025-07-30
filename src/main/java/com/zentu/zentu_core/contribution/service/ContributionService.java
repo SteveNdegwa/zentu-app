@@ -167,6 +167,7 @@ public class ContributionService {
 
         List<Map<String, Object>> members = communityService.getCommunityMembers(contribution.getCommunityId());
         for (Map<String, Object> member : members){
+            log.info("Member : {}", member);
             String phoneNumber = member.get("phone_number").toString();
             if (phoneNumber == null || phoneNumber.isBlank()) {
                 continue;
