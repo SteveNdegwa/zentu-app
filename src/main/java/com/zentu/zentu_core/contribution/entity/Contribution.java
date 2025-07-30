@@ -19,6 +19,8 @@ public class Contribution extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
+    private String description;
+
     @Column(nullable = false, precision = 19, scale = 4)
     private BigDecimal amount;
 

@@ -13,6 +13,8 @@ public class UpdateContributionRequest {
     @NotBlank
     private String name;
 
+    private String contributionDesc;
+
     @NotNull
     private LocalDate deadline;
 

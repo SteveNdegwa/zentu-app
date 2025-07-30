@@ -75,6 +75,7 @@ public class ContributionService {
         Contribution contribution = contributionRepository.save(
                 Contribution.builder()
                         .name(request.getName())
+                        .description(request.getContributionDesc())
                         .amount(request.getAmount())
                         .deadline(LocalDate.parse(request.getDeadline()))
                         .alias(generateNextAlias())
@@ -115,6 +116,7 @@ public class ContributionService {
         }
 
         contribution.setName(request.getName().trim());
+        contribution.setDescription(request.getContributionDesc());
         contribution.setAmount(request.getAmount());
 
         contributionRepository.save(contribution);
@@ -173,7 +175,6 @@ public class ContributionService {
             }
             try {
                 String normalized = "+" + PhoneUtils.normalizePhoneNumber(phoneNumber, "254", 12);
-                log.info("Normalized: {}", normalized);
                 wassengerApiClient.checkNumberExists(Map.of("phone", normalized));
                 if (phoneNumber.equals(user.get("phone_number"))) {
                     participants.add(Map.of("phone", normalized, "admin", true));

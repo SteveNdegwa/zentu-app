@@ -14,6 +14,8 @@ public class CreateContributionRequest {
     @NotBlank
     private String name;
 
+    private String contributionDesc;
+
     @NotBlank
     private String communityId;
 
