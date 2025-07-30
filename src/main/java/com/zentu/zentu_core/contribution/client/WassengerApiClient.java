@@ -3,7 +3,6 @@ package com.zentu.zentu_core.contribution.client;
 import com.zentu.zentu_core.base.config.WassengerApiFeignConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 import java.util.Map;
 
 @FeignClient(
